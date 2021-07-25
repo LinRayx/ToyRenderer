@@ -183,8 +183,10 @@
     <ClInclude Include="..\src\vulkan_basics.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\src\point_light.vert.glsl" />
     <None Include="..\src\shaders\cube.frag.glsl" />
     <None Include="..\src\shaders\cube.vert.glsl" />
+    <None Include="..\src\shaders\point_light.frag.glsl" />
     <None Include="..\src\shaders\triangle.frag.glsl" />
     <None Include="..\src\shaders\triangle.vert.glsl" />
   </ItemGroup>

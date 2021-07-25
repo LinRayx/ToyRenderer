@@ -175,7 +175,7 @@ typedef struct shading_pass_s {
 	shader_t vertex_shader, fragment_shader;
 }shading_pass_t;
 
-typedef struct light_pass_s {
+typedef struct point_light_pass_t {
 	pipeline_with_bindings_t pipeline;
 	shader_t vertex_shader, fragment_shader;
 }light_pass_t;
@@ -189,7 +189,7 @@ typedef struct application_s {
 	render_pass_t render_pass;
 	render_targets_t render_targets;
 	imgui_pass_t imgui_pass;
-	light_pass_t light_pass;
+	point_light_pass_t point_light_pass;
 	frame_queue_t frame_queue;
 	VkClearValue        ClearValue;
 	first_person_camera_t camera;

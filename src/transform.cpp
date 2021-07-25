@@ -28,7 +28,7 @@ namespace Transform {
 	int update_mvp_matrix(mvp_matrix_buffer_t* buffer, mvp_matrix_t* mvp_matrix, mvp_set_param* param, const swapchain_t* swapchain) {
 		mvp_matrix->view = GetViewMatrix(param->camera);
 		mvp_matrix->proj = GetProjectMatrix(param->camera, param->width, param->height);
-		mvp_matrix->model = glm::mat4(1.0f);
+		mvp_matrix->model = param->model;
 		mvp_matrix->model = glm::rotate(mvp_matrix->model, glm::radians(param->angle), glm::vec3(1.0f, 0.3f, 0.5f));
 		for (int i = 0; i < swapchain->image_count; ++i) {
 			memcpy(((char*)buffer->data) + buffer->buffer.buffers[i].offset, mvp_matrix, sizeof(mvp_matrix_t));

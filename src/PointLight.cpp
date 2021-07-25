@@ -51,10 +51,10 @@ namespace PointLight {
 		return 0;
 	}
 
-	int update_light_attri(point_light_attri_buffer_t* lights, point_light_attri_t* attri, const swapchain_t* swapchain) {
-		attri->Color = glm::vec3(1, 0, 0);
+	int update_light_attri(point_light_attri_buffer_t* lights, point_light_attri_t* attri, point_light_attri_set_param_t* param, const swapchain_t* swapchain) {
+		attri->Color = param->Color;
 		attri->density = 1;
-		attri->Position = glm::vec3(0, 0, 5);
+		attri->Position = param->Position;
 
 		for (int i = 0; i < swapchain->image_count; ++i) {
 			memcpy(((char*)lights->data) + lights->buffer.buffers[i].offset, attri, sizeof(*attri));

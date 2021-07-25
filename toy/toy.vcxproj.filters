@@ -130,5 +130,11 @@
     <None Include="..\src\shaders\cube.frag.glsl">
       <Filter>源文件\shaders</Filter>
     </None>
+    <None Include="..\src\point_light.vert.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\point_light.frag.glsl">
+      <Filter>源文件\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

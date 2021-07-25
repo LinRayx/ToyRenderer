@@ -30,10 +30,15 @@ namespace PointLight {
 		void* data;
 	};
 
+	struct point_light_attri_set_param_t {
+		glm::vec3 Position;
+		glm::vec3 Color;
+	};
+
 	int create_light_attri_buffer(point_light_attri_buffer_t* lights, const device_t* device, const swapchain_t* swapchain);
 	int create_light_mvp_buffer(point_light_mvp_buffer_t* lights, const device_t* device, const swapchain_t* swapchain);
 
-	int update_light_attri(point_light_attri_buffer_t* lights, point_light_attri_t* attri, const swapchain_t* swapchain);
+	int update_light_attri(point_light_attri_buffer_t* lights, point_light_attri_t* attri, point_light_attri_set_param_t* param, const swapchain_t* swapchain);
 	int update_light_mvp(point_light_mvp_buffer_t* lights, const swapchain_t* swapchain);
 
 	int destroy(buffers_t* buffer, const device_t* device);

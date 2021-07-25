@@ -22,6 +22,7 @@ namespace Transform {
 		int width;
 		int height;
 		float angle;
+		glm::mat4 model;
 		first_person_camera_t* camera;
 	};
 

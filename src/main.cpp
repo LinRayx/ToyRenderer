@@ -20,6 +20,7 @@ using namespace std;
 namespace PointLight {
 	point_light_attri_t point_light1_attri1;
 	point_light_attri_buffer_t point_light_attri_buffer1;
+	point_light_attri_set_param_t param1 = { glm::vec3(0, 0, 5), glm::vec3(1, 0, 1) };
 }
 
 namespace Transform {
@@ -57,6 +58,7 @@ static void check_vk_result(VkResult err)
 void destroy_scene(application_t* app) {
 	destroy_buffers(&Mesh::cube1_mesh_buffer.vertices, &app->device);
 	destroy_buffers(&Transform::mvp_matrix_buffer1.buffer, &app->device);
+	destroy_buffers(&Transform::point_light_mvp_buffer1.buffer, &app->device);
 	destroy_buffers(&PointLight::point_light_attri_buffer1.buffer, &app->device);
 	destroy_buffers(&ConstantValue::constant_param_buffer.buffer, &app->device);
 }
@@ -84,7 +86,8 @@ int update_constant(first_person_camera_t* camera, swapchain_t* swapchain) {
 }
 
 int update_lights(swapchain_t* swapchain) {
-	PointLight::update_light_attri(&PointLight::point_light_attri_buffer1, &PointLight::point_light1_attri1, swapchain);
+	
+	PointLight::update_light_attri(&PointLight::point_light_attri_buffer1, &PointLight::point_light1_attri1, &PointLight::param1, swapchain);
 	return 0;
 }
 
@@ -95,8 +98,21 @@ int update_transform(first_person_camera_t* camera, swapchain_t* swapchain) {
 	param.camera = camera;
 	param.width = ConstantValue::width;
 	param.height = ConstantValue::height;
-
+	param.model = glm::mat4(1.0);
 	Transform::update_mvp_matrix(&Transform::mvp_matrix_buffer1, &Transform::mvp_matrix1, &param, swapchain);
+
+	param.model = glm::mat4(1.0);
+	param.model = glm::translate(param.model, PointLight::param1.Position);
+	param.angle = 0;
+	param.model = glm::scale(param.model, glm::vec3(0.5, 0.5, 0.5));
+	Transform::update_mvp_matrix(&Transform::point_light_mvp_buffer1, &Transform::point_light_mvp1, &param, swapchain);
+	return 0;
+}
+
+
+int load_transform(const device_t* device, const swapchain_t* swapchain) {
+	Transform::create_mvp_matrix_buffer(&Transform::mvp_matrix_buffer1, device, swapchain);
+	Transform::create_mvp_matrix_buffer(&Transform::point_light_mvp_buffer1, device, swapchain);
 	return 0;
 }
 
@@ -113,11 +129,6 @@ int init_camera(first_person_camera_t* camera) {
 	camera->MouseSensitivity = ConstantValue::SENSITIVITY;
 	camera->MovementSpeed = ConstantValue::SPEED;
 	updateCameraVectors(camera);
-	return 0;
-}
-
-int load_transform(const device_t* device, const swapchain_t* swapchain) {
-	Transform::create_mvp_matrix_buffer(&Transform::mvp_matrix_buffer1, device, swapchain);
 	return 0;
 }
 
@@ -203,7 +214,7 @@ int create_render_pass(render_pass_t* pass, const device_t* device, const swapch
 			.format = render_targets->targets[0].image_info.format,
 			.samples = VK_SAMPLE_COUNT_1_BIT,
 			.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
-			.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+			.storeOp = VK_ATTACHMENT_STORE_OP_STORE,
 			.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
 			.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
 			.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
@@ -224,10 +235,16 @@ int create_render_pass(render_pass_t* pass, const device_t* device, const swapch
 
 	VkSubpassDescription subpasses2 = {};
 	subpasses2.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpasses2.pDepthStencilAttachment = &depth_reference;
 	subpasses2.colorAttachmentCount = 1;
 	subpasses2.pColorAttachments = &swapchain_output_reference;
 
-	subpasses.push_back(subpasses1); subpasses.push_back(subpasses2);
+	VkSubpassDescription subpasses3 = {};
+	subpasses3.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpasses3.colorAttachmentCount = 1;
+	subpasses3.pColorAttachments = &swapchain_output_reference;
+
+	subpasses.push_back(subpasses1); subpasses.push_back(subpasses2); subpasses.push_back(subpasses3);
 
 	VkSubpassDependency dependencies[] = {
 		{ // Swapchain image has been acquired
@@ -245,7 +262,15 @@ int create_render_pass(render_pass_t* pass, const device_t* device, const swapch
 			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 			.srcAccessMask = 0,
 			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-		}
+		},
+		{
+			.srcSubpass = 1,
+			.dstSubpass = 2,
+			.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			.srcAccessMask = 0,
+			.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+		},
 	};
 	VkRenderPassCreateInfo renderpass_info = {
 		.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
@@ -293,6 +318,14 @@ void destroy_shading_pass(shading_pass_s* pass, const device_t* device) {
 	memset(pass, 0, sizeof(*pass));
 }
 
+//! Frees objects and zeros
+void destroy_point_light_pass(point_light_pass_t* pass, const device_t* device) {
+	destroy_pipeline_with_bindings(&pass->pipeline, device);
+	destroy_shader(&pass->vertex_shader, device);
+	destroy_shader(&pass->fragment_shader, device);
+	memset(pass, 0, sizeof(*pass));
+}
+
 void destroy_imgui_pass(imgui_pass_s* pass, const device_t* device) {
 	destroy_pipeline_with_bindings(&pass->pipeline, device);
 	memset(pass, 0, sizeof(*pass));
@@ -328,8 +361,7 @@ int create_imgui_pass(imgui_pass_s* pass, const device_t* device) {
 	return 0;
 }
 
-int create_shading_pass(shading_pass_s* pass, const device_t* device, const swapchain_t* swapchain, const render_pass_t* render_pass, 
-	first_person_camera_t* camera) {
+int create_shading_pass(shading_pass_s* pass, const device_t* device, const swapchain_t* swapchain, const render_pass_t* render_pass) {
 	memset(pass, 0, sizeof(*pass));
 	pipeline_with_bindings_t* pipeline = &pass->pipeline;
 
@@ -405,8 +437,6 @@ int create_shading_pass(shading_pass_s* pass, const device_t* device, const swap
 		destroy_shading_pass(pass, device);
 		return 1;
 	}
-
-
 
 	// Define the graphics pipeline state
 
@@ -518,41 +548,182 @@ int create_shading_pass(shading_pass_s* pass, const device_t* device, const swap
 
 }
 
-//int create_light_pass(light_pass_s* pass, const device_t* device, const swapchain_t* swapchain, const render_pass_t* render_pass, 
-//	point_light_buffer_t* point_light_buffer) {
-//	memset(pass, 0, sizeof(*pass));
-//	pipeline_with_bindings_t* pipeline = &pass->pipeline;
-//	VkDescriptorSetLayoutBinding layout_bindings[] = {
-//	{.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER},
-//	};
-//	uint32_t binding_count = COUNT_OF(layout_bindings);
-//	descriptor_set_request_t set_request{};
-//	set_request.bindings = layout_bindings;
-//	set_request.min_descriptor_count = 1;
-//	set_request.binding_count = binding_count;
-//	set_request.stage_flags = VK_SHADER_STAGE_VERTEX_BIT;
-//
-//	if (create_descriptor_sets(pipeline, device, &set_request, swapchain->image_count)) {
-//		return 1;
-//	}
-//
-//	VkDescriptorBufferInfo descriptor_buffer_infos[] = {
-//		{.offset = 0},
-//	};
-//
-//	VkWriteDescriptorSet descriptor_set_writes[] = {
-//		{.dstBinding = 0, .pBufferInfo = &descriptor_buffer_infos[0]},
-//	};
-//
-//	complete_descriptor_set_write(binding_count, descriptor_set_writes, &set_request);
-//
-//
-//	for (uint32_t i = 0; i != swapchain->image_count; ++i) {
-//		descriptor_buffer_infos[0].buffer = point_light_buffer->buffer.buffers[i].buffer;
-//		descriptor_buffer_infos[0].range = point_light_buffer->buffer.buffers[i].size;
-//		descriptor_set_writes[0].dstSet = pipeline->descriptor_sets[i];
-//	}
-//}
+int create_point_light_pass(point_light_pass_t* pass, const device_t* device, const swapchain_t* swapchain, const render_pass_t* render_pass) {
+	memset(pass, 0, sizeof(*pass));
+	pipeline_with_bindings_t* pipeline = &pass->pipeline;
+	VkDescriptorSetLayoutBinding layout_bindings[] = {
+	{.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER},
+		{.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER},
+	};
+	uint32_t binding_count = COUNT_OF(layout_bindings);
+	descriptor_set_request_t set_request{};
+	set_request.bindings = layout_bindings;
+	set_request.min_descriptor_count = 1;
+	set_request.binding_count = binding_count;
+	set_request.stage_flags = VK_SHADER_STAGE_ALL;
+
+	if (create_descriptor_sets(pipeline, device, &set_request, swapchain->image_count)) {
+		return 1;
+	}
+
+	VkDescriptorBufferInfo descriptor_buffer_infos[] = {
+		{.offset = 0},
+		{.offset = 0},
+	};
+
+	VkWriteDescriptorSet descriptor_set_writes[] = {
+		{.dstBinding = 0, .pBufferInfo = &descriptor_buffer_infos[0]},
+		{.dstBinding = 1, .pBufferInfo = &descriptor_buffer_infos[1]},
+	};
+
+	complete_descriptor_set_write(binding_count, descriptor_set_writes, &set_request);
+
+
+	for (uint32_t i = 0; i != swapchain->image_count; ++i) {
+		descriptor_buffer_infos[0].buffer = Transform::point_light_mvp_buffer1.buffer.buffers[i].buffer;
+		descriptor_buffer_infos[0].range = Transform::point_light_mvp_buffer1.buffer.buffers[i].size;
+		descriptor_set_writes[0].dstSet = pipeline->descriptor_sets[i];
+
+		
+		descriptor_buffer_infos[1].buffer = PointLight::point_light_attri_buffer1.buffer.buffers[i].buffer;
+		descriptor_buffer_infos[1].range = PointLight::point_light_attri_buffer1.buffer.buffers[i].size;
+		descriptor_set_writes[1].dstSet = pipeline->descriptor_sets[i];
+
+		vkUpdateDescriptorSets(device->device, binding_count, descriptor_set_writes, 0, NULL);
+	}
+
+	// Compile a vertex and fragment shader
+	shader_request_t vertex_shader_request = {
+		.shader_file_path = "../src/shaders/point_light.vert.glsl",
+		.include_path = "../src/shaders",
+		.entry_point = "main",
+		.stage = VK_SHADER_STAGE_VERTEX_BIT
+	};
+	shader_request_t fragment_shader_request = {
+		.shader_file_path = "../src/shaders/point_light.frag.glsl",
+		.include_path = "../src/shaders",
+		.entry_point = "main",
+		.stage = VK_SHADER_STAGE_FRAGMENT_BIT
+	};
+
+	if (compile_glsl_shader_with_second_chance(&pass->vertex_shader, device, &vertex_shader_request)) {
+		printf("Failed to compile the vertex shader for the geometry pass.\n");
+		destroy_point_light_pass(pass, device);
+		return 1;
+	}
+	if (compile_glsl_shader_with_second_chance(&pass->fragment_shader, device, &fragment_shader_request)) {
+		printf("Failed to compile the fragment shader for the geometry pass.\n");
+		destroy_point_light_pass(pass, device);
+		return 1;
+	}
+	// Define the graphics pipeline state
+
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+	auto bindingDescription = CubeObject::cube_t::getBindingDescription();
+	auto attributeDescriptions = CubeObject::cube_t::getAttributeDescriptions();
+
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	inputAssembly.primitiveRestartEnable = VK_FALSE;
+
+	VkViewport viewport = {};
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = (float)swapchain->extent.width;
+	viewport.height = (float)swapchain->extent.height;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+
+	VkRect2D scissor = { .extent = swapchain->extent };
+
+	VkPipelineViewportStateCreateInfo viewport_info = {};
+	viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+	viewport_info.viewportCount = 1;
+	viewport_info.scissorCount = 1;
+	viewport_info.pScissors = &scissor;
+	viewport_info.pViewports = &viewport;
+
+	VkPipelineRasterizationStateCreateInfo rasterizer{};
+	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizer.depthClampEnable = VK_FALSE;
+	rasterizer.rasterizerDiscardEnable = VK_FALSE;
+	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
+	rasterizer.lineWidth = 1.0f;
+	rasterizer.cullMode = VK_CULL_MODE_NONE;
+	rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+	rasterizer.depthBiasEnable = VK_FALSE;
+
+	VkPipelineMultisampleStateCreateInfo multisampling{};
+	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	multisampling.sampleShadingEnable = VK_FALSE;
+	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	colorBlendAttachment.blendEnable = VK_FALSE;
+
+	VkPipelineColorBlendStateCreateInfo colorBlending{};
+	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	colorBlending.logicOpEnable = VK_FALSE;
+	colorBlending.logicOp = VK_LOGIC_OP_COPY;
+	colorBlending.attachmentCount = 1;
+	colorBlending.pAttachments = &colorBlendAttachment;
+	colorBlending.blendConstants[0] = 0.0f;
+	colorBlending.blendConstants[1] = 0.0f;
+	colorBlending.blendConstants[2] = 0.0f;
+	colorBlending.blendConstants[3] = 0.0f;
+
+	VkPipelineDepthStencilStateCreateInfo depth_stencil_info = {};
+	depth_stencil_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depth_stencil_info.depthTestEnable = VK_TRUE;
+	depth_stencil_info.depthWriteEnable = VK_TRUE;
+	depth_stencil_info.depthCompareOp = VK_COMPARE_OP_LESS;
+
+	VkPipelineShaderStageCreateInfo shader_stages[2] = {
+	{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+		.stage = VK_SHADER_STAGE_VERTEX_BIT,
+		.module = pass->vertex_shader.module,
+		.pName = "main"
+	},
+	{
+		.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+		.stage = VK_SHADER_STAGE_FRAGMENT_BIT,
+		.module = pass->fragment_shader.module,
+		.pName = "main"
+	}
+	};
+
+	VkGraphicsPipelineCreateInfo pipelineInfo{};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipelineInfo.stageCount = 2;
+	pipelineInfo.pStages = shader_stages;
+	pipelineInfo.pVertexInputState = &vertexInputInfo;
+	pipelineInfo.pInputAssemblyState = &inputAssembly;
+	pipelineInfo.pViewportState = &viewport_info;
+	pipelineInfo.pRasterizationState = &rasterizer;
+	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pColorBlendState = &colorBlending;
+	pipelineInfo.pDepthStencilState = &depth_stencil_info;
+	pipelineInfo.layout = pipeline->pipeline_layout;
+	pipelineInfo.renderPass = render_pass->render_pass;
+	pipelineInfo.subpass = 1;
+	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+	if (vkCreateGraphicsPipelines(device->device, NULL, 1, &pipelineInfo, NULL, &pass->pipeline.pipeline)) {
+		printf("Failed to create a graphics pipeline for the geometry pass.\n");
+		destroy_point_light_pass(pass, device);
+		return 1;
+	}
+	return 0;
+}
 
 //! Frees objects and zeros
 void destroy_frame_sync(frame_sync_t* sync, const device_t* device) {
@@ -673,6 +844,13 @@ int record_render_frame_commands(VkCommandBuffer cmd, application_t* app, uint32
 	vkCmdDraw(cmd, CubeObject::cube_vertices.size(), 1, 0, 0);
 
 	vkCmdNextSubpass(cmd, VK_SUBPASS_CONTENTS_INLINE);
+	// draw light
+	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, app->point_light_pass.pipeline.pipeline);
+	vkCmdBindDescriptorSets(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS,
+		app->point_light_pass.pipeline.pipeline_layout, 0, 1, &app->point_light_pass.pipeline.descriptor_sets[swapchain_index], 0, NULL);
+	vkCmdDraw(cmd, CubeObject::cube_vertices.size(), 1, 0, 0);
+
+	vkCmdNextSubpass(cmd, VK_SUBPASS_CONTENTS_INLINE);
 
 	const bool is_minimized = (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f);
 	if (!is_minimized)
@@ -739,6 +917,12 @@ int render_frame(application_t* app) {
 		ImGui::SliderFloat("float", &ConstantValue::angle, 0.0f, 180.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 		ImGui::ColorEdit3("clear color", (float*)&ConstantValue::clearColor); // Edit 3 floats representing a color
 
+		ImGui::ColorEdit3("light color", (float*)&PointLight::param1.Color); // Edit 3 floats representing a color
+
+		ImGui::SliderFloat("camera.x", &app->camera.Position.x, -FLT_MAX / 2.0f, FLT_MAX / 2.0f);
+		ImGui::SliderFloat("camera.y", &app->camera.Position.y, -FLT_MAX / 2.0f, FLT_MAX / 2.0f);
+		ImGui::SliderFloat("camera.z", &app->camera.Position.z, -FLT_MAX / 2.0f, FLT_MAX / 2.0f);
+
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::End();
 	}
@@ -795,7 +979,8 @@ int update_application(application_t* app) {
 
 	create_render_targets(&app->render_targets, &app->device, &app->swapchain);
 	create_render_pass(&app->render_pass, &app->device, &app->swapchain, &app->render_targets);
-	create_shading_pass(&app->shading_pass, &app->device, &app->swapchain, &app->render_pass, &app->camera);
+	create_shading_pass(&app->shading_pass, &app->device, &app->swapchain, &app->render_pass);
+	create_point_light_pass(&app->point_light_pass, &app->device, &app->swapchain, &app->render_pass);
 	create_imgui_pass(&app->imgui_pass, &app->device);
 	create_frame_queue(&app->frame_queue, &app->device, &app->swapchain);
 
@@ -819,7 +1004,7 @@ int update_application(application_t* app) {
 	init_info.MinImageCount = 2;
 	init_info.ImageCount = app->swapchain.image_count;
 	init_info.CheckVkResultFn = check_vk_result;
-	init_info.Subpass = 1;
+	init_info.Subpass = 2;
 	ImGui_ImplVulkan_Init(&init_info, app->render_pass.render_pass);
 
 	// Upload Fonts
@@ -896,6 +1081,7 @@ void destroy_application(application_t* app) {
 		vkDeviceWaitIdle(app->device.device);
 	destroy_frame_queue(&app->frame_queue, &app->device);
 	destroy_shading_pass(&app->shading_pass, &app->device);
+	destroy_point_light_pass(&app->point_light_pass, &app->device);
 	destroy_imgui_pass(&app->imgui_pass, &app->device);
 	destroy_render_pass(&app->render_pass, &app->device);
 	destroy_render_targets(&app->render_targets, &app->device);
