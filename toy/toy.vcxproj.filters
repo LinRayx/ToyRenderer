@@ -16,6 +16,12 @@
     <Filter Include="源文件\shaders">
       <UniqueIdentifier>{20022c4b-5710-47c1-bc57-bcd14d06030e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\vertex">
+      <UniqueIdentifier>{b151208d-3203-48c4-ad52-0e74cea36397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\vertex">
+      <UniqueIdentifier>{ca53b899-2238-4948-8fee-507ce653ac8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\model.cpp">
@@ -72,6 +78,12 @@
     <ClCompile Include="..\src\constant_value.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\vertex.cpp">
+      <Filter>源文件\vertex</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vertex_layout.cpp">
+      <Filter>源文件\vertex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\model.h">
@@ -115,6 +127,15 @@
     </ClInclude>
     <ClInclude Include="..\src\constant_value.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vertex.h">
+      <Filter>头文件\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vertex_buffer.h">
+      <Filter>头文件\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Color.h">
+      <Filter>头文件\vertex</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
