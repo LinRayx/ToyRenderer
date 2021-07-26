@@ -180,7 +180,7 @@ typedef struct point_light_pass_t {
 	shader_t vertex_shader, fragment_shader;
 }light_pass_t;
 
-
+#include "mesh.h"
 typedef struct application_s {
 	device_t device;
 	swapchain_t swapchain;
@@ -191,7 +191,6 @@ typedef struct application_s {
 	imgui_pass_t imgui_pass;
 	point_light_pass_t point_light_pass;
 	frame_queue_t frame_queue;
-	VkClearValue        ClearValue;
 	first_person_camera_t camera;
 }application_t;
 

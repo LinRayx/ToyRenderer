@@ -38,8 +38,9 @@ namespace Mesh {
 	{
 	public:
 
-		Mesh(vertices_buffer_t vertices, indices_buffer_t indices, VkVertexInputBindingDescription bindingDescription, std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
+		Mesh(const device_t* device, vertices_buffer_t vertices, indices_buffer_t indices, VkVertexInputBindingDescription bindingDescription, std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
 		{
+			this->device = device;
 			this->vertices = vertices;
 			this->indices = indices;
 			this->bindingDescription = bindingDescription;
@@ -47,18 +48,20 @@ namespace Mesh {
 		}
 
 		void Draw(VkCommandBuffer* cmd, VkPipeline* pipeline);
-
+		~Mesh();
 	private:
 		
 		vertices_buffer_t vertices;
 		indices_buffer_t indices;
 		VkVertexInputBindingDescription bindingDescription;
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+		const device_t* device;
 	};
 
 	class Model {
 	public:
-		Model(const device_t* device, std::string fileName);
+		Model() {}
+		void LoadModel (const device_t* device, std::string fileName);
 	private:
 		static std::unique_ptr<Mesh> ParseMesh(const device_t* device, const aiMesh& mesh);
 		//std::unique_ptr<Node> ParseNode(int& nextId, const aiNode& node) noexcept;

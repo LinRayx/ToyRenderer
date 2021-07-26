@@ -1,13 +1,12 @@
 
 #include "main.h"
 #include "frame_timer.h"
-
 #include "string_utilities.h"
 #include "gui.h"
 #include "PointLight.h"
 #include "cube.h"
 #include "transform.h"
-#include "mesh.h"
+
 #include "constant_value.h"
 
 #include <vector>
@@ -36,6 +35,7 @@ namespace CubeObject {
 
 namespace Mesh {
 	mesh_buffer_t cube1_mesh_buffer;
+	Model model1;
 }
 
 namespace ConstantValue {
@@ -65,6 +65,7 @@ void destroy_scene(application_t* app) {
 
 int load_scene( const device_t* device) {
 	Mesh::create_mesh_buffer(&Mesh::cube1_mesh_buffer, CubeObject::get_size(), (void*)CubeObject::cube_vertices.data(), device);
+	Mesh::model1.LoadModel(device, "..assets/Models/nano.gltf");
 	return 0;
 }
 
@@ -443,8 +444,18 @@ int create_shading_pass(shading_pass_s* pass, const device_t* device, const swap
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
+	/*auto bindingDescription = CubeObject::cube_t::getBindingDescription();
+	auto attributeDescriptions = CubeObject::cube_t::getAttributeDescriptions();
+
+
+	vertexInputInfo.vertexBindingDescriptionCount = 1;
+	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();*/
+
 	auto bindingDescription = CubeObject::cube_t::getBindingDescription();
 	auto attributeDescriptions = CubeObject::cube_t::getAttributeDescriptions();
+
 
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());

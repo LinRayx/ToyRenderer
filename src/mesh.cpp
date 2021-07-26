@@ -60,7 +60,7 @@ namespace Mesh {
 
 
 
-	Model::Model(const device_t* device, const std::string fileName) {
+	void Model::LoadModel(const device_t* device, std::string fileName) {
 		Assimp::Importer imp;
 		const auto pScene = imp.ReadFile(fileName.c_str(),
 			aiProcess_Triangulate |
@@ -111,7 +111,7 @@ namespace Mesh {
 		create_vertices_buffer(&vertices_b, vbuf.SizeBytes(), (void*)vbuf.GetData(), device);
 		create_indices_buffer(&indices_b, indices.size() * sizeof(unsigned short), indices.data(), device);
 		
-		return std::make_unique<Mesh>(std::move(vertices_b), std::move(indices_b), std::move(vbuf.GetLayout().GetBindingDescription()), std::move(vbuf.GetLayout().GetAttributeDescriptions()));
+		return std::make_unique<Mesh>(device, std::move(vertices_b), std::move(indices_b), std::move(vbuf.GetLayout().GetBindingDescription()), std::move(vbuf.GetLayout().GetAttributeDescriptions()));
 	}
 
 	
@@ -124,6 +124,13 @@ namespace Mesh {
 		vkCmdBindIndexBuffer(*cmd, indices.buffers.buffers->buffer, 0, VK_INDEX_TYPE_UINT16);
 
 		vkCmdDrawIndexed(*cmd, indices.size, 1, 0, 0, 0);
+	}
+
+	Mesh::~Mesh()
+	{
+		if (device == nullptr) return;
+		destroy_buffers(&vertices.buffers, device);
+		destroy_buffers(&indices.buffers, device);
 	}
 
 }
