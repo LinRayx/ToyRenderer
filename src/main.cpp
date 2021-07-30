@@ -65,7 +65,7 @@ void destroy_scene(application_t* app) {
 
 int load_scene( const device_t* device) {
 	Mesh::create_mesh_buffer(&Mesh::cube1_mesh_buffer, CubeObject::get_size(), (void*)CubeObject::cube_vertices.data(), device);
-	Mesh::model1.LoadModel(device, "..assets/Models/nano.gltf");
+	// Mesh::model1.LoadModel(device, "..assets/Models/nano.gltf");
 	return 0;
 }
 
@@ -400,16 +400,16 @@ int create_shading_pass(shading_pass_s* pass, const device_t* device, const swap
 
 	for (uint32_t i = 0; i != swapchain->image_count; ++i) {
 
-		descriptor_buffer_infos[0].buffer = Transform::mvp_matrix_buffer1.buffer.buffers[i].buffer;
-		descriptor_buffer_infos[0].range = Transform::mvp_matrix_buffer1.buffer.buffers[i].size;
+		descriptor_buffer_infos[0].buffer = Transform::mvp_matrix_buffer1.buffer.buffers[0].buffer;
+		descriptor_buffer_infos[0].range = Transform::mvp_matrix_buffer1.buffer.buffers[0].size;
 		descriptor_set_writes[0].dstSet = pipeline->descriptor_sets[i];
 		// PointLight::point_light_attri_buffer1.buffer.buffers[i].buffer;
-		descriptor_buffer_infos[1].buffer = PointLight::point_light_attri_buffer1.buffer.buffers[i].buffer;;
-		descriptor_buffer_infos[1].range = PointLight::point_light_attri_buffer1.buffer.buffers[i].size;
+		descriptor_buffer_infos[1].buffer = PointLight::point_light_attri_buffer1.buffer.buffers[0].buffer;;
+		descriptor_buffer_infos[1].range = PointLight::point_light_attri_buffer1.buffer.buffers[0].size;
 		descriptor_set_writes[1].dstSet = pipeline->descriptor_sets[i];
 
-		descriptor_buffer_infos[2].buffer = ConstantValue::constant_param_buffer.buffer.buffers[i].buffer;
-		descriptor_buffer_infos[2].range = ConstantValue::constant_param_buffer.buffer.buffers[i].size;
+		descriptor_buffer_infos[2].buffer = ConstantValue::constant_param_buffer.buffer.buffers[0].buffer;
+		descriptor_buffer_infos[2].range = ConstantValue::constant_param_buffer.buffer.buffers[0].size;
 		descriptor_set_writes[2].dstSet = pipeline->descriptor_sets[i];
 		vkUpdateDescriptorSets(device->device, binding_count, descriptor_set_writes, 0, NULL);
 	}

@@ -22,6 +22,18 @@
     <Filter Include="源文件\vertex">
       <UniqueIdentifier>{ca53b899-2238-4948-8fee-507ce653ac8b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Bindable">
+      <UniqueIdentifier>{6daf1e1b-cb75-4346-99b6-d7cfe5a3278e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Bindable">
+      <UniqueIdentifier>{82567dde-def9-4391-ae84-45ab25e1cacc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\VulkanCore">
+      <UniqueIdentifier>{79c96a8f-3938-4e6d-9b77-f7dfaa47785f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\VulkanCore">
+      <UniqueIdentifier>{403dfea5-600f-430a-8c45-21a4ba7761b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\model.cpp">
@@ -84,6 +96,21 @@
     <ClCompile Include="..\src\vertex_layout.cpp">
       <Filter>源文件\vertex</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Vulkan.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Buffer.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Image.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderPass.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PipelineLayout.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\model.h">
@@ -136,6 +163,39 @@
     </ClInclude>
     <ClInclude Include="..\src\Color.h">
       <Filter>头文件\vertex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PipelineLayout.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VertexBuffer.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\IndexBuffer.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VertexShader.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\PixelShader.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Vulkan.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Buffer.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Image.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderPass.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Pipeline.h">
+      <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

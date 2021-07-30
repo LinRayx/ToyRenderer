@@ -154,37 +154,53 @@
     <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\src\Buffer.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\constant_value.cpp" />
     <ClCompile Include="..\src\cube.cpp" />
     <ClCompile Include="..\src\frame_timer.c" />
+    <ClCompile Include="..\src\Image.cpp" />
     <ClCompile Include="..\src\imgui_vulkan.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\mesh.cpp" />
     <ClCompile Include="..\src\model.cpp" />
+    <ClCompile Include="..\src\PipelineLayout.cpp" />
     <ClCompile Include="..\src\PointLight.cpp" />
+    <ClCompile Include="..\src\RenderPass.cpp" />
     <ClCompile Include="..\src\transform.cpp" />
     <ClCompile Include="..\src\vertex.cpp" />
     <ClCompile Include="..\src\vertex_layout.cpp" />
+    <ClCompile Include="..\src\Vulkan.cpp" />
     <ClCompile Include="..\src\vulkan_basics.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Bindable.h" />
+    <ClInclude Include="..\src\Buffer.h" />
     <ClInclude Include="..\src\camera.h" />
     <ClInclude Include="..\src\Color.h" />
     <ClInclude Include="..\src\constant_value.h" />
     <ClInclude Include="..\src\cube.h" />
     <ClInclude Include="..\src\frame_timer.h" />
     <ClInclude Include="..\src\gui.h" />
+    <ClInclude Include="..\src\Image.h" />
     <ClInclude Include="..\src\imgui_vulkan.h" />
+    <ClInclude Include="..\src\IndexBuffer.h" />
     <ClInclude Include="..\src\main.h" />
     <ClInclude Include="..\src\mesh.h" />
     <ClInclude Include="..\src\model.h" />
+    <ClInclude Include="..\src\Pipeline.h" />
+    <ClInclude Include="..\src\PixelShader.h" />
     <ClInclude Include="..\src\PointLight.h" />
+    <ClInclude Include="..\src\RenderPass.h" />
     <ClInclude Include="..\src\string_utilities.h" />
     <ClInclude Include="..\src\transform.h" />
     <ClInclude Include="..\src\triangle.h" />
+    <ClInclude Include="..\src\PipelineLayout.h" />
     <ClInclude Include="..\src\vertex.h" />
+    <ClInclude Include="..\src\VertexBuffer.h" />
+    <ClInclude Include="..\src\VertexShader.h" />
     <ClInclude Include="..\src\vertex_buffer.h" />
+    <ClInclude Include="..\src\Vulkan.h" />
     <ClInclude Include="..\src\vulkan_basics.h" />
   </ItemGroup>
   <ItemGroup>
