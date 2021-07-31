@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\Bindable">
+      <UniqueIdentifier>{104f67ac-777b-4508-ae53-7f8fa31443c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Drawable">
+      <UniqueIdentifier>{cbe5cb2c-47f0-40c8-8bf8-9f49e9f5e683}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\VulkanCore">
+      <UniqueIdentifier>{5f6795e3-0ed9-4f79-9a09-10343f60e3de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Bindable">
+      <UniqueIdentifier>{3ec2afda-2790-4de8-8220-f2f4ea4eef04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Drawable">
+      <UniqueIdentifier>{affa7b86-be2a-4f3f-aa76-1d939d935efb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\VulkanCore">
+      <UniqueIdentifier>{1b648c56-3ea6-4366-b126-2c4b3c7f21e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Test">
+      <UniqueIdentifier>{4bede344-8533-4a34-bf2a-59364662bc2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Test">
+      <UniqueIdentifier>{5ed23dea-366a-481f-b9d8-3f0cae976c57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Utils">
+      <UniqueIdentifier>{c3330d5f-ad66-48d7-8751-f75e3a3026d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\imgui">
+      <UniqueIdentifier>{f1406426-75ad-4ff7-bcb9-1b9e4ea6ad1c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\VulkanCore\Buffer.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\CommandBuffer.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\CommandPool.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\DescriptorSet.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\Graphics.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\Image.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\Pipeline.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\RenderPass.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\Vulkan.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\vulkan_basics.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\Bindable.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\Bindable_heads.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\IndexBuffer.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\PipelineLayout.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\PixelShader.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\Shader.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\VertexBuffer.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\VertexShader.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\Drawable.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\string_utils.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\string_utilities.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\DescriptorSet.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\Image.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\Pipeline.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\Vulkan.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\vulkan_basics.c">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bindable\IndexBuffer.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bindable\PipelineLayout.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bindable\PixelShader.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bindable\Shader.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bindable\VertexBuffer.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\Drawable.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="test.cpp">
+      <Filter>源文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\imgui\imgui_vulkan.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui_draw.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui_tables.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\imgui_widgets.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
