@@ -26,7 +26,7 @@ namespace Bind
 		
 	public:
 		friend class Draw::Drawable;
-		PipelineLayout() :  dstBinding(-1) {}
+		PipelineLayout() :  dstBinding(0) {}
 
 		void AddLayout(DESCRIPTOR_TYPE type, uint32_t offset);
 

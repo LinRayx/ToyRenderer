@@ -45,10 +45,55 @@ namespace Draw
 	{
 
 	public:
+		Drawable(shared_ptr<Graphics::Vulkan> _vulkan_ptr) : vulkan_ptr(_vulkan_ptr) {
+		}
+
 		void Register(GraphicsType type, std::shared_ptr<Graphics::Graphics> elem);
 		void Register(BindType type, std::shared_ptr<Bind::Bindable> elem);
+
+		template<GraphicsType type>
+		void Register(std::shared_ptr<Graphics::Graphics> elem)
+		{
+			switch (type)
+			{
+			case GraphicsType::Vulkan:
+				vulkan_ptr = std::dynamic_pointer_cast<Graphics::Vulkan> (elem);
+				break;
+			case GraphicsType::RenderPass:
+				renderpass_ptr = std::dynamic_pointer_cast<Graphics::RenderPass> (elem);
+				break;
+			case GraphicsType::Pipeline:
+				pipeline_ptr = std::dynamic_pointer_cast<Graphics::Pipeline> (elem);
+			default:
+				break;
+			}
+		}
+
+		template<BindType type>
+		void Register(std::shared_ptr<Bind::Bindable> elem)
+		{
+			switch (type)
+			{
+			case Draw::BindType::IndexBuffer:
+
+				break;
+			case Draw::BindType::VertexBuffer:
+				vertexBuffer_ptr = std::dynamic_pointer_cast<Bind::VertexBuffer>(elem);
+				break;
+			case Draw::BindType::PixelShader:
+				pixelShader_ptr = std::dynamic_pointer_cast<Bind::PixelShader> (elem);
+				break;
+			case Draw::BindType::VertexShader:
+				vertexShader_ptr = std::dynamic_pointer_cast<Bind::VertexShader> (elem);
+				break;
+			case Draw::BindType::PipelineLayout:
+				pipelineLayout_ptr = std::dynamic_pointer_cast<Bind::PipelineLayout> (elem);
+				break;
+			}
+		}
+		
 		void CompilePipeline();
-		void CompileCommand();
+		// void CompileCommand();
 	private:
 		shared_ptr<Bind::IndexBuffer> indexBuffer_ptr;
 		shared_ptr<Bind::VertexBuffer> vertexBuffer_ptr;
@@ -61,6 +106,7 @@ namespace Draw
 		shared_ptr<Graphics::RenderPass> renderpass_ptr;
 	private:
 		Graphics::Pipeline::pipeline_with_bindings_t pipeline;
+		
 
 	};
 }

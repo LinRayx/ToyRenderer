@@ -13,7 +13,7 @@ namespace Bind
 		default:
 			break;
 		}
-
+		layout_binding.binding = dstBinding++;
 		layout_bindinds.emplace_back(std::move(layout_binding));
 
 	}

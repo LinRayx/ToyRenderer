@@ -17,6 +17,8 @@ namespace Draw
 			break;
 		}
 	}
+
+
 	void Drawable::Register(BindType type, std::shared_ptr<Bind::Bindable> elem)
 	{
 		switch (type)
@@ -57,8 +59,8 @@ namespace Draw
 		auto bindingDescription = vertexBuffer_ptr->bindingDescription;
 		auto attributeDescriptions = vertexBuffer_ptr->attributeDescriptions;
 
-		vertexInputInfo.vertexAttributeDescriptionCount = 1;
-		vertexInputInfo.vertexAttributeDescriptionCount = 1;
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 

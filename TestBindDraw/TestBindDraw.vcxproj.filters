@@ -108,6 +108,12 @@
     <ClInclude Include="..\src\Utils\string_utilities.h">
       <Filter>头文件\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\vulkan_core_headers.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Test\test.h">
+      <Filter>源文件\Test</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -146,9 +152,6 @@
     <ClCompile Include="..\src\Drawable\Drawable.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
-    <ClCompile Include="test.cpp">
-      <Filter>源文件\Test</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\imgui\imgui_vulkan.cpp">
       <Filter>源文件\imgui</Filter>
     </ClCompile>
@@ -166,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp">
       <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Test\test.cpp">
+      <Filter>源文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\RenderPass.cpp">
+      <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

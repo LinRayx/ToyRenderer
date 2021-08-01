@@ -18,6 +18,9 @@ namespace Bind
 	{
 		friend class Draw::Drawable;
 	public:
+		VertexBuffer(VkVertexInputBindingDescription _bindingDescription, std::vector<VkVertexInputAttributeDescription> _attributeDescriptions) 
+			: bindingDescription(_bindingDescription), attributeDescriptions(_attributeDescriptions)
+		{}
 		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data);
 		~VertexBuffer();
 

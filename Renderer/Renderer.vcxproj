@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b387093f-9612-48e5-b07b-15b3112314a8}</ProjectGuid>
-    <RootNamespace>TestBindDraw</RootNamespace>
+    <ProjectGuid>{c8ce4a2b-cdec-401b-b27a-5d6f536926b7}</ProjectGuid>
+    <RootNamespace>Renderer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -78,9 +78,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>$(ProjectDir)..\lib;$(LibraryPath)</LibraryPath>
-    <LibraryWPath>$(ProjectDir)..\lib;$(LibraryWPath)</LibraryWPath>
-    <IncludePath>$(ProjectDir)..\src\Test;$(ProjectDir)..\include;$(ProjectDir)..\src\VulkanCore;$(ProjectDir)..\include\Include;$(ProjectDir)..\include\imgui;$(ProjectDir)..\include\imgui\backends;$(ProjectDir)..\src\Drawable;$(ProjectDir)..\src\Bindable;$(ProjectDir)..\src\Utils;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -117,14 +114,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>vulkan-1.lib;glfw3.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,53 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Bindable\Bindable.h" />
-    <ClInclude Include="..\src\Bindable\Bindable_heads.h" />
-    <ClInclude Include="..\src\Bindable\IndexBuffer.h" />
-    <ClInclude Include="..\src\Bindable\PipelineLayout.h" />
-    <ClInclude Include="..\src\Bindable\PixelShader.h" />
-    <ClInclude Include="..\src\Bindable\Shader.h" />
-    <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
-    <ClInclude Include="..\src\Bindable\VertexShader.h" />
-    <ClInclude Include="..\src\Drawable\Drawable.h" />
-    <ClInclude Include="..\src\Test\test.h" />
-    <ClInclude Include="..\src\Utils\string_utilities.h" />
-    <ClInclude Include="..\src\Utils\string_utils.h" />
-    <ClInclude Include="..\src\VulkanCore\Buffer.h">
-      <DeploymentContent>false</DeploymentContent>
-    </ClInclude>
-    <ClInclude Include="..\src\VulkanCore\CommandBuffer.h" />
-    <ClInclude Include="..\src\VulkanCore\CommandPool.h" />
-    <ClInclude Include="..\src\VulkanCore\DescriptorSet.h" />
-    <ClInclude Include="..\src\VulkanCore\Graphics.h" />
-    <ClInclude Include="..\src\VulkanCore\Image.h" />
-    <ClInclude Include="..\src\VulkanCore\Pipeline.h" />
-    <ClInclude Include="..\src\VulkanCore\RenderPass.h" />
-    <ClInclude Include="..\src\VulkanCore\Vulkan.h" />
-    <ClInclude Include="..\src\VulkanCore\vulkan_basics.h" />
-    <ClInclude Include="..\src\VulkanCore\vulkan_core_headers.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\include\imgui\imgui.cpp" />
-    <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
-    <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
-    <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="..\src\Bindable\IndexBuffer.cpp" />
-    <ClCompile Include="..\src\Bindable\PipelineLayout.cpp" />
-    <ClCompile Include="..\src\Bindable\PixelShader.cpp" />
-    <ClCompile Include="..\src\Bindable\Shader.cpp" />
-    <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
-    <ClCompile Include="..\src\Drawable\Drawable.cpp" />
-    <ClCompile Include="..\src\imgui\imgui_vulkan.cpp" />
-    <ClCompile Include="..\src\Test\test.cpp" />
-    <ClCompile Include="..\src\VulkanCore\Buffer.cpp" />
-    <ClCompile Include="..\src\VulkanCore\DescriptorSet.cpp" />
-    <ClCompile Include="..\src\VulkanCore\Image.cpp" />
-    <ClCompile Include="..\src\VulkanCore\Pipeline.cpp" />
-    <ClCompile Include="..\src\VulkanCore\RenderPass.cpp" />
-    <ClCompile Include="..\src\VulkanCore\Vulkan.cpp" />
-    <ClCompile Include="..\src\VulkanCore\vulkan_basics.c" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

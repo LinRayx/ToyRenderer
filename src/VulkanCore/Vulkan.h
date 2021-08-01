@@ -238,7 +238,7 @@ namespace Graphics {
 		} descriptor_set_request_t;
 
 	public:
-		Vulkan();
+		Vulkan(int width = 800, int height = 600);
 		~Vulkan();
 
 		void BeginFrame();

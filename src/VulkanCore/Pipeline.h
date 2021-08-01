@@ -7,7 +7,7 @@
 
 namespace Graphics
 {
-	class Pipeline
+	class Pipeline : public Graphics
 	{
 		public:
 		/*! This structure combines a pipeline state object with everything that is
@@ -58,6 +58,7 @@ namespace Graphics
 	private:
 		shared_ptr<Vulkan> vulkan_ptr;
 	public:
+		Pipeline(shared_ptr<Vulkan> _vulkan_ptr) : vulkan_ptr(_vulkan_ptr) {}
 		pipeline_with_bindings_t pipeline;
 	};
 }

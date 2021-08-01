@@ -1,5 +1,4 @@
 #include "Buffer.h"
-
 namespace Graphics {
 	Buffer::Buffer(shared_ptr<Vulkan> _vulkan_ptr, size_t size, void* _data) : vulkan_ptr(_vulkan_ptr)
 	{

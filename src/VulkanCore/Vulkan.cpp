@@ -24,15 +24,7 @@ namespace Graphics {
 		result[output_length] = 0;
 		return result;
 	}
-	Vulkan::Vulkan()
-	{
-	}
-
-	Vulkan::~Vulkan()
-	{
-	}
-
-	void Vulkan::BeginFrame()
+	Vulkan::Vulkan(int width, int height) : width(width), height(height)
 	{
 		const char application_display_name[] = "Vulkan renderer";
 		const char application_internal_name[] = "vulkan_renderer";
@@ -53,6 +45,15 @@ namespace Graphics {
 		ImGui::StyleColorsDark();
 		// Setup Platform/Renderer backends
 		ImGui_ImplGlfw_InitForVulkan(swapchain.window, true);
+	}
+
+	Vulkan::~Vulkan()
+	{
+	}
+
+	void Vulkan::BeginFrame()
+	{
+
 	}
 
 	void Vulkan::EndFrame()
@@ -198,7 +199,7 @@ namespace Graphics {
 
 
 		VkDeviceQueueCreateInfo queue_info = {};
-		queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+		queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queue_info.queueCount = 1;
 		queue_info.pQueuePriorities = queue_priorities;
 		queue_info.queueFamilyIndex = device->queue_family_index;
@@ -242,7 +243,7 @@ namespace Graphics {
 			printf("Ray tracing is available.\n");
 		else if (request_ray_tracing)
 			printf("Ray tracing was requested but is unavailable. Try installing the latest GPU drivers or using a different physical device.\n");
-
+		return 0;
 	}
 
 	void Vulkan::destroy_vulkan_device(device_t* device)
