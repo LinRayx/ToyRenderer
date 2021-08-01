@@ -49,6 +49,9 @@
     <Filter Include="源文件\DynamicVariable">
       <UniqueIdentifier>{265f17aa-0edc-4c0e-a04e-b6a504c3dac4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Others">
+      <UniqueIdentifier>{9e23cf82-8519-45e6-96a6-e2a026cf196b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
