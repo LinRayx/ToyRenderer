@@ -4,6 +4,8 @@ namespace Graphics {
 
 	RenderPass::~RenderPass()
 	{
+		destroy_render_targets(&render_tangets);
+		destroy_render_pass(&renderpass);
 	}
 
 

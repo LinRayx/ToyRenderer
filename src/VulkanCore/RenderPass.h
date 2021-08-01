@@ -46,7 +46,10 @@ namespace Graphics {
 		} render_pass_t;
 
 	public:
-		RenderPass(shared_ptr<Vulkan> _vulkan_ptr, shared_ptr<Image> _image_ptr) : vulkan_ptr(_vulkan_ptr), image_ptr(_image_ptr) {}
+		RenderPass(shared_ptr<Vulkan> _vulkan_ptr, shared_ptr<Image> _image_ptr) : vulkan_ptr(_vulkan_ptr), image_ptr(_image_ptr) {
+			create_render_targets(&render_tangets);
+			create_render_pass(&renderpass, &render_tangets);
+		}
 		~RenderPass();
 	private:
 		int create_render_targets(render_targets_t* targets);
@@ -57,6 +60,7 @@ namespace Graphics {
 		shared_ptr<Vulkan> vulkan_ptr;
 		shared_ptr<Image> image_ptr;
 		render_pass_t renderpass;
+		render_targets_t render_tangets;
 	};
 
 }

@@ -43,6 +43,12 @@
     <Filter Include="源文件\imgui">
       <UniqueIdentifier>{f1406426-75ad-4ff7-bcb9-1b9e4ea6ad1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\DynamicVariable">
+      <UniqueIdentifier>{376b5971-14bd-43c4-bfb4-b5b5123cbb14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\DynamicVariable">
+      <UniqueIdentifier>{265f17aa-0edc-4c0e-a04e-b6a504c3dac4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -70,9 +76,6 @@
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
     <ClInclude Include="..\src\VulkanCore\Vulkan.h">
-      <Filter>头文件\VulkanCore</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\VulkanCore\vulkan_basics.h">
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Bindable\Bindable.h">
@@ -114,6 +117,18 @@
     <ClInclude Include="..\src\Test\test.h">
       <Filter>源文件\Test</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h">
+      <Filter>头文件\DynamicVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h">
+      <Filter>头文件\DynamicVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DynamicVariable\LayoutCodex.h">
+      <Filter>头文件\DynamicVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\DescriptorSets.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -129,9 +144,6 @@
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\Vulkan.cpp">
-      <Filter>源文件\VulkanCore</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\VulkanCore\vulkan_basics.c">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp">
@@ -175,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\RenderPass.cpp">
       <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DynamicVariable\DynamicConstant.cpp">
+      <Filter>源文件\DynamicVariable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DynamicVariable\LayoutCodex.cpp">
+      <Filter>源文件\DynamicVariable</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

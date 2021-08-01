@@ -432,9 +432,6 @@ namespace Graphics {
 
 
 public:
-
-
-
 		int create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties);
 
 		/*! Destroys all buffers in the given object, frees the device memory

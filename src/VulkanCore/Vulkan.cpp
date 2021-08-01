@@ -49,6 +49,8 @@ namespace Graphics {
 
 	Vulkan::~Vulkan()
 	{
+		destroy_swapchain(&swapchain, &device);
+		destroy_vulkan_device(&device);
 	}
 
 	void Vulkan::BeginFrame()

@@ -12,7 +12,9 @@ namespace Graphics {
 
 	public:
 
+		Buffer(shared_ptr<Vulkan> _vulkan_ptr, size_t size);
 		Buffer(shared_ptr<Vulkan> _vulkan_ptr, size_t size, void* data);
+		void CopyData(void* data);
 		~Buffer();
 
 

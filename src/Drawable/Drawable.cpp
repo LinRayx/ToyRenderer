@@ -79,7 +79,7 @@ namespace Draw
 
 		VkPipelineShaderStageCreateInfo frag_shader_stage = {};
 		frag_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		frag_shader_stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		frag_shader_stage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 		frag_shader_stage.module = pixelShader_ptr->shader.module;
 		frag_shader_stage.pName = "main";
 

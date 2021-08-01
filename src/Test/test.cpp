@@ -5,7 +5,8 @@
 #include "Drawable.h"
 #include <glm/glm.hpp>
 #include <array>
-
+#include "DynamicConstant.h"
+#include "LayoutCodex.h"
 using namespace std;
 
 class TestCube
@@ -98,13 +99,14 @@ class Test
 	using nameAndBindable = std::pair<Draw::BindType, std::shared_ptr<Bind::Bindable> >;
 	
 public:
-	void init()
-	{
-		vulkan_ptr = make_shared<Graphics::Vulkan>();
-		image_ptr = make_shared<Graphics::Image>(vulkan_ptr);
-	}
+
+    Test()
+    {
+        vulkan_ptr = make_shared<Graphics::Vulkan>();
+        image_ptr = make_shared<Graphics::Image>(vulkan_ptr);
+    }
+
 	void test() {
-		init();
 		
 		auto pipelineLayout_ptr = std::make_shared<Bind::PipelineLayout>();
 		pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 0);
@@ -130,6 +132,30 @@ public:
 		drawable->CompilePipeline();
 	}
 
+    void TestDynamicConstant()
+    {
+        Dcb::RawLayout s;
+        s.Add<Dcb::Struct>("butts"s);
+        //s["butts"s].Add<Dcb::Float3>("pubes"s);
+        s["butts"s].Add<Dcb::Float>("dank"s);
+        //s.Add<Dcb::Float>("woot"s);
+        //s.Add<Dcb::Array>("arr"s);
+        //s["arr"s].Set<Dcb::Struct>(4);
+        //s["arr"s].T().Add<Dcb::Float3>("twerk"s);
+        //s["arr"s].T().Add<Dcb::Array>("werk"s);
+        //s["arr"s].T()["werk"s].Set<Dcb::Float>(6);
+        //s["arr"s].T().Add<Dcb::Array>("meta"s);
+        //s["arr"s].T()["meta"s].Set<Dcb::Array>(6);
+        //s["arr"s].T()["meta"s].T().Set<Dcb::Matrix>(4);
+        //s["arr"s].T().Add<Dcb::Bool>("booler");
+
+        
+        cout << s.GetSignature() << endl;
+        auto b = Dcb::Buffer(std::move(s));
+        cout << b.GetSizeInBytes() << endl;
+        cout << b.GetData() << endl;
+    }
+
 private:
 
 	shared_ptr<Graphics::Vulkan> vulkan_ptr;
@@ -141,7 +167,7 @@ private:
 int main()
 {
 	Test test;
-	test.test();
+    test.test();
 	cout << "hello" << endl;
 	return 0;
 }
