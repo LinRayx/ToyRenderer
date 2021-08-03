@@ -7,6 +7,8 @@
 #include "Pipeline.h"
 #include "DescriptorSet.h"
 #include "RenderPass.h"
+#include "CommandBuffer.h"
+#include "CommandQueue.h"
 
 using namespace std;
 
@@ -28,7 +30,9 @@ namespace Draw
 	{
 		Vulkan,
 		RenderPass,
-		Pipeline
+		Pipeline,
+		CommandBuffer,
+		CommandQueue,
 	};
 
 	enum class BindType
@@ -64,6 +68,11 @@ namespace Draw
 				break;
 			case GraphicsType::Pipeline:
 				pipeline_ptr = std::dynamic_pointer_cast<Graphics::Pipeline> (elem);
+			case GraphicsType::CommandBuffer:
+				cmdBuf_ptr = std::dynamic_pointer_cast<Graphics::CommandBuffer> (elem);
+				break;
+			case GraphicsType::CommandQueue:
+				cmdQueue_ptr = std::dynamic_pointer_cast<Graphics::CommandQueue> (elem);
 			default:
 				break;
 			}
@@ -94,6 +103,16 @@ namespace Draw
 		
 		void CompilePipeline();
 		// void CompileCommand();
+		void BuildCommandBuffer()
+		{
+			cmdBuf_ptr->BuildCommandBuffer(renderpass_ptr, pipeline_ptr, vertexBuffer_ptr->buffer_ptr, nullptr);
+		}
+
+		void Submit()
+		{
+			cmdQueue_ptr->SetCommandBuffer(cmdBuf_ptr);
+			cmdQueue_ptr->Submit();
+		}
 	private:
 		shared_ptr<Bind::IndexBuffer> indexBuffer_ptr;
 		shared_ptr<Bind::VertexBuffer> vertexBuffer_ptr;
@@ -104,10 +123,10 @@ namespace Draw
 		shared_ptr<Graphics::Pipeline> pipeline_ptr;
 		shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		shared_ptr<Graphics::RenderPass> renderpass_ptr;
+		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
+		shared_ptr<Graphics::CommandQueue> cmdQueue_ptr;
 	private:
-		Graphics::Pipeline::pipeline_with_bindings_t pipeline;
-		
-
+		// Graphics::Pipeline::pipeline_with_bindings_t pipeline;
 	};
 }
 

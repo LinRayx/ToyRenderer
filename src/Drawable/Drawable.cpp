@@ -52,7 +52,7 @@ namespace Draw
 		set_request.binding_count = pipelineLayout_ptr->dstBinding;
 		set_request.stage_flags = VK_SHADER_STAGE_ALL;
 
-		pipeline_ptr->create_descriptor_sets(&pipeline, &set_request, 1);
+		pipeline_ptr->create_descriptor_sets(&pipeline_ptr->pipeline, &set_request, 1);
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -151,12 +151,12 @@ namespace Draw
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDepthStencilState = &depth_stencil_info;
 		
-		pipelineInfo.layout = pipeline.pipeline_layout;
+		pipelineInfo.layout = pipeline_ptr->pipeline.pipeline_layout;
 		pipelineInfo.renderPass = renderpass_ptr->renderpass.render_pass;
 		pipelineInfo.subpass = 1;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		
-		if (vkCreateGraphicsPipelines(vulkan_ptr->device.device, NULL, 1, &pipelineInfo, NULL, &pipeline.pipeline)) {
+		if (vkCreateGraphicsPipelines(vulkan_ptr->device.device, NULL, 1, &pipelineInfo, NULL, &pipeline_ptr->pipeline.pipeline)) {
 			printf("Failed to create a graphics pipeline for the geometry pass.\n");
 			// destroy_point_light_pass(pass, device);
 			exit(1);

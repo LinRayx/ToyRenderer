@@ -132,6 +132,15 @@
     <ClInclude Include="..\src\Bindable\DescriptorSets.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\CommandQueue.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\Synchronization.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\Model.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -196,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="..\src\DynamicVariable\LayoutCodex.cpp">
       <Filter>源文件\DynamicVariable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp">
+      <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

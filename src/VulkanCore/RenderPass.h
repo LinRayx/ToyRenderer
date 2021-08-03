@@ -17,6 +17,7 @@ namespace Graphics {
 	class RenderPass : public Graphics
 	{
 		friend class Draw::Drawable;
+		friend class CommandBuffer;
 	public:
 		/*! Provides convenient access to all render targets used by this application,
 		except for swapchain images. These render targets are duplicated per
@@ -57,6 +58,8 @@ namespace Graphics {
 		void destroy_render_targets(render_targets_t* render_targets);
 		void destroy_render_pass(render_pass_t* pass);
 	private:
+		
+		std::vector<VkClearValue> clearValues;
 		shared_ptr<Vulkan> vulkan_ptr;
 		shared_ptr<Image> image_ptr;
 		render_pass_t renderpass;

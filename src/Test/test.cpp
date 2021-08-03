@@ -5,6 +5,7 @@
 #include "Drawable.h"
 #include <glm/glm.hpp>
 #include <array>
+#include "Model.h"
 #include "DynamicConstant.h"
 #include "LayoutCodex.h"
 using namespace std;
@@ -94,6 +95,61 @@ public:
     };
 };
 
+class TestTriangle : public Draw::Model
+{
+public:
+    struct Vertex {
+        glm::vec2 pos;
+        glm::vec3 color;
+    };
+
+    const std::vector<Vertex> vertices = {
+        {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+        {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+        {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+    };
+
+    VkVertexInputBindingDescription getBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(Vertex);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    }
+
+    std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() {
+        std::vector<VkVertexInputAttributeDescription> attributeDescriptions(2);
+
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+        return attributeDescriptions;
+    }
+
+    size_t getCount()
+    {
+        return vertices.size();
+    }
+
+    size_t getSize()
+    {
+        return sizeof(vertices.size());
+    }
+
+    void* getData()
+    {
+        return (void*)vertices.data();
+    }
+};
+
 class Test
 {
 	using nameAndBindable = std::pair<Draw::BindType, std::shared_ptr<Bind::Bindable> >;
@@ -104,6 +160,11 @@ public:
     {
         vulkan_ptr = make_shared<Graphics::Vulkan>();
         image_ptr = make_shared<Graphics::Image>(vulkan_ptr);
+        triangle_ptr = make_shared<TestTriangle>();
+        cmdPool_ptr = make_shared<Graphics::CommandPool>(vulkan_ptr);
+        sync_ptr = make_shared<Graphics::Synchronization>(vulkan_ptr);
+        cmdBuf_ptr = make_shared<Graphics::CommandBuffer>(vulkan_ptr, cmdPool_ptr);
+        cmdQueue_ptr = make_shared<Graphics::CommandQueue>(vulkan_ptr, cmdBuf_ptr, sync_ptr);
     }
 
 	void test() {
@@ -112,9 +173,9 @@ public:
 		pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 0);
 		pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 1);
         
-		auto vertexShader_ptr = std::make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/cube.vert.glsl", "../src/shaders", "main");
-		auto pixelShader_ptr = std::make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/cube.frag.glsl", "../src/shaders", "main");
-		auto vertexBuffer_ptr = std::make_shared<Bind::VertexBuffer>(TestCube::getBindingDescription(), TestCube::getAttributeDescriptions());
+		auto vertexShader_ptr = std::make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/triangle.vert.glsl", "../src/shaders", "main");
+		auto pixelShader_ptr = std::make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/triangle.frag.glsl", "../src/shaders", "main");
+		auto vertexBuffer_ptr = std::make_shared<Bind::VertexBuffer>(vulkan_ptr, triangle_ptr);
 		
 		auto pipeline_ptr = std::make_shared<Graphics::Pipeline>(vulkan_ptr);
 		auto renderpass_ptr = std::make_shared<Graphics::RenderPass>(vulkan_ptr, image_ptr);
@@ -123,6 +184,8 @@ public:
 
 		drawable->Register<Draw::GraphicsType::Pipeline>(pipeline_ptr);
 		drawable->Register<Draw::GraphicsType::RenderPass>(renderpass_ptr);
+        drawable->Register<Draw::GraphicsType::CommandBuffer>(cmdBuf_ptr);
+        drawable->Register<Draw::GraphicsType::CommandQueue>(cmdQueue_ptr);
 
 		drawable->Register<Draw::BindType::PipelineLayout>(pipelineLayout_ptr);
 		drawable->Register<Draw::BindType::VertexShader>(vertexShader_ptr);
@@ -130,6 +193,10 @@ public:
 		drawable->Register<Draw::BindType::VertexBuffer>(vertexBuffer_ptr);
 
 		drawable->CompilePipeline();
+
+        drawable->BuildCommandBuffer();
+
+        drawable->Submit();
 	}
 
     void TestDynamicConstant()
@@ -160,7 +227,11 @@ private:
 
 	shared_ptr<Graphics::Vulkan> vulkan_ptr;
 	shared_ptr<Graphics::Image> image_ptr;
-	
+    shared_ptr<TestTriangle> triangle_ptr;
+    shared_ptr<Graphics::CommandPool> cmdPool_ptr;
+    shared_ptr<Graphics::Synchronization> sync_ptr;
+    shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
+    shared_ptr<Graphics::CommandQueue> cmdQueue_ptr;
 };
 
 

@@ -154,6 +154,7 @@
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\Drawable.h" />
+    <ClInclude Include="..\src\Drawable\Model.h" />
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
     <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h" />
     <ClInclude Include="..\src\DynamicVariable\LayoutCodex.h" />
@@ -165,11 +166,13 @@
     </ClInclude>
     <ClInclude Include="..\src\VulkanCore\CommandBuffer.h" />
     <ClInclude Include="..\src\VulkanCore\CommandPool.h" />
+    <ClInclude Include="..\src\VulkanCore\CommandQueue.h" />
     <ClInclude Include="..\src\VulkanCore\DescriptorSet.h" />
     <ClInclude Include="..\src\VulkanCore\Graphics.h" />
     <ClInclude Include="..\src\VulkanCore\Image.h" />
     <ClInclude Include="..\src\VulkanCore\Pipeline.h" />
     <ClInclude Include="..\src\VulkanCore\RenderPass.h" />
+    <ClInclude Include="..\src\VulkanCore\Synchronization.h" />
     <ClInclude Include="..\src\VulkanCore\Vulkan.h" />
     <ClInclude Include="..\src\VulkanCore\vulkan_core_headers.h" />
   </ItemGroup>
@@ -190,6 +193,7 @@
     <ClCompile Include="..\src\imgui\imgui_vulkan.cpp" />
     <ClCompile Include="..\src\Test\test.cpp" />
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp" />
+    <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp" />
     <ClCompile Include="..\src\VulkanCore\DescriptorSet.cpp" />
     <ClCompile Include="..\src\VulkanCore\Image.cpp" />
     <ClCompile Include="..\src\VulkanCore\Pipeline.cpp" />

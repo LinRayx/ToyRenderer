@@ -22,6 +22,10 @@ namespace Graphics {
 		friend class Image;
 		friend class Buffer;
 		friend class Pipeline;
+		friend class CommandPool;
+		friend class CommandBuffer;
+		friend class Synchronization;
+		friend class CommandQueue;
 		friend class Draw::Drawable;
 	private:
 		/*! This macro initializes a function pointer for the Vulkan function with the

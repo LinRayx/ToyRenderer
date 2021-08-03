@@ -4,6 +4,7 @@
 
 #include "Bindable.h"
 #include "Buffer.h"
+#include "Model.h"
 #include <memory>
 #include <vector>
 
@@ -22,10 +23,11 @@ namespace Bind
 			: bindingDescription(_bindingDescription), attributeDescriptions(_attributeDescriptions)
 		{}
 		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data);
+		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, std::shared_ptr<Draw::Model> model_ptr);
 		~VertexBuffer();
-
-	private:
 		std::shared_ptr<Graphics::Buffer> buffer_ptr;
+	private:
+		
 		VkVertexInputBindingDescription bindingDescription;
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
 	};
