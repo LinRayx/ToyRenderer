@@ -3,6 +3,7 @@
 ## Doing
 
 - 动态uniform变量
+- 渲染队列/渲染系统
 
 ## Plan
 
