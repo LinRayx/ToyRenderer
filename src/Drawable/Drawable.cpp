@@ -153,7 +153,7 @@ namespace Draw
 		
 		pipelineInfo.layout = pipeline_ptr->pipeline.pipeline_layout;
 		pipelineInfo.renderPass = renderpass_ptr->renderpass.render_pass;
-		pipelineInfo.subpass = 1;
+		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		
 		if (vkCreateGraphicsPipelines(vulkan_ptr->device.device, NULL, 1, &pipelineInfo, NULL, &pipeline_ptr->pipeline.pipeline)) {

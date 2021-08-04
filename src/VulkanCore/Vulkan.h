@@ -436,22 +436,25 @@ namespace Graphics {
 
 
 public:
-		int create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties);
 
-		/*! Destroys all buffers in the given object, frees the device memory
-			allocation, destroys arrays, zeros handles and zeros the object.*/
-		void destroy_buffers(buffers_t* buffers);
+	bool WindowShouldClose();
 
-		public:
-			device_t& GetDevice()
-			{
-				return device;
-			}
+	int create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties);
 
-			swapchain_t& GetSwapchain()
-			{
-				return swapchain;
-			}
+	/*! Destroys all buffers in the given object, frees the device memory
+		allocation, destroys arrays, zeros handles and zeros the object.*/
+	void destroy_buffers(buffers_t* buffers);
+
+	public:
+		device_t& GetDevice()
+		{
+			return device;
+		}
+
+		swapchain_t& GetSwapchain()
+		{
+			return swapchain;
+		}
 	private:
 		device_t device;
 		swapchain_t swapchain;

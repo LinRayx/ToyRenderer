@@ -80,7 +80,7 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(ProjectDir)..\lib;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(ProjectDir)..\lib;$(LibraryWPath)</LibraryWPath>
-    <IncludePath>$(ProjectDir)..\src\Test;$(ProjectDir)..\include;$(ProjectDir)..\src\VulkanCore;$(ProjectDir)..\include\Include;$(ProjectDir)..\include\imgui;$(ProjectDir)..\include\imgui\backends;$(ProjectDir)..\src\Drawable;$(ProjectDir)..\src\DynamicVariable;$(ProjectDir)..\src\Bindable;$(ProjectDir)..\src\Utils;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\src\Test;$(ProjectDir)..\include;$(ProjectDir)..\src\VulkanCore;$(ProjectDir)..\include\Include;$(ProjectDir)..\include\imgui;$(ProjectDir)..\include\imgui\backends;$(ProjectDir)..\src\Drawable;$(ProjectDir)..\src\DynamicVariable;$(ProjectDir)..\src\Bindable;$(ProjectDir)..\src\Utils;$(ProjectDir)..\src\RenderSystem;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -158,6 +158,7 @@
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
     <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h" />
     <ClInclude Include="..\src\DynamicVariable\LayoutCodex.h" />
+    <ClInclude Include="..\src\RenderSystem\RenderLoop.h" />
     <ClInclude Include="..\src\Test\test.h" />
     <ClInclude Include="..\src\Utils\string_utilities.h" />
     <ClInclude Include="..\src\Utils\string_utils.h" />

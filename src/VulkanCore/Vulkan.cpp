@@ -509,6 +509,11 @@ namespace Graphics {
 	}
 
 
+	bool Vulkan::WindowShouldClose()
+	{
+		return !glfwWindowShouldClose(swapchain.window);
+	}
+
 	int Vulkan::create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties) {
 
 		memset(buffers, 0, sizeof(*buffers));

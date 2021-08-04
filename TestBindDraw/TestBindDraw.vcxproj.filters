@@ -52,6 +52,9 @@
     <Filter Include="Others">
       <UniqueIdentifier>{9e23cf82-8519-45e6-96a6-e2a026cf196b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\RenderSystem">
+      <UniqueIdentifier>{9944d3d0-9a0c-4351-a730-f531a6760eae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -140,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Drawable\Model.h">
       <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderSystem\RenderLoop.h">
+      <Filter>头文件\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

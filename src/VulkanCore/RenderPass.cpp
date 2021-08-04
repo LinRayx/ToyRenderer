@@ -119,7 +119,7 @@ namespace Graphics {
 		subpasses3.colorAttachmentCount = 1;
 		subpasses3.pColorAttachments = &swapchain_output_reference;
 
-		subpasses.push_back(subpasses1); subpasses.push_back(subpasses2); subpasses.push_back(subpasses3);
+		subpasses.push_back(subpasses1); /*subpasses.push_back(subpasses2); subpasses.push_back(subpasses3);*/
 
 		VkSubpassDependency dependencies[] = {
 			{ // Swapchain image has been acquired
@@ -130,22 +130,22 @@ namespace Graphics {
 				.srcAccessMask = 0,
 				.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
 			},
-			{
-				.srcSubpass = 0,
-				.dstSubpass = 1,
-				.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-				.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-				.srcAccessMask = 0,
-				.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-			},
-			{
-				.srcSubpass = 1,
-				.dstSubpass = 2,
-				.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-				.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-				.srcAccessMask = 0,
-				.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-			},
+			//{
+			//	.srcSubpass = 0,
+			//	.dstSubpass = 1,
+			//	.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			//	.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			//	.srcAccessMask = 0,
+			//	.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			//},
+			//{
+			//	.srcSubpass = 1,
+			//	.dstSubpass = 2,
+			//	.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			//	.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+			//	.srcAccessMask = 0,
+			//	.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			//},
 		};
 		VkRenderPassCreateInfo renderpass_info = {
 			.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,

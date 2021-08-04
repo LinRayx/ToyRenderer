@@ -15,8 +15,10 @@ namespace Graphics
 		Synchronization(std::shared_ptr<Vulkan> vulkan_ptr) : vulkan_ptr(vulkan_ptr)
 		{
 			VkSemaphoreCreateInfo semaphoreCreateInfo = {};
-			semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
+			semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			// VkResult res;
+			presentComplete.resize(vulkan_ptr->swapchain.image_count);
+			renderComplete.resize(vulkan_ptr->swapchain.image_count);
 
 			for (size_t i = 0; i < vulkan_ptr->swapchain.image_count; ++i) {
 

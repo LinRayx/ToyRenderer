@@ -8,6 +8,8 @@
 #include "Model.h"
 #include "DynamicConstant.h"
 #include "LayoutCodex.h"
+#include "RenderLoop.h"
+
 using namespace std;
 
 class TestCube
@@ -141,7 +143,7 @@ public:
 
     size_t getSize()
     {
-        return sizeof(vertices.size());
+        return sizeof(vertices[0]) * vertices.size() ;
     }
 
     void* getData()
@@ -167,58 +169,52 @@ public:
         cmdQueue_ptr = make_shared<Graphics::CommandQueue>(vulkan_ptr, cmdBuf_ptr, sync_ptr);
     }
 
-	void test() {
-		
-		auto pipelineLayout_ptr = std::make_shared<Bind::PipelineLayout>();
-		pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 0);
-		pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 1);
-        
-		auto vertexShader_ptr = std::make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/triangle.vert.glsl", "../src/shaders", "main");
-		auto pixelShader_ptr = std::make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/triangle.frag.glsl", "../src/shaders", "main");
-		auto vertexBuffer_ptr = std::make_shared<Bind::VertexBuffer>(vulkan_ptr, triangle_ptr);
-		
-		auto pipeline_ptr = std::make_shared<Graphics::Pipeline>(vulkan_ptr);
-		auto renderpass_ptr = std::make_shared<Graphics::RenderPass>(vulkan_ptr, image_ptr);
+    void test() {
 
-		auto drawable = std::make_shared<Draw::Drawable>(vulkan_ptr);
+        auto pipelineLayout_ptr = std::make_shared<Bind::PipelineLayout>();
+        pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 0);
+        pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 1);
 
-		drawable->Register<Draw::GraphicsType::Pipeline>(pipeline_ptr);
-		drawable->Register<Draw::GraphicsType::RenderPass>(renderpass_ptr);
+        auto vertexShader_ptr = std::make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/triangle.vert.glsl", "../src/shaders", "main");
+        auto pixelShader_ptr = std::make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/triangle.frag.glsl", "../src/shaders", "main");
+        auto vertexBuffer_ptr = std::make_shared<Bind::VertexBuffer>(vulkan_ptr, triangle_ptr);
+
+        auto pipeline_ptr = std::make_shared<Graphics::Pipeline>(vulkan_ptr);
+        auto renderpass_ptr = std::make_shared<Graphics::RenderPass>(vulkan_ptr, image_ptr);
+
+        auto drawable = std::make_shared<Draw::Drawable>(vulkan_ptr);
+
+        drawable->Register<Draw::GraphicsType::Pipeline>(pipeline_ptr);
+        drawable->Register<Draw::GraphicsType::RenderPass>(renderpass_ptr);
         drawable->Register<Draw::GraphicsType::CommandBuffer>(cmdBuf_ptr);
         drawable->Register<Draw::GraphicsType::CommandQueue>(cmdQueue_ptr);
 
-		drawable->Register<Draw::BindType::PipelineLayout>(pipelineLayout_ptr);
-		drawable->Register<Draw::BindType::VertexShader>(vertexShader_ptr);
-		drawable->Register<Draw::BindType::PixelShader>(pixelShader_ptr);
-		drawable->Register<Draw::BindType::VertexBuffer>(vertexBuffer_ptr);
+        drawable->Register<Draw::BindType::PipelineLayout>(pipelineLayout_ptr);
+        drawable->Register<Draw::BindType::VertexShader>(vertexShader_ptr);
+        drawable->Register<Draw::BindType::PixelShader>(pixelShader_ptr);
+        drawable->Register<Draw::BindType::VertexBuffer>(vertexBuffer_ptr);
 
-		drawable->CompilePipeline();
+        drawable->CompilePipeline();
 
         drawable->BuildCommandBuffer();
 
-        drawable->Submit();
-	}
+        renderLoop_ptr = std::make_shared<RenderSystem::RenderLoop>(vulkan_ptr, drawable);
+        renderLoop_ptr->Loop();
+    }
 
     void TestDynamicConstant()
     {
         Dcb::RawLayout s;
-        s.Add<Dcb::Struct>("butts"s);
-        //s["butts"s].Add<Dcb::Float3>("pubes"s);
-        s["butts"s].Add<Dcb::Float>("dank"s);
-        //s.Add<Dcb::Float>("woot"s);
-        //s.Add<Dcb::Array>("arr"s);
-        //s["arr"s].Set<Dcb::Struct>(4);
-        //s["arr"s].T().Add<Dcb::Float3>("twerk"s);
-        //s["arr"s].T().Add<Dcb::Array>("werk"s);
-        //s["arr"s].T()["werk"s].Set<Dcb::Float>(6);
-        //s["arr"s].T().Add<Dcb::Array>("meta"s);
-        //s["arr"s].T()["meta"s].Set<Dcb::Array>(6);
-        //s["arr"s].T()["meta"s].T().Set<Dcb::Matrix>(4);
-        //s["arr"s].T().Add<Dcb::Bool>("booler");
+        s.Add<Dcb::Float>("a1");
+        s.Add<Dcb::Float>("a2");
+        s.Add<Dcb::Float>("a3");
+        s.Add<Dcb::Float2>("a4");
 
-        
         cout << s.GetSignature() << endl;
         auto b = Dcb::Buffer(std::move(s));
+        b["a3"] = 1.0f;
+        b["a2"] = 2.0f;
+        b["a4"] = glm::vec2(1., 2.);
         cout << b.GetSizeInBytes() << endl;
         cout << b.GetData() << endl;
     }
@@ -232,6 +228,7 @@ private:
     shared_ptr<Graphics::Synchronization> sync_ptr;
     shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
     shared_ptr<Graphics::CommandQueue> cmdQueue_ptr;
+    shared_ptr<RenderSystem::RenderLoop> renderLoop_ptr;
 };
 
 

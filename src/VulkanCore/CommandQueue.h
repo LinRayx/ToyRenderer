@@ -23,12 +23,15 @@ namespace Graphics
 
 		void Submit()
 		{
-			prepareFrame();
-			endFrame();
+			drawFrame();
 		}
 	private:
-		void prepareFrame()
+		void drawFrame()
 		{
+
+			std::vector< VkSemaphore > waitSemaphores;
+			std::vector< VkSemaphore > signalSemaphores;
+			uint32_t imageIndex = 0;
 			vkWaitForFences(vulkan_ptr->device.device, 1, &sync_ptr->waitFences[currentFrame], VK_TRUE, UINT64_MAX);
 			
 			VkResult result = vkAcquireNextImageKHR(vulkan_ptr->device.device, vulkan_ptr->swapchain.swapchain, UINT64_MAX, sync_ptr->presentComplete[currentFrame], VK_NULL_HANDLE, &imageIndex);
@@ -69,10 +72,7 @@ namespace Graphics
 			if (vkQueueSubmit(vulkan_ptr->device.queue, 1, &submitInfo, sync_ptr->waitFences[currentFrame]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to submit draw command buffer!");
 			}
-		}
 
-		void endFrame()
-		{
 			VkPresentInfoKHR presentInfo{};
 			presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
@@ -85,7 +85,7 @@ namespace Graphics
 
 			presentInfo.pImageIndices = &imageIndex;
 
-			VkResult result = vkQueuePresentKHR(vulkan_ptr->device.queue, &presentInfo);
+			result = vkQueuePresentKHR(vulkan_ptr->device.queue, &presentInfo);
 
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ) {
 
@@ -99,12 +99,11 @@ namespace Graphics
 
 	private:
 		uint32_t currentFrame = 0;
-		uint32_t imageIndex = 0;
+
 		std::shared_ptr<Vulkan> vulkan_ptr;
 		std::shared_ptr<Synchronization> sync_ptr;
 		std::shared_ptr<CommandBuffer> cmdBuf_ptr;
-		std::vector< VkSemaphore > waitSemaphores;
-		std::vector< VkSemaphore > signalSemaphores;
+
 	};
 }
 
