@@ -3,10 +3,7 @@
 #ifndef VULKAN_H
 #define VULKAN_H
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-#define VK_LOAD(FUNCTION_NAME) PFN_##FUNCTION_NAME p##FUNCTION_NAME = (PFN_##FUNCTION_NAME) glfwGetInstanceProcAddress(device->instance, #FUNCTION_NAME);
-#define COUNT_OF(ARRAY) (sizeof(ARRAY) / sizeof(ARRAY[0]))
+
 
 #include "Graphics.h"
 
@@ -26,6 +23,9 @@ namespace Graphics {
 		friend class CommandBuffer;
 		friend class Synchronization;
 		friend class CommandQueue;
+		friend class DescriptorPool;
+		friend class DescriptorSetCore;
+		friend class DescriptorSetLayout;
 		friend class Draw::Drawable;
 	private:
 		/*! This macro initializes a function pointer for the Vulkan function with the
@@ -438,6 +438,8 @@ namespace Graphics {
 public:
 
 	bool WindowShouldClose();
+
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 	int create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties);
 

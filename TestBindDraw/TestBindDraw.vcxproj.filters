@@ -147,6 +147,12 @@
     <ClInclude Include="..\src\RenderSystem\RenderLoop.h">
       <Filter>头文件\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\DescriptorPool.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\PipelineLayout.h">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -213,6 +219,15 @@
       <Filter>源文件\DynamicVariable</Filter>
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bindable\DescriptorSets.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\DescriptorPool.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\Graphics.cpp">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
   </ItemGroup>

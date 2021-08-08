@@ -3,54 +3,70 @@
 #define DESCRIPTOR_SET_H
 
 #include "Buffer.h"
+#include "DescriptorPool.h"
+#include "Pipeline.h"
 #include <vector>
 #include <map>
 #include <string>
+#include <memory>
 
 using namespace std;
 
+namespace Draw
+{
+	class Drawable;
+}
 
 namespace Graphics
 {
-	class DescriptorSet
+	class DescriptorSetLayout;
+
+	class DescriptorSetCore : public Graphics
 	{
-	public:
-		//! Specifies a single descriptor layout and a number of 
-		struct descriptor_set_request_t {
-			//! The stageFlags member of each entry of bindings is ORed with this value
-			//! before using it
-			VkShaderStageFlagBits stage_flags;
-			//! The minimal number of descriptors per binding. Setting this to one is a
-			//! good way to avoid some redundant specifications.
-			uint32_t min_descriptor_count;
-			//! Number of entries in bindings
-			uint32_t binding_count;
-			//! A specification of the bindings in the layout. The member binding is
-			//! overwritten by the array index before use, stageFlags is ORed with
-			//! stage_flags and descriptorCount clamped to a minimum of
-			//! min_descriptor_count.
-			vector<VkDescriptorSetLayoutBinding> bindings;
-		} ;
+		friend class Draw::Drawable;
+		friend class CommandBuffer;
 
-	public:
-		DescriptorSet(string name, uint32_t offset) : dstBinding(-1)
+		struct descInfo
 		{
-			name_to_dst[name] = ++dstBinding;
-			VkDescriptorBufferInfo buffer_info = {};
-			buffer_info.offset = 0;
-			VkWriteDescriptorSet write_set = {};
-			write_set.dstBinding = dstBinding;
+			DescriptorType type;
+			shared_ptr<Buffer> buffer_ptr;
+		};
+	public:
+		DescriptorSetCore(std::shared_ptr<Vulkan> vulkan_ptr, std::shared_ptr<DescriptorPool> desc_pool_ptr);
+		~DescriptorSetCore();
+		void Add(DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
+		void Compile();
 
-			buffer_infos.emplace_back(std::move(buffer_info));
-			write_sets.emplace_back(std::move(write_set));
-		}
-		void Update();
 	private:
-		uint16_t dstBinding;
-		std::vector<VkDescriptorBufferInfo> buffer_infos;
-		std::vector<VkWriteDescriptorSet> write_sets;
 		
-		map<string, uint16_t> name_to_dst;
+		vector<descInfo> infos;
+
+		std::vector<VkWriteDescriptorSet> write_sets;
+		std::vector<VkDescriptorSet> descriptorSets;
+
+		std::shared_ptr<DescriptorPool> desc_pool_ptr;
+		std::shared_ptr<Vulkan> vulkan_ptr;
+		std::shared_ptr<DescriptorSetLayout> desc_layout_ptr;
+	};
+
+	class DescriptorSetLayout : public Graphics
+	{
+		friend class DescriptorSetCore;
+		friend class Draw::Drawable;
+		friend class CommandBuffer;
+	public:
+		DescriptorSetLayout(shared_ptr<Vulkan> vulkan_ptr) : vulkan_ptr(vulkan_ptr) {}
+		~DescriptorSetLayout()
+		{
+			vkDestroyDescriptorSetLayout( vulkan_ptr->device.device, descriptorSetLayout, vulkan_ptr->device.allocator);
+		}
+		void Add(DescriptorType type, StageFlag stage);
+		void Compile();
+	private:
+		vector<VkDescriptorSetLayoutBinding> bindings;
+		VkDescriptorSetLayout descriptorSetLayout;
+		VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+		shared_ptr<Vulkan> vulkan_ptr;
 	};
 }
 

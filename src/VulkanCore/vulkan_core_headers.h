@@ -8,3 +8,5 @@
 #include "Pipeline.h"
 #include "RenderPass.h"
 #include "Synchronization.h"
+#include "DescriptorPool.h"
+#include "DescriptorSet.h"

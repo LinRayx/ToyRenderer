@@ -100,6 +100,12 @@ public:
 class TestTriangle : public Draw::Model
 {
 public:
+    TestTriangle(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr)
+    {
+        desc_ptr = make_shared<Graphics::DescriptorSetCore>(vulkan_ptr, desc_pool_ptr);
+
+    }
+
     struct Vertex {
         glm::vec2 pos;
         glm::vec3 color;
@@ -136,6 +142,36 @@ public:
         return attributeDescriptions;
     }
 
+    void InitVar()
+    {
+        layout.Add<Dcb::Float>("a1");
+        layout.Add<Dcb::Float>("a2");
+        layout.Add<Dcb::Float>("a3");
+        layout.Add<Dcb::Float2>("a4");
+    }
+
+
+
+    void SetData()
+    {
+        buf = make_shared<Dcb::Buffer>(std::move(layout));
+        buffer_ptr = make_shared<Graphics::Buffer>(vulkan_ptr, Graphics::BufferUsage::UNIFORM, buf->GetSizeInBytes());
+        desc_ptr->Add(Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX, buffer_ptr);
+        (*buf)["a1"] = 2.0f;
+        (*buf)["a3"] = 1.0f;
+        (*buf)["a2"] = 2.0f;
+        (*buf)["a4"] = glm::vec2(1., 2.);
+        buffer_ptr->UpdateData(0, buf->GetSizeInBytes(), (void*)buf->GetData());
+        buffer_ptr->UpdateData(1, buf->GetSizeInBytes(), (void*)buf->GetData());
+    }
+
+    shared_ptr<Graphics::Buffer> buffer_ptr;
+
+    void Compile()
+    {
+        desc_ptr->Compile();
+    }
+
     size_t getCount()
     {
         return vertices.size();
@@ -162,18 +198,17 @@ public:
     {
         vulkan_ptr = make_shared<Graphics::Vulkan>();
         image_ptr = make_shared<Graphics::Image>(vulkan_ptr);
-        triangle_ptr = make_shared<TestTriangle>();
+        
         cmdPool_ptr = make_shared<Graphics::CommandPool>(vulkan_ptr);
         sync_ptr = make_shared<Graphics::Synchronization>(vulkan_ptr);
         cmdBuf_ptr = make_shared<Graphics::CommandBuffer>(vulkan_ptr, cmdPool_ptr);
         cmdQueue_ptr = make_shared<Graphics::CommandQueue>(vulkan_ptr, cmdBuf_ptr, sync_ptr);
+        desc_pool_ptr = make_shared<Graphics::DescriptorPool>(vulkan_ptr);
+        triangle_ptr = make_shared<TestTriangle>(vulkan_ptr, desc_pool_ptr);
     }
 
     void test() {
-
-        auto pipelineLayout_ptr = std::make_shared<Bind::PipelineLayout>();
-        pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 0);
-        pipelineLayout_ptr->AddLayout(Bind::DESCRIPTOR_TYPE::UNFIORM, 1);
+        
 
         auto vertexShader_ptr = std::make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/triangle.vert.glsl", "../src/shaders", "main");
         auto pixelShader_ptr = std::make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/triangle.frag.glsl", "../src/shaders", "main");
@@ -181,15 +216,18 @@ public:
 
         auto pipeline_ptr = std::make_shared<Graphics::Pipeline>(vulkan_ptr);
         auto renderpass_ptr = std::make_shared<Graphics::RenderPass>(vulkan_ptr, image_ptr);
+      
+        triangle_ptr->InitVar();
+        triangle_ptr->SetData();
 
         auto drawable = std::make_shared<Draw::Drawable>(vulkan_ptr);
 
+        drawable->Register(triangle_ptr);
         drawable->Register<Draw::GraphicsType::Pipeline>(pipeline_ptr);
         drawable->Register<Draw::GraphicsType::RenderPass>(renderpass_ptr);
         drawable->Register<Draw::GraphicsType::CommandBuffer>(cmdBuf_ptr);
         drawable->Register<Draw::GraphicsType::CommandQueue>(cmdQueue_ptr);
 
-        drawable->Register<Draw::BindType::PipelineLayout>(pipelineLayout_ptr);
         drawable->Register<Draw::BindType::VertexShader>(vertexShader_ptr);
         drawable->Register<Draw::BindType::PixelShader>(pixelShader_ptr);
         drawable->Register<Draw::BindType::VertexBuffer>(vertexBuffer_ptr);
@@ -228,6 +266,7 @@ private:
     shared_ptr<Graphics::Synchronization> sync_ptr;
     shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
     shared_ptr<Graphics::CommandQueue> cmdQueue_ptr;
+    shared_ptr<Graphics::DescriptorPool> desc_pool_ptr;
     shared_ptr<RenderSystem::RenderLoop> renderLoop_ptr;
 };
 

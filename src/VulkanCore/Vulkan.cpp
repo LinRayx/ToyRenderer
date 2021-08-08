@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
+#include <stdexcept>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -512,6 +513,20 @@ namespace Graphics {
 	bool Vulkan::WindowShouldClose()
 	{
 		return !glfwWindowShouldClose(swapchain.window);
+	}
+
+	uint32_t Vulkan::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+	{
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties(device.physical_device, &memProperties);
+
+		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+				return i;
+			}
+		}
+
+		throw std::runtime_error("failed to find suitable memory type!");
 	}
 
 	int Vulkan::create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties) {

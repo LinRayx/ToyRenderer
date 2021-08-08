@@ -35,14 +35,14 @@ namespace Graphics
 
 		~CommandBuffer()
 		{
-			vkFreeCommandBuffers(vulkan_ptr->device.device, cmdPool_ptr->cmdPool, drawCmdBuffers.size(), drawCmdBuffers.data());
+			vkFreeCommandBuffers(vulkan_ptr->device.device, cmdPool_ptr->cmdPool, static_cast<uint32_t>(drawCmdBuffers.size()), drawCmdBuffers.data());
 		}
 
 		void BuildCommandBuffer(
 			shared_ptr<RenderPass> renderpass_ptr,
 			shared_ptr<Pipeline> pipeline_ptr,
 			shared_ptr<Buffer> vertexBuffer_ptr,
-			shared_ptr<DescriptorSet> desc_ptr);
+			shared_ptr<DescriptorSetCore> desc_ptr);
 	private:
 		shared_ptr<Vulkan> vulkan_ptr;
 		shared_ptr<CommandPool> cmdPool_ptr;

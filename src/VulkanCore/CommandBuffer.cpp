@@ -1,7 +1,7 @@
 #include "CommandBuffer.h"
 #include <stdexcept>
 
-void Graphics::CommandBuffer::BuildCommandBuffer(shared_ptr<RenderPass> renderpass_ptr, shared_ptr<Pipeline> pipeline_ptr, shared_ptr<Buffer> vertexBuffer_ptr, shared_ptr<DescriptorSet> desc_ptr)
+void Graphics::CommandBuffer::BuildCommandBuffer(shared_ptr<RenderPass> renderpass_ptr, shared_ptr<Pipeline> pipeline_ptr, shared_ptr<Buffer> vertexBuffer_ptr, shared_ptr<DescriptorSetCore> desc_ptr)
 {
 
     for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
@@ -25,17 +25,17 @@ void Graphics::CommandBuffer::BuildCommandBuffer(shared_ptr<RenderPass> renderpa
 
         vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-        vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_ptr->pipeline.pipeline);
+        vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_ptr->pipeline);
 
-        VkBuffer vertexBuffers[] = { vertexBuffer_ptr->buffer.buffers->buffer };
+        VkBuffer vertexBuffers[] = { vertexBuffer_ptr->buffers[0] };
         VkDeviceSize offsets[] = { 0 };
         vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
 
         //vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-        //vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+        vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_ptr->desc_layout_ptr->pipelineLayout, 0, 1, &desc_ptr->descriptorSets[i], 0, nullptr);
 
-        vkCmdDraw(drawCmdBuffers[i], vertexBuffer_ptr->elem_count, 1, 0, 0);
+        vkCmdDraw(drawCmdBuffers[i], static_cast<uint32_t>(vertexBuffer_ptr->elem_count), 1, 0, 0);
         vkCmdEndRenderPass(drawCmdBuffers[i]);
 
         if (vkEndCommandBuffer(drawCmdBuffers[i]) != VK_SUCCESS) {

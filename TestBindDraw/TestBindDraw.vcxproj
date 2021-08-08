@@ -168,10 +168,12 @@
     <ClInclude Include="..\src\VulkanCore\CommandBuffer.h" />
     <ClInclude Include="..\src\VulkanCore\CommandPool.h" />
     <ClInclude Include="..\src\VulkanCore\CommandQueue.h" />
+    <ClInclude Include="..\src\VulkanCore\DescriptorPool.h" />
     <ClInclude Include="..\src\VulkanCore\DescriptorSet.h" />
     <ClInclude Include="..\src\VulkanCore\Graphics.h" />
     <ClInclude Include="..\src\VulkanCore\Image.h" />
     <ClInclude Include="..\src\VulkanCore\Pipeline.h" />
+    <ClInclude Include="..\src\VulkanCore\PipelineLayout.h" />
     <ClInclude Include="..\src\VulkanCore\RenderPass.h" />
     <ClInclude Include="..\src\VulkanCore\Synchronization.h" />
     <ClInclude Include="..\src\VulkanCore\Vulkan.h" />
@@ -183,6 +185,7 @@
     <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\src\Bindable\DescriptorSets.cpp" />
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp" />
     <ClCompile Include="..\src\Bindable\PipelineLayout.cpp" />
     <ClCompile Include="..\src\Bindable\PixelShader.cpp" />
@@ -195,7 +198,9 @@
     <ClCompile Include="..\src\Test\test.cpp" />
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp" />
     <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp" />
+    <ClCompile Include="..\src\VulkanCore\DescriptorPool.cpp" />
     <ClCompile Include="..\src\VulkanCore\DescriptorSet.cpp" />
+    <ClCompile Include="..\src\VulkanCore\Graphics.cpp" />
     <ClCompile Include="..\src\VulkanCore\Image.cpp" />
     <ClCompile Include="..\src\VulkanCore\Pipeline.cpp" />
     <ClCompile Include="..\src\VulkanCore\RenderPass.cpp" />

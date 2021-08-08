@@ -1,98 +1,81 @@
 #include "Buffer.h"
+#include <stdexcept>
+
 namespace Graphics {
-	Buffer::Buffer(shared_ptr<Vulkan> _vulkan_ptr, size_t size) : vulkan_ptr(_vulkan_ptr)
+
+
+	Buffer::Buffer(shared_ptr<Vulkan> _vulkan_ptr, BufferUsage type, size_t size) : vulkan_ptr(_vulkan_ptr), size(size)
 	{
-
-		memset(&buffer, 0, sizeof(buffer));
-		VkBufferCreateInfo buffer_info = {};
-		buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		buffer_info.size = size;
-		buffer_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-		buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		uint32_t count = 1;
-
-		VkBufferCreateInfo* buffer_infos = (VkBufferCreateInfo*)malloc(sizeof(VkBufferCreateInfo) * count);
-		for (uint32_t i = 0; i != count; ++i) {
-			buffer_infos[i] = buffer_info;
-		}
-		if (_vulkan_ptr->create_buffers(&buffer, buffer_infos, count, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)) {
-			exit(1);
-		}
-
-		free(buffer_infos);
-		if (vkMapMemory(vulkan_ptr->device.device, buffer.memory, 0, buffer.size, 0, &data)) {
-			exit(1);
+		buffers.resize(vulkan_ptr->swapchain.image_count);
+		buffersMemorys.resize(vulkan_ptr->swapchain.image_count);
+		for (size_t i = 0; i < buffers.size(); ++i)
+		{
+			createBuffer(size, getUsage(type), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffers[i], buffersMemorys[i]);
 		}
 	}
 
-	Buffer::Buffer(shared_ptr<Vulkan> _vulkan_ptr, size_t size, void* data) : vulkan_ptr(_vulkan_ptr)
+
+	// Vertex Buffer
+	Buffer::Buffer(shared_ptr<Vulkan> _vulkan_ptr, BufferUsage type, size_t size, void* newData, size_t elem_count) : vulkan_ptr(_vulkan_ptr), elem_count(elem_count), size(size)
 	{
+		buffers.resize(1);
+		buffersMemorys.resize(1);
+		for (size_t i = 0; i < buffers.size(); ++i)
+		{
+			void* data;
+			createBuffer(size, getUsage(type), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffers[i], buffersMemorys[i]);
+			if (vkMapMemory(vulkan_ptr->device.device, buffersMemorys[i], 0, size, 0, &data)) {
+				exit(1);
+			}
 
-		memset(&buffer, 0, sizeof(buffer));
-		VkBufferCreateInfo buffer_info = {};
-		buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		buffer_info.size = size;
-		buffer_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
-		buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			memcpy(data, newData, size);
 
-		uint32_t count = 1;
-
-		VkBufferCreateInfo* buffer_infos = (VkBufferCreateInfo*)malloc(sizeof(VkBufferCreateInfo) * count);
-		for (uint32_t i = 0; i != count; ++i) {
-			buffer_infos[i] = buffer_info;
+			vkUnmapMemory(vulkan_ptr->device.device, buffersMemorys[i]);
 		}
-		if (_vulkan_ptr->create_buffers(&buffer, buffer_infos, count, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)) {
-			exit(1);
-		}
-
-		free(buffer_infos);
-		if (vkMapMemory(vulkan_ptr->device.device, buffer.memory, 0, buffer.size, 0, &data)) {
-			exit(1);
-		}
-
-		memcpy(this->data, data, buffer.size);
-
-		vkUnmapMemory(vulkan_ptr->device.device, buffer.memory);
-	}
-
-	void Buffer::CopyData(void* data)
-	{
-		memcpy(this->data, data, buffer.size);
-	}
-
-	Buffer::Buffer(shared_ptr<Vulkan> _vulkan_ptr, BufferUsage type, size_t size, void* data, size_t elem_count) : vulkan_ptr(_vulkan_ptr), elem_count(elem_count)
-	{
-		memset(&buffer, 0, sizeof(buffer));
-		VkBufferCreateInfo buffer_info = {};
-		buffer_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		buffer_info.size = size;
-		buffer_info.usage = getUsage(type);
-		buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		uint32_t count = 1;
-
-		VkBufferCreateInfo* buffer_infos = (VkBufferCreateInfo*)malloc(sizeof(VkBufferCreateInfo) * count);
-		for (uint32_t i = 0; i != count; ++i) {
-			buffer_infos[i] = buffer_info;
-		}
-		if (_vulkan_ptr->create_buffers(&buffer, buffer_infos, count, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT)) {
-			exit(1);
-		}
-
-		free(buffer_infos);
-		if (vkMapMemory(vulkan_ptr->device.device, buffer.memory, 0, buffer.size, 0, &this->data)) {
-			exit(1);
-		}
-
-		memcpy(this->data, data, size);
-
-		vkUnmapMemory(vulkan_ptr->device.device, buffer.memory);
 	}
 
 	Buffer::~Buffer()
 	{
-		vulkan_ptr->destroy_buffers(&buffer);
+		for (size_t i = 0; i < buffers.size(); i++) {
+			vkDestroyBuffer(vulkan_ptr->device.device, buffers[i], vulkan_ptr->device.allocator);
+			vkFreeMemory(vulkan_ptr->device.device, buffersMemorys[i], vulkan_ptr->device.allocator);
+		}
+	}
+
+	void Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+	{
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = usage;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		if (vkCreateBuffer(vulkan_ptr->device.device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create buffer!");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(vulkan_ptr->device.device, buffer, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = vulkan_ptr->findMemoryType(memRequirements.memoryTypeBits, properties);
+
+		if (vkAllocateMemory(vulkan_ptr->device.device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate buffer memory!");
+		}
+
+		vkBindBufferMemory(vulkan_ptr->device.device, buffer, bufferMemory, 0);
+	}
+
+	void Buffer::UpdateData(uint32_t currentImage, size_t size, void* newData)
+	{
+		update = true;
+		void* data;
+		vkMapMemory(vulkan_ptr->device.device, buffersMemorys[currentImage], 0, size, 0, &data);
+		memcpy(data, &newData, size);
+		vkUnmapMemory(vulkan_ptr->device.device, buffersMemorys[currentImage]);
 	}
 
 	VkBufferUsageFlags Buffer::getUsage(BufferUsage type)

@@ -9,6 +9,7 @@
 #include "RenderPass.h"
 #include "CommandBuffer.h"
 #include "CommandQueue.h"
+#include "Model.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ namespace Draw
 		Pipeline,
 		CommandBuffer,
 		CommandQueue,
+		DescriptorSet,
 	};
 
 	enum class BindType
@@ -41,7 +43,7 @@ namespace Draw
 		VertexBuffer,
 		PixelShader,
 		VertexShader,
-		PipelineLayout,
+		
 
 	};
 
@@ -73,6 +75,9 @@ namespace Draw
 				break;
 			case GraphicsType::CommandQueue:
 				cmdQueue_ptr = std::dynamic_pointer_cast<Graphics::CommandQueue> (elem);
+				break;
+			case GraphicsType::DescriptorSet:
+
 			default:
 				break;
 			}
@@ -95,17 +100,19 @@ namespace Draw
 			case Draw::BindType::VertexShader:
 				vertexShader_ptr = std::dynamic_pointer_cast<Bind::VertexShader> (elem);
 				break;
-			case Draw::BindType::PipelineLayout:
-				pipelineLayout_ptr = std::dynamic_pointer_cast<Bind::PipelineLayout> (elem);
-				break;
 			}
 		}
-		
+
+		void Register(shared_ptr<Model> model_ptr)
+		{
+			this->model_ptr = model_ptr;
+		}
+
 		void CompilePipeline();
 		// void CompileCommand();
 		void BuildCommandBuffer()
 		{
-			cmdBuf_ptr->BuildCommandBuffer(renderpass_ptr, pipeline_ptr, vertexBuffer_ptr->buffer_ptr, nullptr);
+			cmdBuf_ptr->BuildCommandBuffer(renderpass_ptr, pipeline_ptr, vertexBuffer_ptr->buffer_ptr, model_ptr->desc_ptr);
 		}
 
 		void Submit()
@@ -118,13 +125,14 @@ namespace Draw
 		shared_ptr<Bind::VertexBuffer> vertexBuffer_ptr;
 		shared_ptr<Bind::VertexShader> vertexShader_ptr;
 		shared_ptr<Bind::PixelShader> pixelShader_ptr;
-		shared_ptr<Bind::PipelineLayout> pipelineLayout_ptr;
 
 		shared_ptr<Graphics::Pipeline> pipeline_ptr;
 		shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		shared_ptr<Graphics::RenderPass> renderpass_ptr;
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
 		shared_ptr<Graphics::CommandQueue> cmdQueue_ptr;
+
+		shared_ptr<Model> model_ptr;
 	private:
 		// Graphics::Pipeline::pipeline_with_bindings_t pipeline;
 	};

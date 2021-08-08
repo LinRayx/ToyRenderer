@@ -35,24 +35,13 @@ namespace Draw
 		case Draw::BindType::VertexShader:
 			vertexShader_ptr = std::dynamic_pointer_cast<Bind::VertexShader> (elem);
 			break;
-		case Draw::BindType::PipelineLayout:
-			pipelineLayout_ptr = std::dynamic_pointer_cast<Bind::PipelineLayout> (elem);
-			break;
 		default:
 			break;
 		}
 	}
 	void Drawable::CompilePipeline()
 	{
-		
-		Graphics::DescriptorSet::descriptor_set_request_t set_request = {};
-		
-		set_request.bindings = pipelineLayout_ptr->layout_bindinds;
-		set_request.min_descriptor_count = 1;
-		set_request.binding_count = pipelineLayout_ptr->dstBinding;
-		set_request.stage_flags = VK_SHADER_STAGE_ALL;
-
-		pipeline_ptr->create_descriptor_sets(&pipeline_ptr->pipeline, &set_request, 1);
+		model_ptr->Compile();
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -139,6 +128,7 @@ namespace Draw
 		depth_stencil_info.depthWriteEnable = VK_TRUE;
 		depth_stencil_info.depthCompareOp = VK_COMPARE_OP_LESS;
 
+
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = 2;
@@ -151,12 +141,12 @@ namespace Draw
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDepthStencilState = &depth_stencil_info;
 		
-		pipelineInfo.layout = pipeline_ptr->pipeline.pipeline_layout;
+		pipelineInfo.layout = model_ptr->desc_ptr->desc_layout_ptr->pipelineLayout;
 		pipelineInfo.renderPass = renderpass_ptr->renderpass.render_pass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		
-		if (vkCreateGraphicsPipelines(vulkan_ptr->device.device, NULL, 1, &pipelineInfo, NULL, &pipeline_ptr->pipeline.pipeline)) {
+		if (vkCreateGraphicsPipelines(vulkan_ptr->device.device, NULL, 1, &pipelineInfo, NULL, &pipeline_ptr->pipeline)) {
 			printf("Failed to create a graphics pipeline for the geometry pass.\n");
 			// destroy_point_light_pass(pass, device);
 			exit(1);
