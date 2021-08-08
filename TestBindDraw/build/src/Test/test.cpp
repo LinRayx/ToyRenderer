@@ -157,20 +157,14 @@ public:
     void SetData()
     {
         buf = make_shared<Dcb::Buffer>(std::move(layout));
-
         buffer_ptr = make_shared<Graphics::Buffer>(vulkan_ptr, Graphics::BufferUsage::UNIFORM, buf->GetSizeInBytes());
         desc_ptr->Add(Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX, buffer_ptr);
-        (*buf)["a1"] = 1.0f;
+        (*buf)["a1"] = 0.0f;
         (*buf)["a3"] = 0.0f;
-        (*buf)["a2"] = 0.0f;
+        (*buf)["a2"] = 1.0f;
         (*buf)["a4"] = glm::vec2(1., 2.);
-        
-        float t1 = (*buf)["a1"];
-        cout << t1 << endl;
-
-
-        buffer_ptr->UpdateData(0, buf->GetSizeInBytes(), buf->GetData());
-        buffer_ptr->UpdateData(1, buf->GetSizeInBytes(), buf->GetData());
+        buffer_ptr->UpdateData(0, buf->GetSizeInBytes(), (void*)buf->GetData());
+        buffer_ptr->UpdateData(1, buf->GetSizeInBytes(), (void*)buf->GetData());
     }
 
     shared_ptr<Graphics::Buffer> buffer_ptr;

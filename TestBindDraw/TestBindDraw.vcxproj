@@ -81,6 +81,8 @@
     <LibraryPath>$(ProjectDir)..\lib;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(ProjectDir)..\lib;$(LibraryWPath)</LibraryWPath>
     <IncludePath>$(ProjectDir)..\src\Test;$(ProjectDir)..\include;$(ProjectDir)..\src\VulkanCore;$(ProjectDir)..\include\Include;$(ProjectDir)..\include\imgui;$(ProjectDir)..\include\imgui\backends;$(ProjectDir)..\src\Drawable;$(ProjectDir)..\src\DynamicVariable;$(ProjectDir)..\src\Bindable;$(ProjectDir)..\src\Utils;$(ProjectDir)..\src\RenderSystem;$(IncludePath)</IncludePath>
+    <OutDir>$(ProjectDir)build\Debug\</OutDir>
+    <IntDir>$(ProjectDir)build\Debug\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -205,6 +207,10 @@
     <ClCompile Include="..\src\VulkanCore\Pipeline.cpp" />
     <ClCompile Include="..\src\VulkanCore\RenderPass.cpp" />
     <ClCompile Include="..\src\VulkanCore\Vulkan.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\shaders\desc_test.frag.glsl" />
+    <None Include="..\src\shaders\desc_test.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -69,12 +69,12 @@ namespace Graphics {
 		vkBindBufferMemory(vulkan_ptr->device.device, buffer, bufferMemory, 0);
 	}
 
-	void Buffer::UpdateData(uint32_t currentImage, size_t size, const char* newData)
+	void Buffer::UpdateData(uint32_t currentImage, size_t size, void* newData)
 	{
 		update[currentImage] = true;
 		void* data;
 		vkMapMemory(vulkan_ptr->device.device, buffersMemorys[currentImage], 0, size, 0, &data);
-		memcpy(data, newData, size);
+		memcpy(data, &newData, size);
 		vkUnmapMemory(vulkan_ptr->device.device, buffersMemorys[currentImage]);
 	}
 

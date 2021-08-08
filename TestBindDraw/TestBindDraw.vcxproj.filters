@@ -55,6 +55,9 @@
     <Filter Include="头文件\RenderSystem">
       <UniqueIdentifier>{9944d3d0-9a0c-4351-a730-f531a6760eae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Shaders">
+      <UniqueIdentifier>{e3ffc16b-45e9-46cf-ba38-ed49e45f3edd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -230,5 +233,13 @@
     <ClCompile Include="..\src\VulkanCore\Graphics.cpp">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\shaders\desc_test.vert.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\desc_test.frag.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
