@@ -58,6 +58,15 @@
     <Filter Include="源文件\Shaders">
       <UniqueIdentifier>{e3ffc16b-45e9-46cf-ba38-ed49e45f3edd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Control">
+      <UniqueIdentifier>{ef12366f-4998-4727-b68d-5de98e9a555f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Control">
+      <UniqueIdentifier>{e453a832-26f0-459c-8f8b-ada16c322233}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\RenderSystem">
+      <UniqueIdentifier>{4bcee1fc-1cc4-47af-b701-0ec6511df2ac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -156,6 +165,12 @@
     <ClInclude Include="..\src\VulkanCore\PipelineLayout.h">
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Control\Camera.h">
+      <Filter>头文件\Control</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderSystem\FrameTimer.h">
+      <Filter>头文件\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -232,6 +247,15 @@
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\Graphics.cpp">
       <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Control\Camera.cpp">
+      <Filter>源文件\Control</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\Model.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp">
+      <Filter>源文件\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

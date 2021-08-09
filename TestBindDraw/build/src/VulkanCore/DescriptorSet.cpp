@@ -48,7 +48,7 @@ namespace Graphics
 				//infos[j].buffer_ptr->update[i] = true;
 				VkDescriptorBufferInfo bufferInfo = {};
 
-				bufferInfo.buffer = infos[j].buffer_ptr->buffers[0];
+				bufferInfo.buffer = infos[j].buffer_ptr->buffers[i];
 				bufferInfo.offset = 0;
 				bufferInfo.range = infos[j].buffer_ptr->size;
 

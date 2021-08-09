@@ -43,14 +43,15 @@ namespace Graphics
 
 		for (size_t i = 0; i < vulkan_ptr->swapchain.image_count; ++i) {
 			write_sets.clear();
+			vector<VkDescriptorBufferInfo> bufferInfos(infos.size());
 			for (size_t j = 0; j < infos.size(); ++j) {
 				//if (infos[j].buffer_ptr->update[i] == false) continue;
 				//infos[j].buffer_ptr->update[i] = true;
-				VkDescriptorBufferInfo bufferInfo = {};
+				
 
-				bufferInfo.buffer = infos[j].buffer_ptr->buffers[0];
-				bufferInfo.offset = 0;
-				bufferInfo.range = infos[j].buffer_ptr->size;
+				bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[i];
+				bufferInfos[j].offset = 0;
+				bufferInfos[j].range = infos[j].buffer_ptr->size;
 
 				VkWriteDescriptorSet descriptorWrite = {};
 				descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -59,7 +60,7 @@ namespace Graphics
 				descriptorWrite.dstArrayElement = 0;
 				descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				descriptorWrite.descriptorCount = 1;
-				descriptorWrite.pBufferInfo = &bufferInfo;
+				descriptorWrite.pBufferInfo = &bufferInfos[j];
 
 				write_sets.emplace_back(std::move(descriptorWrite));
 				

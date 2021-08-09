@@ -120,6 +120,8 @@ namespace Draw
 			cmdQueue_ptr->SetCommandBuffer(cmdBuf_ptr);
 			cmdQueue_ptr->Submit();
 		}
+
+		void Update();
 	private:
 		shared_ptr<Bind::IndexBuffer> indexBuffer_ptr;
 		shared_ptr<Bind::VertexBuffer> vertexBuffer_ptr;

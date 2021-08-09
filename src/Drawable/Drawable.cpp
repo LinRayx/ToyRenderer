@@ -152,4 +152,8 @@ namespace Draw
 			exit(1);
 		}
 	}
+	void Drawable::Update()
+	{
+		model_ptr->Update();
+	}
 }

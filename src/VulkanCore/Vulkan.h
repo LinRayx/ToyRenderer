@@ -12,6 +12,11 @@ namespace Draw
 	class Drawable;
 }
 
+namespace RenderSystem
+{
+	class RenderLoop;
+}
+
 namespace Graphics {
 
 	class Vulkan : public Graphics{
@@ -27,6 +32,7 @@ namespace Graphics {
 		friend class DescriptorSetCore;
 		friend class DescriptorSetLayout;
 		friend class Draw::Drawable;
+		friend class RenderSystem::RenderLoop;
 	private:
 		/*! This macro initializes a function pointer for the Vulkan function with the
 		given name. It uses GLFW to find it. The surrounding scope must have a

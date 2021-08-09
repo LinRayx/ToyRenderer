@@ -18,7 +18,7 @@ namespace Graphics {
 		Buffer(shared_ptr<Vulkan> _vulkan_ptr, BufferUsage type, size_t size);
 		Buffer(shared_ptr<Vulkan> _vulkan_ptr, BufferUsage type, size_t size, void* data, size_t elem_count);
 		~Buffer();
-		void UpdateData(uint32_t currentImage, size_t size, void* newData);
+		void UpdateData(uint32_t currentImage, size_t size, const char* newData);
 	private:
 		void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		
