@@ -58,14 +58,20 @@
     <Filter Include="源文件\Shaders">
       <UniqueIdentifier>{e3ffc16b-45e9-46cf-ba38-ed49e45f3edd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Control">
-      <UniqueIdentifier>{ef12366f-4998-4727-b68d-5de98e9a555f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="源文件\Control">
-      <UniqueIdentifier>{e453a832-26f0-459c-8f8b-ada16c322233}</UniqueIdentifier>
-    </Filter>
     <Filter Include="源文件\RenderSystem">
       <UniqueIdentifier>{4bcee1fc-1cc4-47af-b701-0ec6511df2ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Scene">
+      <UniqueIdentifier>{ef12366f-4998-4727-b68d-5de98e9a555f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Scene">
+      <UniqueIdentifier>{85a623c0-828e-418e-b30c-a97601055812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Exception">
+      <UniqueIdentifier>{aad17601-666c-473c-a303-4b889c97fb20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Exception">
+      <UniqueIdentifier>{e0720bd2-f95f-4976-9107-9d7ea0e91505}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -165,10 +171,31 @@
     <ClInclude Include="..\src\VulkanCore\PipelineLayout.h">
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Control\Camera.h">
-      <Filter>头文件\Control</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\RenderSystem\FrameTimer.h">
+      <Filter>头文件\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\Camera.h">
+      <Filter>头文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\Scene.h">
+      <Filter>头文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\DirectionLight.h">
+      <Filter>头文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Exception\ChiliException.h">
+      <Filter>头文件\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Exception\ModelException.h">
+      <Filter>头文件\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\DynamicVariable\DynamicVertex.h">
+      <Filter>头文件\DynamicVariable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderSystem\PipelineStateObject.h">
+      <Filter>头文件\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\RenderSystem\PhonePSO.h">
       <Filter>头文件\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
@@ -248,13 +275,37 @@
     <ClCompile Include="..\src\VulkanCore\Graphics.cpp">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Control\Camera.cpp">
-      <Filter>源文件\Control</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Drawable\Model.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp">
+      <Filter>源文件\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\Camera.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\Scene.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\DirectionLight.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Exception\ChiliException.cpp">
+      <Filter>源文件\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Exception\ModelException.cpp">
+      <Filter>源文件\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DynamicVariable\DynamicVertex.cpp">
+      <Filter>源文件\DynamicVariable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderSystem\PipelineStateObject.cpp">
+      <Filter>源文件\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderSystem\PhonePSO.cpp">
+      <Filter>源文件\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp">
       <Filter>源文件\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
@@ -263,6 +314,12 @@
       <Filter>源文件\Shaders</Filter>
     </None>
     <None Include="..\src\shaders\desc_test.frag.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Phone.vert.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Phone.frag.glsl">
       <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>

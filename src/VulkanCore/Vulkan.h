@@ -6,6 +6,7 @@
 
 
 #include "Graphics.h"
+#include <vector>
 
 namespace Draw
 {
@@ -118,135 +119,6 @@ namespace Graphics {
 			VkImageView* image_views;
 		} swapchain_t;
 
-
-		/*! The information needed to request construction of an image.*/
-		typedef struct image_request_s {
-			/*! Complete image creation info. If the number of mip levels is set to
-				zero, it will be automatically set using get_mipmap_count_3d().*/
-			VkImageCreateInfo image_info;
-			/*! Description of the view that is to be created. format and image do not
-				need to be set. If the layer count or mip count are zero, they are set
-				to match the corresponding values of the image. If sType is not
-				VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO, creation of a view is
-				skipped.*/
-			VkImageViewCreateInfo view_info;
-		} image_request_t;
-
-
-		/*! This structure combines a Vulkan image object, with meta-data and the view.
-			The memory allocation is handled elsewhere, typically by an images_t.*/
-		typedef struct image_s {
-			//! The creation info used to create image
-			VkImageCreateInfo image_info;
-			//! The creation info used to create view
-			VkImageViewCreateInfo view_info;
-			//! The Vulkan object for the image
-			VkImage image;
-			//! A view onto the contents of this image or NULL if no view was requested
-			VkImageView view;
-			//! The offset of this image within the used memory allocation
-			VkDeviceSize memory_offset;
-			//! The required size of the memory allocation for this image in bytes. It
-			//! may be larger than the image data itself.
-			VkDeviceSize memory_size;
-			//! Non-zero iff this image has a dedicated memory allocation
-			uint32_t dedicated_allocation;
-			//! The index of the memory allocation that is bound to this image
-			uint32_t memory_index;
-		} image_t;
-
-
-		/*! This object handles a list of Vulkan images among with the corresponding
-			memory allocations.*/
-		typedef struct images_s {
-			//! Number of held images
-			uint32_t image_count;
-			//! The held images
-			image_t* images;
-			//! The number of used device memory allocations
-			uint32_t memory_count;
-			/*! The memory allocations used to store the images. The intent is that all
-				images share one allocation, except for those which prefer dedicated
-				allocatins.*/
-			VkDeviceMemory* memories;
-			/*! The memory properties that have to be suported for the memory
-				allocations. Combination of VkMemoryPropertyFlagBits.*/
-			VkMemoryPropertyFlags memory_properties;
-		} images_t;
-
-
-		//! Combines a buffer handle with offset and size
-		typedef struct buffer_s {
-			//! The buffer handle
-			VkBuffer buffer;
-			//! The offset in the bound memory allocation in bytes
-			VkDeviceSize offset;
-			//! The size of this buffer without padding in bytes
-			VkDeviceSize size;
-		} buffer_t;
-
-
-		//! A list of buffers that all share a single memory allocation
-		typedef struct buffers_s {
-			//! Number of held buffers
-			uint32_t buffer_count;
-			//! Array of buffer_count buffers
-			buffer_t* buffers;
-			//! The memory allocation that serves all of the buffers
-			VkDeviceMemory memory;
-			//! The size in bytes of the whole memory allocation
-			VkDeviceSize size;
-		} buffers_t;
-
-
-		//! Handles all information needed to compile a shader into a module
-		typedef struct shader_request_s {
-			//! A path to the file with the GLSL source code (relative to the CWD)
-			const char* shader_file_path;
-			//! The director(ies) which are searched for includes
-			const char* include_path;
-			//! The name of the function that serves as entry point
-			const char* entry_point;
-			//! A single bit from VkShaderStageFlagBits to indicate the targeted shader
-			//! stage
-			VkShaderStageFlags stage;
-			//! Number of defines
-			uint32_t define_count;
-			//! A list of strings providing the defines, either as "IDENTIFIER" or
-			//! "IDENTIFIER=VALUE". Do not use white space, these strings go into the
-			//! command line unmodified.
-			char** defines;
-		} shader_request_t;
-
-
-		//! Bundles a Vulkan shader module with its SPIRV code
-		typedef struct shader_s {
-			//! The Vulkan shader module
-			VkShaderModule module;
-			//! The size of the compiled SPIRV code in bytes
-			size_t spirv_size;
-			//! The compiled SPIRV code
-			uint32_t* spirv_code;
-		} shader_t;
-
-
-		//! Specifies a single descriptor layout and a number of 
-		typedef struct descriptor_set_request_s {
-			//! The stageFlags member of each entry of bindings is ORed with this value
-			//! before using it
-			VkShaderStageFlagBits stage_flags;
-			//! The minimal number of descriptors per binding. Setting this to one is a
-			//! good way to avoid some redundant specifications.
-			uint32_t min_descriptor_count;
-			//! Number of entries in bindings
-			uint32_t binding_count;
-			//! A specification of the bindings in the layout. The member binding is
-			//! overwritten by the array index before use, stageFlags is ORed with
-			//! stage_flags and descriptorCount clamped to a minimum of
-			//! min_descriptor_count.
-			VkDescriptorSetLayoutBinding* bindings;
-		} descriptor_set_request_t;
-
 	public:
 		Vulkan(int width = 800, int height = 600);
 		~Vulkan();
@@ -328,130 +200,14 @@ namespace Graphics {
 			return ((offset + alignment - 1) / alignment) * alignment;
 		}
 
-
-		/*! This utility function computes the number of mipmap levels needed to get
-			from a resource of the given size to one texel. This is the maximal number
-			of mipmaps that can be created.*/
-		static inline uint32_t get_mipmap_count_1d(uint32_t width) {
-			int32_t padded_width = (int32_t)(2 * width - 1);
-			uint32_t mipmap_count = 0;
-			while (padded_width > 0) {
-				padded_width &= 0x7ffffffe;
-				padded_width >>= 1;
-				++mipmap_count;
-			}
-			return mipmap_count;
-		}
-
-		//! \return The maximum of get_mipmap_count_1d() for all given extents
-		static inline uint32_t get_mipmap_count_3d(VkExtent3D extent) {
-			uint32_t counts[3] = {
-				get_mipmap_count_1d(extent.width),
-				get_mipmap_count_1d(extent.height),
-				get_mipmap_count_1d(extent.depth)
-			};
-			uint32_t result = counts[0];
-			result = (result < counts[1]) ? counts[1] : result;
-			result = (result < counts[2]) ? counts[2] : result;
-			return result;
-		}
-
-		///*! Implements copy_buffers(), copy_images() and copy_buffers_to_images() using
-		//	a single command buffer.*/
-		//int copy_buffers_and_images(const device_t* device,
-		//	uint32_t buffer_count, const VkBuffer* source_buffers, const VkBuffer* destination_buffers, VkBufferCopy* buffer_regions,
-		//	uint32_t image_count, const VkImage* source_images, const VkImage* destination_images, VkImageLayout source_layout,
-		//	VkImageLayout destination_layout_before, VkImageLayout destination_layout_after, VkImageCopy* image_regions,
-		//	uint32_t buffer_to_image_count, const VkBuffer* image_source_buffers, const VkImage* buffer_destination_images,
-		//	VkImageLayout buffer_destination_layout_before, VkImageLayout buffer_destination_layout_after, VkBufferImageCopy* buffer_to_image_regions);
-
-		///*! This function copies data between buffers, e.g. to get data from staging
-		//	buffers into device local buffers. Upon successful return, the copying has
-		//	been completed.
-		//	\param buffer_count Number of buffer pairs for which to perform a copy.
-		//	\param source_buffers Buffers with usage VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-		//		from which to copy.
-		//	\param destination_buffers Buffers with usage
-		//		VK_BUFFER_USAGE_TRANSFER_DST_BIT to which to copy.
-		//	\param buffer_region The region to copy for each source and destination
-		//		buffer.
-		//	\return 0 on success.*/
-		//static inline int copy_buffers(const device_t* device,
-		//	uint32_t buffer_count, const VkBuffer* source_buffers, const VkBuffer* destination_buffers, VkBufferCopy* buffer_regions)
-		//{
-		//	return copy_buffers_and_images(device, buffer_count, source_buffers, destination_buffers, buffer_regions,
-		//		0, NULL, NULL, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_UNDEFINED, NULL,
-		//		0, NULL, NULL, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_UNDEFINED, NULL);
-		//}
-
-		///*! This function copies data between images, e.g. to get data from staging
-		//	images into device local images. Upon successful return, the copying has
-		//	been completed.
-		//	\param image_count Number of image pairs for which to perform a copy.
-		//	\param source_images Images with usage VK_IMAGE_USAGE_TRANSFER_SRC_BIT
-		//		from which to copy.
-		//	\param destination_images Images with usage
-		//		VK_IMAGE_USAGE_TRANSFER_DST_BIT to which to copy.
-		//	\param source_layout The current layouts of all source images. If the values
-		//		are different, you have to invoke this function multiple times.
-		//	\param destination_layout_before The current layout of the destination
-		//		images. Pass VK_IMAGE_LAYOUT_UNDEFINED if you want to completely
-		//		replace all current contents of the images.
-		//	\param destination_layout_after Destination images are first transferred
-		//		into layout VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL and once copying is
-		//		done, they are transferred into this given layout.
-		//	\param image_region The region to copy for each source and destination
-		//		image.
-		//	\return 0 on success.*/
-		//static inline int copy_images(const device_t* device,
-		//	uint32_t image_count, const VkImage* source_images, const VkImage* destination_images,
-		//	VkImageLayout source_layout, VkImageLayout destination_layout_before, VkImageLayout destination_layout_after, VkImageCopy* image_regions)
-		//{
-		//	return copy_buffers_and_images(device, 0, NULL, NULL, NULL,
-		//		image_count, source_images, destination_images,
-		//		source_layout, destination_layout_before, destination_layout_after, image_regions,
-		//		0, NULL, NULL, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_UNDEFINED, NULL);
-		//}
-
-		///*! This function copies data from buffers to images, e.g. to fill textures
-		//	with binary data from staging buffers. Upon successful return, the copying
-		//	has been completed.
-		//	\param image_count Number of image pairs for which to perform a copy.
-		//	\param source_images Images with usage VK_IMAGE_USAGE_TRANSFER_SRC_BIT
-		//		from which to copy.
-		//	\param destination_images Images with usage
-		//		VK_IMAGE_USAGE_TRANSFER_DST_BIT to which to copy.
-		//	\param buffer_destination_layout_before The current layout of the
-		//		destination images. Pass VK_IMAGE_LAYOUT_UNDEFINED if you want to
-		//		completely replace all current contents of the images.
-		//	\param buffer_destination_layout_after Destination images are first
-		//		transitioned into layout VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL and once
-		//		copying is done, they are transferred into this given layout.
-		//	\param image_region The region to copy for each source and destination
-		//		image.
-		//	\return 0 on success.*/
-		//static inline int copy_buffers_to_images(const device_t* device,
-		//	uint32_t buffer_to_image_count, const VkBuffer* image_source_buffers, const VkImage* buffer_destination_images,
-		//	VkImageLayout buffer_destination_layout_before, VkImageLayout buffer_destination_layout_after, VkBufferImageCopy* buffer_to_image_regions)
-		//{
-		//	return copy_buffers_and_images(device, 0, NULL, NULL, NULL, 0, NULL, NULL,
-		//		VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_UNDEFINED, NULL,
-		//		buffer_to_image_count, image_source_buffers, buffer_destination_images,
-		//		buffer_destination_layout_before, buffer_destination_layout_after, buffer_to_image_regions);
-		//}
-
-
 public:
 
+	VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
+	VkFormat findDepthFormat();
 	bool WindowShouldClose();
 
 	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
-	int create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties);
-
-	/*! Destroys all buffers in the given object, frees the device memory
-		allocation, destroys arrays, zeros handles and zeros the object.*/
-	void destroy_buffers(buffers_t* buffers);
 
 	public:
 		device_t& GetDevice()
@@ -462,6 +218,11 @@ public:
 		swapchain_t& GetSwapchain()
 		{
 			return swapchain;
+		}
+
+		size_t GetSwapImageCount()
+		{
+			return swapchain.image_count;
 		}
 	private:
 		device_t device;

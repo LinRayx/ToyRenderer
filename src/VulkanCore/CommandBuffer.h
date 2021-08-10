@@ -46,6 +46,7 @@ namespace Graphics
 	private:
 		shared_ptr<Vulkan> vulkan_ptr;
 		shared_ptr<CommandPool> cmdPool_ptr;
+	public:
 		vector<VkCommandBuffer> drawCmdBuffers;
 	};
 }

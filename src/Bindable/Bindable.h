@@ -5,9 +5,10 @@
 #include <memory>
 
 
-
 namespace Bind
 {
+
+
 	class Bindable
 	{
 	public:

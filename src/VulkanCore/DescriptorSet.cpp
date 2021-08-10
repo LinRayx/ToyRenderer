@@ -11,6 +11,7 @@ namespace Graphics
 		desc_layout_ptr = make_shared<DescriptorSetLayout>(vulkan_ptr);
 		write_sets.clear();
 		descriptorSets.clear();
+		slots_index.resize(static_cast<size_t>(LayoutType::COUNT), 0);
 	}
 
 	DescriptorSetCore::~DescriptorSetCore()
@@ -18,27 +19,39 @@ namespace Graphics
 
 	}
 
-	void DescriptorSetCore::Add(DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr)
+	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr)
 	{
-		desc_layout_ptr->Add(type, stage);
-		descInfo info{ type, buffer_ptr };
+		desc_layout_ptr->Add(layout_type, type, stage);
+
+		if (buffer_ptr == nullptr) return;
+
+		uint16_t index = static_cast<uint16_t>(layout_type);
+		descInfo info{ index, type, buffer_ptr, slots_index[index]++ };
 		infos.emplace_back(std::move(info));
 	}
 
-	void DescriptorSetCore::Compile()
+	void DescriptorSetCore::Compile(bool onlyLayout)
 	{
 		desc_layout_ptr->Compile();
 
-		std::vector<VkDescriptorSetLayout> layouts(vulkan_ptr->swapchain.image_count, desc_layout_ptr->descriptorSetLayout);
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = desc_pool_ptr->descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(vulkan_ptr->swapchain.image_count);
-		allocInfo.pSetLayouts = layouts.data();
+		if (onlyLayout) return;
 
 		descriptorSets.resize(vulkan_ptr->swapchain.image_count);
-		if (vkAllocateDescriptorSets(vulkan_ptr->device.device, &allocInfo, descriptorSets.data()) != VK_SUCCESS) {
-			throw std::runtime_error("failed to allocate descriptor sets!");
+		for (size_t i = 0; i < descriptorSets.size(); ++i) {
+			descriptorSets[i].resize(static_cast<size_t>(LayoutType::COUNT));
+			for (size_t j = 0; j < descriptorSets[i].size(); ++j) {
+
+				std::vector<VkDescriptorSetLayout> layouts(1, desc_layout_ptr->descLayouts[j]);
+				VkDescriptorSetAllocateInfo allocInfo{};
+				allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+				allocInfo.descriptorPool = desc_pool_ptr->descriptorPool;
+				allocInfo.descriptorSetCount = 1;
+				allocInfo.pSetLayouts = layouts.data();
+
+				if (vkAllocateDescriptorSets(vulkan_ptr->device.device, &allocInfo, &descriptorSets[i][j]) != VK_SUCCESS) {
+					throw std::runtime_error("failed to allocate descriptor sets!");
+				}
+			}
 		}
 
 		for (size_t i = 0; i < vulkan_ptr->swapchain.image_count; ++i) {
@@ -47,30 +60,35 @@ namespace Graphics
 			for (size_t j = 0; j < infos.size(); ++j) {
 				//if (infos[j].buffer_ptr->update[i] == false) continue;
 				//infos[j].buffer_ptr->update[i] = true;
-				
-
 				bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[i];
 				bufferInfos[j].offset = 0;
 				bufferInfos[j].range = infos[j].buffer_ptr->size;
 
 				VkWriteDescriptorSet descriptorWrite = {};
 				descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				descriptorWrite.dstSet = descriptorSets[i];
-				descriptorWrite.dstBinding = static_cast<uint32_t>(j);
+				descriptorWrite.dstSet = descriptorSets[i][infos[j].slot];
+				descriptorWrite.dstBinding = infos[j].binding;
 				descriptorWrite.dstArrayElement = 0;
 				descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 				descriptorWrite.descriptorCount = 1;
 				descriptorWrite.pBufferInfo = &bufferInfos[j];
 
 				write_sets.emplace_back(std::move(descriptorWrite));
-				
 			}	
 			vkUpdateDescriptorSets(vulkan_ptr->device.device, static_cast<uint32_t>(write_sets.size()), write_sets.data(), 0, nullptr);
 		}
 
 	}
 
-	void DescriptorSetLayout::Add(DescriptorType type, StageFlag stage)
+	bool DescriptorSetCore::Update()
+	{
+		for (size_t i = 0; i < infos.size(); ++i) {
+			if (infos[i].buffer_ptr->update == true) return true;
+		}
+		return false;
+	}
+
+	void DescriptorSetLayout::add(DescriptorType type, StageFlag stage, vector<VkDescriptorSetLayoutBinding>& bindings)
 	{
 		switch (type)
 		{
@@ -87,21 +105,29 @@ namespace Graphics
 
 	}
 
+	void DescriptorSetLayout::Add(LayoutType layout_type, DescriptorType desc_type, StageFlag stage)
+	{
+		uint32_t index = static_cast<uint32_t>(layout_type);
+		add(desc_type, stage, layout_bindings[index]);
+	}
+
 	void DescriptorSetLayout::Compile()
 	{
-		VkDescriptorSetLayoutCreateInfo layoutInfo{};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-		layoutInfo.pBindings = bindings.data();
+		for (size_t i = 0; i < descLayouts.size(); ++i) {
+			VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+			layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			layoutInfo.bindingCount = static_cast<uint32_t>(layout_bindings[i].size());
+			layoutInfo.pBindings = layout_bindings[i].data();
 
-		if (vkCreateDescriptorSetLayout(vulkan_ptr->device.device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-			throw std::runtime_error("failed to create descriptor set layout!");
+			if (vkCreateDescriptorSetLayout(vulkan_ptr->device.device, &layoutInfo, nullptr, &descLayouts[i]) != VK_SUCCESS) {
+				throw std::runtime_error("failed to create descriptor set layout!");
+			}
 		}
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 1;
-		pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descLayouts.size());
+		pipelineLayoutInfo.pSetLayouts = descLayouts.data();
 
 		if (vkCreatePipelineLayout(vulkan_ptr->device.device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create pipeline layout!");

@@ -14,8 +14,8 @@ void Graphics::CommandBuffer::BuildCommandBuffer(shared_ptr<RenderPass> renderpa
 
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        renderPassInfo.renderPass = renderpass_ptr->renderpass.render_pass;
-        renderPassInfo.framebuffer = renderpass_ptr->renderpass.framebuffers[i];
+        renderPassInfo.renderPass = renderpass_ptr->renderPass;
+        renderPassInfo.framebuffer = renderpass_ptr->framebuffers[i];
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent = vulkan_ptr->swapchain.extent;
 
@@ -33,7 +33,10 @@ void Graphics::CommandBuffer::BuildCommandBuffer(shared_ptr<RenderPass> renderpa
 
         //vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-        vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_ptr->desc_layout_ptr->pipelineLayout, 0, 1, &desc_ptr->descriptorSets[i], 0, nullptr);
+        //vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_ptr->desc_layout_ptr->pipelineLayout, 0, 1, &desc_ptr->descriptorSets[i], 0, nullptr);
+
+        vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_ptr->desc_layout_ptr->pipelineLayout, 0, 
+            static_cast<uint32_t>(desc_ptr->descriptorSets[i].size()), desc_ptr->descriptorSets[i].data(), 0, nullptr);
 
         vkCmdDraw(drawCmdBuffers[i], static_cast<uint32_t>(vertexBuffer_ptr->elem_count), 1, 0, 0);
         vkCmdEndRenderPass(drawCmdBuffers[i]);

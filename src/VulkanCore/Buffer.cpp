@@ -71,7 +71,7 @@ namespace Graphics {
 
 	void Buffer::UpdateData(uint32_t currentImage, size_t size, const char* newData)
 	{
-		update[currentImage] = true;
+		update = true;
 		void* data;
 		vkMapMemory(vulkan_ptr->device.device, buffersMemorys[currentImage], 0, size, 0, &data);
 		memcpy(data, newData, size);

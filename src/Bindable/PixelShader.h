@@ -31,6 +31,7 @@ namespace Bind
 
 	private:
 		std::shared_ptr<Shader> shaderBuild;
+	public:
 		Shader::shader_t shader;
 	};
 }

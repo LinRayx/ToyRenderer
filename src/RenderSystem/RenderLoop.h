@@ -1,10 +1,11 @@
 #ifndef RENDER_LOOP_H
 #define RENDER_LOOP_H
 #include "Vulkan.h"
-#include "Drawable.h"
-#include "Camera.h"
+#include "Scene.h"
 #include <memory>
 #include "FrameTimer.h"
+#include "RenderSystem/PhonePSO.h"
+#include "VulkanCore/CommandQueue.h"
 
 namespace RenderSystem
 {
@@ -12,14 +13,25 @@ namespace RenderSystem
 	{
 
 	public:
-		RenderLoop(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::shared_ptr<Draw::Drawable> drawable_ptr, std::shared_ptr<Control::Camera> camera_ptr)
-			: vulkan_ptr(vulkan_ptr), drawable_ptr(drawable_ptr), camera_ptr(camera_ptr)
+		RenderLoop(shared_ptr<Graphics::Vulkan> vulkan_ptr,
+			shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::CommandQueue> cmdQue_ptr);
+
+		RenderLoop(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::shared_ptr<Draw::Drawable> drawable_ptr, std::shared_ptr<Control::Scene> scene_ptr)
+			: vulkan_ptr(vulkan_ptr), scene_ptr(scene_ptr)
 		{
 			frameT_ptr = std::make_shared<FrameTimer>();
 		}
 
+
+		void AddPSO(PipelineStateObject& pso);
+
 		void Loop()
 		{
+			for (size_t i = 0; i < pso_vecs.size(); ++i) {
+				pso_vecs[i].BuildPipeline();
+				pso_vecs[i].BuildCommandBuffer(cmdBuf_ptr);
+			}
+
 			while (vulkan_ptr->WindowShouldClose())
 			{
 				glfwPollEvents();
@@ -28,16 +40,26 @@ namespace RenderSystem
 					break;
 				}
 				frameT_ptr->Record();
-				camera_ptr->Control_camera(vulkan_ptr->swapchain.window, frameT_ptr->Get());
-				drawable_ptr->Update();
-				drawable_ptr->Submit();
+
+				scene_ptr->camera_ptr->Control_camera(vulkan_ptr->swapchain.window, frameT_ptr->Get());
+
+				for (size_t i = 0; i < pso_vecs.size(); ++i) {
+					pso_vecs[i].Update(cmdBuf_ptr);
+				}
+				cmdQue_ptr->SetCommandBuffer(cmdBuf_ptr);
+				cmdQue_ptr->Submit();
 			}
 		}
 	private:
 		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
-		std::shared_ptr<Draw::Drawable> drawable_ptr;
-		std::shared_ptr<Control::Camera> camera_ptr;
+		std::shared_ptr<Control::Scene> scene_ptr;
 		std::shared_ptr<FrameTimer> frameT_ptr;
+
+
+		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
+		shared_ptr<Graphics::CommandQueue> cmdQue_ptr;
+
+		vector<PipelineStateObject> pso_vecs;
 	};
 }
 

@@ -26,6 +26,13 @@ namespace Graphics
 		UNIFORM,
 	};
 
+	enum class LayoutType
+	{
+		SCENE = 0,
+		MODEL,
+		COUNT,
+	};
+
 	class Graphics
 	{
 	public:

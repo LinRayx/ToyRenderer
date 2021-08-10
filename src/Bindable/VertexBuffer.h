@@ -4,9 +4,10 @@
 
 #include "Bindable.h"
 #include "Buffer.h"
-#include "Model.h"
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
+#include "DynamicVertex.h"
 
 namespace Draw
 {
@@ -23,14 +24,18 @@ namespace Bind
 			: bindingDescription(_bindingDescription), attributeDescriptions(_attributeDescriptions)
 		{}
 		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data);
-		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, std::shared_ptr<Draw::Model> model_ptr);
+		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, const Dcb::VertexBuffer& vbuf, bool onlyLayout = false);
 		~VertexBuffer();
 		std::shared_ptr<Graphics::Buffer> buffer_ptr;
 	private:
-		
+		int location = 0;
+	public:
 		VkVertexInputBindingDescription bindingDescription;
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
 	};
+
+
+
 }
 
 #endif // !VERTEX_BUFFER_H

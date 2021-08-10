@@ -510,6 +510,32 @@ namespace Graphics {
 	}
 
 
+	VkFormat Vulkan::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features)
+	{
+		for (VkFormat format : candidates) {
+			VkFormatProperties props;
+			vkGetPhysicalDeviceFormatProperties(device.physical_device, format, &props);
+
+			if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+				return format;
+			}
+			else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+				return format;
+			}
+		}
+
+		throw std::runtime_error("failed to find supported format!");
+	}
+
+	VkFormat Vulkan::findDepthFormat()
+	{
+		return findSupportedFormat(
+			{ VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+		);
+	}
+
 	bool Vulkan::WindowShouldClose()
 	{
 		return !glfwWindowShouldClose(swapchain.window);
@@ -527,79 +553,6 @@ namespace Graphics {
 		}
 
 		throw std::runtime_error("failed to find suitable memory type!");
-	}
-
-	int Vulkan::create_buffers(buffers_t* buffers, const VkBufferCreateInfo* buffer_infos, uint32_t buffer_count, VkMemoryPropertyFlags memory_properties) {
-
-		memset(buffers, 0, sizeof(*buffers));
-		buffers->buffer_count = buffer_count;
-		if (buffer_count == 0)
-			return 0;
-		// Prepare the output data structure
-		buffers->memory = NULL;
-		buffers->buffers = (buffer_t*)malloc(sizeof(buffer_t) * buffers->buffer_count);
-		memset(buffers->buffers, 0, sizeof(buffer_t) * buffers->buffer_count);
-		// Create buffers
-		VkMemoryAllocateFlags memory_allocate_flags = 0;
-		for (uint32_t i = 0; i != buffers->buffer_count; ++i) {
-			if (vkCreateBuffer(device.device, &buffer_infos[i], NULL, &buffers->buffers[i].buffer)) {
-				printf("Failed to create a buffer of size %llu.\n", buffer_infos[i].size);
-				destroy_buffers(buffers);
-				return 1;
-			}
-			if (buffer_infos[i].usage & VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT)
-				memory_allocate_flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
-		}
-		// Allocate memory with proper alignment
-		VkDeviceSize current_size = 0;
-		uint32_t memory_type_bits = 0xFFFFFFFF;
-		for (uint32_t i = 0; i != buffers->buffer_count; ++i) {
-			VkMemoryRequirements memory_requirements;
-			vkGetBufferMemoryRequirements(device.device, buffers->buffers[i].buffer, &memory_requirements);
-			memory_type_bits &= memory_requirements.memoryTypeBits;
-			buffers->buffers[i].size = buffer_infos[i].size;
-			buffers->buffers[i].offset = align_memory_offset(current_size, memory_requirements.alignment);
-			current_size = buffers->buffers[i].offset + memory_requirements.size;
-		}
-		VkMemoryAllocateFlagsInfo allocation_flags = {
-			.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO,
-			.flags = memory_allocate_flags,
-			.deviceMask = 1,
-		};
-		VkMemoryAllocateInfo allocation_info = {
-			.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-			.pNext = (memory_allocate_flags != 0) ? &allocation_flags : NULL,
-			.allocationSize = current_size
-		};
-		buffers->size = allocation_info.allocationSize;
-		if (find_memory_type(&allocation_info.memoryTypeIndex, &device, memory_type_bits, memory_properties)) {
-			printf("Failed to find an appropirate memory type for %u buffers with memory properties %u.\n", buffers->buffer_count, memory_properties);
-			destroy_buffers(buffers);
-			return 1;
-		}
-		if (vkAllocateMemory(device.device, &allocation_info, device.allocator, &buffers->memory)) {
-			printf("Failed to allocate %llu bytes of memory for %u buffers.\n", allocation_info.allocationSize, buffers->buffer_count);
-			destroy_buffers(buffers);
-			return 1;
-		}
-		// Bind memory
-		for (uint32_t i = 0; i != buffers->buffer_count; ++i) {
-			if (vkBindBufferMemory(device.device, buffers->buffers[i].buffer, buffers->memory, buffers->buffers[i].offset)) {
-				destroy_buffers(buffers);
-				return 1;
-			}
-		}
-		return 0;
-	}
-
-	void Vulkan::destroy_buffers(buffers_t* buffers) {
-
-		for (uint32_t i = 0; i != buffers->buffer_count; ++i)
-			if (buffers->buffers && buffers->buffers[i].buffer)
-				vkDestroyBuffer(device.device, buffers->buffers[i].buffer, device.allocator);
-		if (buffers->memory) vkFreeMemory(device.device, buffers->memory, device.allocator);
-		free(buffers->buffers);
-		memset(buffers, 0, sizeof(*buffers));
 	}
 
 }

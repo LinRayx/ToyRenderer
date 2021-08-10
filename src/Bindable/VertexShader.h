@@ -29,9 +29,8 @@ namespace Bind
 			shaderBuild->destroy_shader(&shader);
 		}
 
-
-	private:
 		std::shared_ptr<Shader> shaderBuild;
+	public:
 		Shader::shader_t shader;
 	};
 }

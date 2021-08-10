@@ -22,14 +22,16 @@ namespace Graphics {
 	private:
 		void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		
-	private:
-		vector<VkBuffer> buffers;
+
 		std::vector<VkDeviceMemory> buffersMemorys;
 		VkBufferUsageFlags getUsage(BufferUsage type);
 		shared_ptr<Vulkan> vulkan_ptr;
 		size_t size;
+		
+		bool update;
+	public:
 		size_t elem_count;
-		bool update[10];
+		vector<VkBuffer> buffers;
 	};
 
 }

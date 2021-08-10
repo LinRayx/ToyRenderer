@@ -9,7 +9,7 @@
 #include "RenderPass.h"
 #include "CommandBuffer.h"
 #include "CommandQueue.h"
-#include "Model.h"
+
 
 using namespace std;
 
@@ -43,8 +43,6 @@ namespace Draw
 		VertexBuffer,
 		PixelShader,
 		VertexShader,
-		
-
 	};
 
 	class Drawable
@@ -77,7 +75,7 @@ namespace Draw
 				cmdQueue_ptr = std::dynamic_pointer_cast<Graphics::CommandQueue> (elem);
 				break;
 			case GraphicsType::DescriptorSet:
-
+				desc_ptr = std::dynamic_pointer_cast<Graphics::DescriptorSetCore> (elem);
 			default:
 				break;
 			}
@@ -103,16 +101,11 @@ namespace Draw
 			}
 		}
 
-		void Register(shared_ptr<Model> model_ptr)
-		{
-			this->model_ptr = model_ptr;
-		}
-
 		void CompilePipeline();
 		// void CompileCommand();
 		void BuildCommandBuffer()
 		{
-			cmdBuf_ptr->BuildCommandBuffer(renderpass_ptr, pipeline_ptr, vertexBuffer_ptr->buffer_ptr, model_ptr->desc_ptr);
+			cmdBuf_ptr->BuildCommandBuffer(renderpass_ptr, pipeline_ptr, vertexBuffer_ptr->buffer_ptr, desc_ptr);
 		}
 
 		void Submit()
@@ -134,7 +127,9 @@ namespace Draw
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
 		shared_ptr<Graphics::CommandQueue> cmdQueue_ptr;
 
-		shared_ptr<Model> model_ptr;
+		shared_ptr<Graphics::DescriptorSetCore> desc_ptr;
+
+
 	private:
 		// Graphics::Pipeline::pipeline_with_bindings_t pipeline;
 	};
