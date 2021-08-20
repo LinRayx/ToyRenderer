@@ -10,14 +10,19 @@ namespace Graphics {
 
 	void RenderPass::AddResource(std::string name, bool isDepth)
 	{
-		resources.emplace_back(ImageResource(name, isDepth));
+		ImageResource res(name, isDepth);
+		createColorResources(res);
+		
+		resources.emplace_back(res);
 	}
 
 	void RenderPass::CreateRenderPass()
 	{
+		
 		std::vector< VkAttachmentDescription > attachments;
 		std::vector< VkAttachmentReference > ColorAttachmentRefs;
 		VkAttachmentReference depthAttachmentRef{};
+
 		for (size_t i = 0; i < resources.size(); ++i) {
 			VkAttachmentDescription colorAttachment{};
 			VkAttachmentReference colorAttachmentRef{};
@@ -45,12 +50,34 @@ namespace Graphics {
 			
 			attachments.emplace_back(std::move(colorAttachment));
 		}
+
+		VkAttachmentDescription colorAttachmentResolve{};
+		colorAttachmentResolve.format = vulkan_ptr->swapchain.format;
+		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		attachments.emplace_back(std::move(colorAttachmentResolve));
+		VkAttachmentReference colorAttachmentResolveRef{};
+		colorAttachmentResolveRef.attachment = resources.size();
+		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		ColorAttachmentRefs.emplace_back(std::move(colorAttachmentResolveRef));
+
+		clearValues.resize(attachments.size());
+		for (auto it : clearValues) {
+			it.color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+			it.depthStencil = { 1.0f, 0 };
+		}
+
+
 		VkSubpassDescription subpass{};
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		subpass.colorAttachmentCount = static_cast<uint32_t>(ColorAttachmentRefs.size());
 		subpass.pColorAttachments = ColorAttachmentRefs.data();
 		subpass.pDepthStencilAttachment = &depthAttachmentRef;
-		// subpass.pResolveAttachments = &colorAttachmentResolveRef;
 
 		VkSubpassDependency dependency{};
 		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -75,12 +102,12 @@ namespace Graphics {
 
 		framebuffers.resize(vulkan_ptr->swapchain.image_count);
 		for (size_t i = 0; i < framebuffers.size(); i++) {
-
 			std::vector<VkImageView> atts;
 
 			for (size_t j = 0; j < resources.size(); ++j) {
 				atts.emplace_back(resources[j].imageView);
 			}
+			atts.emplace_back(vulkan_ptr->swapchain.image_views[i]);
 
 			VkFramebufferCreateInfo framebufferInfo{};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -108,6 +135,11 @@ namespace Graphics {
 		}
 		
 		image_ptr->createImage(vulkan_ptr->swapchain.extent.width, vulkan_ptr->swapchain.extent.height, 1, msaaSamples, resource.format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, resource.image, resource.imageMemory);
-		resource.imageView = image_ptr->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		if (resource.isDepth) {
+			resource.imageView = image_ptr->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+		}
+		else {
+			resource.imageView = image_ptr->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		}
 	}
 }

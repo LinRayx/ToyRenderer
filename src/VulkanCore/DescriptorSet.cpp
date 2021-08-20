@@ -8,7 +8,6 @@ namespace Graphics
 	DescriptorSetCore::DescriptorSetCore(std::shared_ptr<Vulkan> vulkan_ptr, std::shared_ptr<DescriptorPool> desc_pool_ptr)
 		: vulkan_ptr(vulkan_ptr), desc_pool_ptr(desc_pool_ptr)
 	{
-		desc_layout_ptr = make_shared<DescriptorSetLayout>(vulkan_ptr);
 		write_sets.clear();
 		descriptorSets.clear();
 		slots_index.resize(static_cast<size_t>(LayoutType::COUNT), 0);
@@ -21,21 +20,28 @@ namespace Graphics
 
 	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr)
 	{
-		desc_layout_ptr->Add(layout_type, type, stage);
-
-		if (buffer_ptr == nullptr) return;
-
+		Add(layout_type, type, stage);
 		uint16_t index = static_cast<uint16_t>(layout_type);
-		descInfo info{ index, type, buffer_ptr, slots_index[index]++ };
+		descInfo info{ index, type, buffer_ptr, slots_index[index]++ , VK_NULL_HANDLE, VK_NULL_HANDLE};
 		infos.emplace_back(std::move(info));
 	}
 
-	void DescriptorSetCore::Compile(bool onlyLayout)
+	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage, VkImageView textureImageView,
+	VkSampler textureSampler)
 	{
-		desc_layout_ptr->Compile();
+		Add(layout_type, type, stage);
+		uint16_t index = static_cast<uint16_t>(layout_type);
+		descInfo info{ index, type, nullptr, slots_index[index]++ , textureImageView, textureSampler};
+		infos.emplace_back(std::move(info));
+	}
 
-		if (onlyLayout) return;
+	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage)
+	{
 
+	}
+
+	void DescriptorSetCore::Compile(shared_ptr<DescriptorSetLayout> desc_layout_ptr)
+	{
 		descriptorSets.resize(vulkan_ptr->swapchain.image_count);
 		for (size_t i = 0; i < descriptorSets.size(); ++i) {
 			descriptorSets[i].resize(static_cast<size_t>(LayoutType::COUNT));
@@ -57,22 +63,36 @@ namespace Graphics
 		for (size_t i = 0; i < vulkan_ptr->swapchain.image_count; ++i) {
 			write_sets.clear();
 			vector<VkDescriptorBufferInfo> bufferInfos(infos.size());
+			vector<VkDescriptorImageInfo > imageInfos(infos.size());
 			for (size_t j = 0; j < infos.size(); ++j) {
-				//if (infos[j].buffer_ptr->update[i] == false) continue;
-				//infos[j].buffer_ptr->update[i] = true;
-				bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[i];
-				bufferInfos[j].offset = 0;
-				bufferInfos[j].range = infos[j].buffer_ptr->size;
-
 				VkWriteDescriptorSet descriptorWrite = {};
-				descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				descriptorWrite.dstSet = descriptorSets[i][infos[j].slot];
-				descriptorWrite.dstBinding = infos[j].binding;
-				descriptorWrite.dstArrayElement = 0;
-				descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				descriptorWrite.descriptorCount = 1;
-				descriptorWrite.pBufferInfo = &bufferInfos[j];
+				if (infos[j].type == DescriptorType::TEXTURE2D) {
+					imageInfos[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					imageInfos[j].imageView = infos[j].textureImageView;
+					imageInfos[j].sampler = infos[j].textureSampler;
 
+					descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+					descriptorWrite.dstSet = descriptorSets[i][infos[j].slot];;
+					descriptorWrite.dstBinding = infos[j].binding;
+					descriptorWrite.dstArrayElement = 0;
+					descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+					descriptorWrite.descriptorCount = 1;
+					descriptorWrite.pImageInfo = &imageInfos[j];
+				
+				}
+				else {
+					bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[i];
+					bufferInfos[j].offset = 0;
+					bufferInfos[j].range = infos[j].buffer_ptr->size;
+
+					descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+					descriptorWrite.dstSet = descriptorSets[i][infos[j].slot];
+					descriptorWrite.dstBinding = infos[j].binding;
+					descriptorWrite.dstArrayElement = 0;
+					descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					descriptorWrite.descriptorCount = 1;
+					descriptorWrite.pBufferInfo = &bufferInfos[j];
+				}
 				write_sets.emplace_back(std::move(descriptorWrite));
 			}	
 			vkUpdateDescriptorSets(vulkan_ptr->device.device, static_cast<uint32_t>(write_sets.size()), write_sets.data(), 0, nullptr);
@@ -93,6 +113,7 @@ namespace Graphics
 		switch (type)
 		{
 		case DescriptorType::UNIFORM:
+		{
 			VkDescriptorSetLayoutBinding uboLayoutBinding{};
 			uboLayoutBinding.binding = static_cast<uint32_t>(bindings.size());
 			uboLayoutBinding.descriptorCount = 1;
@@ -101,6 +122,18 @@ namespace Graphics
 			uboLayoutBinding.stageFlags = Graphics::GetStageFlag(stage);
 			bindings.emplace_back(uboLayoutBinding);
 			break;
+		}
+		case DescriptorType::TEXTURE2D:
+		{
+			VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+			samplerLayoutBinding.binding = static_cast<uint32_t>(bindings.size());
+			samplerLayoutBinding.descriptorCount = 1;
+			samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			samplerLayoutBinding.pImmutableSamplers = nullptr;
+			samplerLayoutBinding.stageFlags = Graphics::GetStageFlag(stage);
+			bindings.emplace_back(samplerLayoutBinding);
+			break;
+		}
 		}
 
 	}

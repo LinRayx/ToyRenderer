@@ -41,7 +41,7 @@ namespace Draw
 	}
 	void Drawable::CompilePipeline()
 	{
-		desc_ptr->Compile();
+		
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -141,7 +141,7 @@ namespace Draw
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDepthStencilState = &depth_stencil_info;
 		
-		pipelineInfo.layout = desc_ptr->desc_layout_ptr->pipelineLayout;
+		
 		pipelineInfo.renderPass = renderpass_ptr->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;

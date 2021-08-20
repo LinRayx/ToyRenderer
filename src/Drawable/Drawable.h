@@ -103,10 +103,7 @@ namespace Draw
 
 		void CompilePipeline();
 		// void CompileCommand();
-		void BuildCommandBuffer()
-		{
-			cmdBuf_ptr->BuildCommandBuffer(renderpass_ptr, pipeline_ptr, vertexBuffer_ptr->buffer_ptr, desc_ptr);
-		}
+
 
 		void Submit()
 		{

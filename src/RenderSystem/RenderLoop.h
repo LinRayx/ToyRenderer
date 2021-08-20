@@ -13,24 +13,17 @@ namespace RenderSystem
 	{
 
 	public:
-		RenderLoop(shared_ptr<Graphics::Vulkan> vulkan_ptr,
-			shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::CommandQueue> cmdQue_ptr);
-
-		RenderLoop(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::shared_ptr<Draw::Drawable> drawable_ptr, std::shared_ptr<Control::Scene> scene_ptr)
-			: vulkan_ptr(vulkan_ptr), scene_ptr(scene_ptr)
-		{
-			frameT_ptr = std::make_shared<FrameTimer>();
-		}
-
-
-		void AddPSO(PipelineStateObject& pso);
+		RenderLoop();
+		~RenderLoop();
+		void Init();
 
 		void Loop()
 		{
 			for (size_t i = 0; i < pso_vecs.size(); ++i) {
-				pso_vecs[i].BuildPipeline();
-				pso_vecs[i].BuildCommandBuffer(cmdBuf_ptr);
+				pso_vecs[i]->BuildPipeline();
+				pso_vecs[i]->BuildCommandBuffer(cmdBuf_ptr);
 			}
+			cmdQue_ptr->SetCommandBuffer(cmdBuf_ptr);
 
 			while (vulkan_ptr->WindowShouldClose())
 			{
@@ -42,24 +35,28 @@ namespace RenderSystem
 				frameT_ptr->Record();
 
 				scene_ptr->camera_ptr->Control_camera(vulkan_ptr->swapchain.window, frameT_ptr->Get());
-
+				int imageIndex = cmdQue_ptr->GetCurImageIndex();
 				for (size_t i = 0; i < pso_vecs.size(); ++i) {
-					pso_vecs[i].Update(cmdBuf_ptr);
+					pso_vecs[i]->Update(imageIndex);
 				}
-				cmdQue_ptr->SetCommandBuffer(cmdBuf_ptr);
+
 				cmdQue_ptr->Submit();
 			}
 		}
 	private:
 		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
-		std::shared_ptr<Control::Scene> scene_ptr;
-		std::shared_ptr<FrameTimer> frameT_ptr;
-
-
+		std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr;
+		shared_ptr<Graphics::Image> image_ptr;
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
 		shared_ptr<Graphics::CommandQueue> cmdQue_ptr;
+		shared_ptr<Graphics::CommandPool> cmdPool_ptr;
+		shared_ptr<Graphics::Synchronization> sync_ptr;
 
-		vector<PipelineStateObject> pso_vecs;
+		shared_ptr<Control::Scene> scene_ptr;
+
+		std::shared_ptr<FrameTimer> frameT_ptr;
+
+		vector<PipelineStateObject*> pso_vecs;
 	};
 }
 

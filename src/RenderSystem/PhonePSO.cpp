@@ -7,13 +7,13 @@ namespace RenderSystem
 	{
 		vShader_ptr = make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/Phone.vert.glsl", "../src/shaders", "main");
 		pShader_ptr = make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/Phone.frag.glsl", "../src/shaders", "main");
-		
-		desc_ptr = make_shared<Graphics::DescriptorSetCore>(vulkan_ptr, desc_pool_ptr);
+		pipeline_ptr = make_shared<Graphics::Pipeline>(vulkan_ptr);
+		desc_layout_ptr = make_shared<Graphics::DescriptorSetLayout>(vulkan_ptr);
 
-		desc_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
-		desc_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
+		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
+		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
 
 		using namespace Dcb;
 		Dcb::VertexBuffer vbuf(
@@ -21,7 +21,6 @@ namespace RenderSystem
 				Dcb::VertexLayout{}
 				.Append(VertexLayout::Position3D)
 				.Append(VertexLayout::Normal)
-				.Append(VertexLayout::Texture2D)
 			)
 		);
 
@@ -35,9 +34,17 @@ namespace RenderSystem
 		renderpass_ptr->CreateRenderPass();
 	}
 
+	PhonePSO::~PhonePSO()
+	{
+		for (size_t i = 0; i < models.size(); ++i) {
+			if (models[i] != nullptr) {
+				free(models[i]);
+			}
+		}
+	}
+
 	void PhonePSO::BuildPipeline()
 	{
-		desc_ptr->Compile();
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -103,16 +110,19 @@ namespace RenderSystem
 		multisampling.sampleShadingEnable = VK_FALSE;
 		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-		VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_FALSE;
+		vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments(2);
+		for (size_t i = 0; i < colorBlendAttachments.size(); ++i) {
+			colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+			colorBlendAttachments[i].blendEnable = VK_FALSE;
+		}
+
 
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlending.logicOpEnable = VK_FALSE;
 		colorBlending.logicOp = VK_LOGIC_OP_COPY;
-		colorBlending.attachmentCount = 1;
-		colorBlending.pAttachments = &colorBlendAttachment;
+		colorBlending.attachmentCount = static_cast<uint32_t>(colorBlendAttachments.size());
+		colorBlending.pAttachments = colorBlendAttachments.data();
 		colorBlending.blendConstants[0] = 0.0f;
 		colorBlending.blendConstants[1] = 0.0f;
 		colorBlending.blendConstants[2] = 0.0f;
@@ -137,13 +147,18 @@ namespace RenderSystem
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDepthStencilState = &depth_stencil_info;
 
-		pipelineInfo.layout = desc_ptr->desc_layout_ptr->pipelineLayout;
+		desc_layout_ptr->Compile();
+		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
 		pipelineInfo.renderPass = renderpass_ptr->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
 		if (vkCreateGraphicsPipelines(vulkan_ptr->GetDevice().device, NULL, 1, &pipelineInfo, NULL, &pipeline_ptr->pipeline)) {
 			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
+		}
+
+		for (size_t i = 0; i < models.size(); ++i) {
+			models[i]->BuildDesc(desc_layout_ptr);
 		}
 	}
 
@@ -173,18 +188,19 @@ namespace RenderSystem
 
 			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_ptr->pipeline);
 
-			for (size_t j = 0; j < vBuffer_ptrs.size(); ++j) {
+			for (size_t modelIndex = 0; modelIndex < models.size(); ++modelIndex) {
+				for (size_t itemIndex = 0; itemIndex < models[modelIndex]->items.size(); ++itemIndex) {
+					VkBuffer vertexBuffers[] = { models[modelIndex]->items[itemIndex].mesh.vertex_buffer->Get() };
+					VkDeviceSize offsets[] = { 0 };
+					auto& material = models[modelIndex]->items[itemIndex].material;
 
-				VkBuffer vertexBuffers[] = { vBuffer_ptrs[j].buffer_ptr->buffers[0] };
-				VkDeviceSize offsets[] = { 0 };
-				vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
-
-				//vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-				vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_ptrs[j]->desc_layout_ptr->pipelineLayout, 0,
-					static_cast<uint32_t>(desc_ptrs[j]->descriptorSets[i].size()), desc_ptrs[j]->descriptorSets[i].data(), 0, nullptr);
-
-				vkCmdDraw(drawCmdBuffers[i], static_cast<uint32_t>(vBuffer_ptrs[j].buffer_ptr->elem_count), 1, 0, 0);
+					vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
+					vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_layout_ptr->pipelineLayout, 0,
+						static_cast<uint32_t>(material.desc_ptr->descriptorSets[i].size()), material.desc_ptr->descriptorSets[i].data(), 0, nullptr);
+					vkCmdDraw(drawCmdBuffers[i], static_cast<uint32_t>(models[modelIndex]->items[itemIndex].mesh.vertex_buffer->buffer_ptr->elem_count), 1, 0, 0);
+				}
 			}
+
 			vkCmdEndRenderPass(drawCmdBuffers[i]);
 
 			if (vkEndCommandBuffer(drawCmdBuffers[i]) != VK_SUCCESS) {
@@ -193,20 +209,16 @@ namespace RenderSystem
 		}
 	}
 
-	void PhonePSO::Update(shared_ptr<Graphics::CommandBuffer> cmd)
+	void PhonePSO::Update(int cur)
 	{
-		for (size_t i = 0; i < desc_ptrs.size(); ++i) {
-			if (desc_ptrs[i]->Update()) {
-				BuildCommandBuffer(cmd);
-				break;
-			}
+		for (size_t i = 0; i < models.size(); ++i) {
+			models[i]->Update(cur);
 		}
 	}
 
-	void PhonePSO::Add(Bind::VertexBuffer& vbuf, shared_ptr<Graphics::DescriptorSetCore> desc)
+	void PhonePSO::Add(Draw::Model* model)
 	{
-		vBuffer_ptrs.emplace_back(std::move(vbuf));
-		desc_ptrs.emplace_back(desc);
+		models.push_back(model);
 	}
 }
 

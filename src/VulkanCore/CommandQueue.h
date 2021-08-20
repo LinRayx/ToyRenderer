@@ -13,8 +13,8 @@ namespace Graphics
 	class CommandQueue : public Graphics
 	{
 	public:
-		CommandQueue(std::shared_ptr<Vulkan> vulkan_ptr, std::shared_ptr<CommandBuffer> cmdBuf_ptr, std::shared_ptr<Synchronization> sync_ptr) 
-			: vulkan_ptr(vulkan_ptr), cmdBuf_ptr(cmdBuf_ptr),sync_ptr(sync_ptr) {}
+		CommandQueue(std::shared_ptr<Vulkan> vulkan_ptr, std::shared_ptr<Synchronization> sync_ptr) 
+			: vulkan_ptr(vulkan_ptr), sync_ptr(sync_ptr) {}
 
 		void SetCommandBuffer(std::shared_ptr<CommandBuffer> cmdBuf_ptr)
 		{
@@ -25,15 +25,12 @@ namespace Graphics
 		{
 			drawFrame();
 		}
-	private:
-		void drawFrame()
-		{
 
-			std::vector< VkSemaphore > waitSemaphores;
-			std::vector< VkSemaphore > signalSemaphores;
-			uint32_t imageIndex = 0;
+		int GetCurImageIndex()
+		{
+			imageIndex = 0;
 			vkWaitForFences(vulkan_ptr->device.device, 1, &sync_ptr->waitFences[currentFrame], VK_TRUE, UINT64_MAX);
-			
+
 			VkResult result = vkAcquireNextImageKHR(vulkan_ptr->device.device, vulkan_ptr->swapchain.swapchain, UINT64_MAX, sync_ptr->presentComplete[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 			if (result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -48,7 +45,18 @@ namespace Graphics
 			if (sync_ptr->imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
 				vkWaitForFences(vulkan_ptr->device.device, 1, &sync_ptr->imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
 			}
+
 			sync_ptr->imagesInFlight[imageIndex] = sync_ptr->waitFences[currentFrame];
+			return imageIndex;
+		}
+
+	private:
+		void drawFrame()
+		{
+
+			std::vector< VkSemaphore > waitSemaphores;
+			std::vector< VkSemaphore > signalSemaphores;
+
 
 			VkSubmitInfo submitInfo = {};
 			submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -85,7 +93,7 @@ namespace Graphics
 
 			presentInfo.pImageIndices = &imageIndex;
 
-			result = vkQueuePresentKHR(vulkan_ptr->device.queue, &presentInfo);
+			VkResult result = vkQueuePresentKHR(vulkan_ptr->device.queue, &presentInfo);
 
 			if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ) {
 
@@ -99,6 +107,7 @@ namespace Graphics
 
 	private:
 		uint32_t currentFrame = 0;
+		uint32_t imageIndex = 0;
 
 		std::shared_ptr<Vulkan> vulkan_ptr;
 		std::shared_ptr<Synchronization> sync_ptr;

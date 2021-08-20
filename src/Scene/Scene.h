@@ -7,6 +7,9 @@
 #include "DirectionLight.h"
 #include <memory>
 #include <iostream>
+
+#include "Drawable/Material.h"
+
 using namespace std;
 
 namespace Control
@@ -14,14 +17,14 @@ namespace Control
 	class Scene
 	{
 	public:
-		Scene(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorSetCore> desc_ptr, int width, int height);
+		Scene(shared_ptr<Graphics::Vulkan> vulkan_ptr, int width, int height);
 		~Scene();
 
-		void InitSceneData();
-		void Update();
+		void InitSceneData(Draw::Material* material);
+		void Update(Draw::Material* material);
 
 		shared_ptr<Camera> camera_ptr;
-		shared_ptr<Graphics::DescriptorSetCore> desc_ptr;
+
 	private:
 		shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		
@@ -29,9 +32,6 @@ namespace Control
 
 		int width;
 		int height;
-
-		std::map<std::string, shared_ptr<Graphics::Buffer>> buffer_ptrs;
-		std::map<std::string, shared_ptr<Dcb::Buffer>> bufs;
 	};
 }
 

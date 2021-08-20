@@ -19,7 +19,7 @@ namespace Graphics
 
 	public:
 		
-		VkPipeline pipeline = VK_NULL_HANDLE;
+		VkPipeline pipeline;
 	};
 }
 

@@ -114,9 +114,10 @@ namespace Graphics {
 			//! Number of images in the swapchain
 			uint32_t image_count;
 			//! List of images in the swapchain
-			VkImage* images;
+			std::vector<VkImage> images;
+			
 			//! An image view for each image of the swapchain
-			VkImageView* image_views;
+			std::vector<VkImageView> image_views;
 		} swapchain_t;
 
 	public:

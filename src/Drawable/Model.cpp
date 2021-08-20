@@ -16,9 +16,12 @@ namespace Draw {
 		return mat;
 	}
 
-	Model::Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::string file_path)
+	Model::Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
+		std::string file_path)
 	{
 		this->vulkan_ptr = vulkan_ptr;
+		this->scene_ptr = scene_ptr;
+		this->desc_pool = desc_pool;
 		Assimp::Importer imp;
 		const auto pScene = imp.ReadFile(file_path.c_str(),
 			aiProcess_Triangulate |
@@ -37,7 +40,7 @@ namespace Draw {
 			ParseMesh(*pScene->mMeshes[i]);
 		}
 
-		pRoot = ParseNode(*pScene->mRootNode);
+		pRoot = ParseNode(*pScene->mRootNode, glm::mat4(1));
 	}
 
 	void Model::ParseMesh(const aiMesh& mesh)
@@ -68,69 +71,56 @@ namespace Draw {
 			indices.push_back(face.mIndices[1]);
 			indices.push_back(face.mIndices[2]);
 		}
+		Mesh t_mesh(vulkan_ptr, vbuf);
+		Material mat(vulkan_ptr, desc_pool);
+		scene_ptr->InitSceneData(&mat);
+		
+		Dcb::RawLayout transBuf;
+		transBuf.Add<Dcb::Matrix>("modelTrans");
+		mat.AddLayout("Model", std::move(transBuf), Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
 
-		Mesh mesh_s(vulkan_ptr, renderpass_ptr, cmdBuf_ptr, cmdQueue_ptr, scene_ptr->desc_ptr);
-		mesh_s.Bind(BindType::VertexBuffer, make_shared<Bind::VertexBuffer>(vulkan_ptr, vbuf));
-		mesh_s.Bind(BindType::VertexShader, make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/Phone.vert.glsl", "../src/shaders", "main"));
-		mesh_s.Bind(BindType::PixelShader, make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/Phone.frag.glsl", "../src/shaders", "main"));
-
-		meshes.emplace_back(std::move(mesh_s));
+		items.emplace_back(DrawItem( std::move(t_mesh), std::move(mat) ));
 	}
 
-	std::unique_ptr<Node> Model::ParseNode(const aiNode& node)
+	std::unique_ptr<Node> Model::ParseNode(const aiNode& node, glm::mat4 nowTrans)
 	{
-		const glm::mat4* transform = reinterpret_cast<const glm::mat4* >(&node.mTransformation);
+		const glm::mat4* tmp = reinterpret_cast<const glm::mat4* >(&node.mTransformation);
 		
+		
+		nowTrans = (*tmp) * nowTrans;
+
 		std::vector<Mesh*> curMeshPtrs;
 		curMeshPtrs.reserve(node.mNumMeshes);
+
 		for (size_t i = 0; i < node.mNumMeshes; i++)
 		{
 			const auto meshIdx = node.mMeshes[i];
-			curMeshPtrs.push_back(&(meshes[meshIdx]));
+			items[meshIdx].material.Update("Model", "modelTrans", nowTrans);
+
 		}
-		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), *transform);
+		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), *tmp);
 		for (size_t i = 0; i < node.mNumChildren; i++)
 		{
-			pNode->AddChild(ParseNode(*node.mChildren[i]));
+			pNode->AddChild(ParseNode(*node.mChildren[i], nowTrans));
 		}
 
 		return pNode;
 	}
 
-	VkVertexInputBindingDescription Model::getBindingDescription()
+	void Model::Update(int cur)
 	{
-		return VkVertexInputBindingDescription();
+		for (size_t i = 0; i < items.size(); ++i) {
+			scene_ptr->Update(&items[i].material);
+		}
 	}
 
-	std::vector<VkVertexInputAttributeDescription> Model::getAttributeDescriptions()
+	void Model::BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr)
 	{
-		return std::vector<VkVertexInputAttributeDescription>();
+		for (auto it : items) {
+			it.material.Compile(desc_layout_ptr);
+		}
 	}
 
-	void Model::Compile()
-	{
-		for (size_t i = 0; i < meshes.size(); ++i)
-			meshes[i].Compile();
-	}
-
-	void Model::Update()
-	{
-	}
-
-	size_t Model::getCount()
-	{
-		return size_t();
-	}
-
-	size_t Model::getSize()
-	{
-		return size_t();
-	}
-
-	void* Model::getData()
-	{
-		return nullptr;
-	}
 
 	Node::Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform)
 		: curMeshes(std::move(meshPtrs))
@@ -143,25 +133,8 @@ namespace Draw {
 		childPtrs.push_back(std::move(pChild));
 	}
 
-	Mesh::Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::RenderPass> renderpass_ptr, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::CommandQueue> cmdQueue_ptr, shared_ptr<Graphics::DescriptorSetCore> desc_ptr)
+	Mesh::Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf)
 	{
-		draw_ptr = make_unique<Drawable>(vulkan_ptr);
-		draw_ptr->Register<Draw::GraphicsType::DescriptorSet>(desc_ptr);
-
-		draw_ptr->Register<Draw::GraphicsType::RenderPass>(renderpass_ptr);
-		draw_ptr->Register<Draw::GraphicsType::CommandBuffer>(cmdBuf_ptr);
-		draw_ptr->Register<Draw::GraphicsType::CommandQueue>(cmdQueue_ptr);
+		vertex_buffer = make_shared<Bind::VertexBuffer>(vulkan_ptr, vbuf);
 	}
-
-	void Mesh::Bind(BindType type, std::shared_ptr<Bind::Bindable> elem)
-	{
-		draw_ptr->Register(type, elem);
-	}
-
-	void Mesh::Compile()
-	{
-		draw_ptr->CompilePipeline();
-		draw_ptr->BuildCommandBuffer();
-	}
-
 }

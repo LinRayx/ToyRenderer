@@ -263,11 +263,12 @@ namespace Graphics {
 		memset(device, 0, sizeof(*device));
 	}
 	void Vulkan::partially_destroy_old_swapchain(swapchain_t* swapchain, const device_t* device) {
-		if (swapchain->image_views)
+		if (swapchain->image_views.size() > 0)
 			for (uint32_t i = 0; i != swapchain->image_count; ++i)
 				vkDestroyImageView(device->device, swapchain->image_views[i], device->allocator);
-		free(swapchain->image_views);
-		free(swapchain->images);
+
+		swapchain->image_views.clear();
+		swapchain->images.clear();
 		free(swapchain->present_modes);
 		free(swapchain->surface_formats);
 		// Mark the object as cleared except for swapchain and window
@@ -455,13 +456,16 @@ namespace Graphics {
 			destroy_swapchain(swapchain, device);
 			return 1;
 		}
-		swapchain->images = (VkImage*)malloc(swapchain->image_count * sizeof(VkImage));
-		if (vkGetSwapchainImagesKHR(device->device, swapchain->swapchain, &swapchain->image_count, swapchain->images)) {
+		swapchain->images.resize(swapchain->image_count);
+
+		if (vkGetSwapchainImagesKHR(device->device, swapchain->swapchain, &swapchain->image_count, swapchain->images.data())) {
 			printf("Failed to retrieve swapchain images.\n");
 			destroy_swapchain(swapchain, device);
 			return 1;
 		}
-		swapchain->image_views = (VkImageView*)malloc(swapchain->image_count * sizeof(VkImageView));
+
+		swapchain->image_views.resize(swapchain->image_count);
+
 		for (uint32_t i = 0; i < swapchain->image_count; i++) {
 			VkImageViewCreateInfo color_image_view = {};
 			color_image_view.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

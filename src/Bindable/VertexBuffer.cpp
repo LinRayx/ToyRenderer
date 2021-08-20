@@ -32,4 +32,8 @@ namespace Bind
 	VertexBuffer::~VertexBuffer()
 	{
 	}
+	VkBuffer VertexBuffer::Get()
+	{
+		return buffer_ptr->buffers[0];
+	}
 }

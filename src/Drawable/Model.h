@@ -2,9 +2,6 @@
 #define MODEL_H
 #include "Vulkan.h"
 #include <vector>
-#include "DescriptorSet.h"
-#include "DynamicConstant.h"
-#include "DescriptorPool.h"
 #include <glm/glm.hpp>
 #include "Camera.h"
 #include <map>
@@ -15,20 +12,14 @@
 #include "VertexBuffer.h"
 #include "Drawable.h"
 #include "Scene.h"
+#include "Drawable/Material.h"
+
 namespace Draw
 {
+
+
 	class ModelBase
 	{
-		friend class Drawable;
-	public:
-		
-		virtual VkVertexInputBindingDescription getBindingDescription() = 0;
-		virtual std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() = 0;
-		virtual void Compile() = 0;
-		virtual void Update() = 0;
-		virtual size_t getCount() = 0;
-		virtual size_t getSize() = 0;
-		virtual void* getData() = 0;
 	protected:
 		struct Transform_S {
 			glm::vec3 translate = glm::vec3(0, 0, 0);
@@ -39,26 +30,15 @@ namespace Draw
 		glm::mat4 getModelMatrix();
 
 		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
-		std::shared_ptr<Graphics::DescriptorSetCore> desc_ptr;
-
-
-		std::map<std::string, shared_ptr<Graphics::Buffer>> buffer_ptrs;
-		std::map<std::string, shared_ptr<Dcb::Buffer>> bufs;
 	};
 
 	class Mesh
 	{
 		friend class Model;
 	public:
-		Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr,
-			shared_ptr<Graphics::RenderPass> renderpass_ptr,
-			shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr,
-			shared_ptr<Graphics::CommandQueue> cmdQueue_ptr,
-			shared_ptr<Graphics::DescriptorSetCore> desc_ptr);
-		void Bind(BindType type, std::shared_ptr<Bind::Bindable> elem);
-		void Compile();
-	private:
-		std::unique_ptr<Drawable> draw_ptr;
+		Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf);
+		shared_ptr<Bind::VertexBuffer> vertex_buffer;
+
 	};
 
 	class Node
@@ -72,25 +52,27 @@ namespace Draw
 		glm::mat4 transform;
 	};
 
+	struct DrawItem
+	{
+		DrawItem(Mesh mesh, Material mat) : mesh(mesh), material(mat) {}
+		Mesh mesh;
+		Material material;
+	};
+
 	class Model : public ModelBase
 	{
 	public:
 
-		Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::string file_path);
+		Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
+			std::string file_path);
 
 		void ParseMesh(const aiMesh& mesh);
 
-		std::unique_ptr<Node> ParseNode(const aiNode& node);
+		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 nowTrans);
 
-		// Í¨¹ý ModelBase ¼Ì³Ð
-		virtual VkVertexInputBindingDescription getBindingDescription() override;
-		virtual std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions() override;
-		virtual void Compile() override;
-		virtual void Update() override;
-		virtual size_t getCount() override;
-		virtual size_t getSize() override;
-		virtual void* getData() override;
+		void Update(int cur);
 
+		void BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr);
 
 		void Register(shared_ptr<Control::Scene> scene_ptr)
 		{
@@ -98,14 +80,11 @@ namespace Draw
 		}
 
 		std::unique_ptr<Node> pRoot;
-		vector < Mesh > meshes;
-
-		shared_ptr<Graphics::Vulkan> vulkan_ptr;
-		shared_ptr<Graphics::RenderPass> renderpass_ptr;
-		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
-		shared_ptr<Graphics::CommandQueue> cmdQueue_ptr;
 		
+		vector<DrawItem> items;
+
 		shared_ptr<Control::Scene> scene_ptr;
+		shared_ptr<Graphics::DescriptorPool> desc_pool;
 
 	};
 }

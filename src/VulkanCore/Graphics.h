@@ -10,7 +10,8 @@ namespace Graphics
 {
 	enum class DescriptorType
 	{
-		UNIFORM
+		UNIFORM,
+		TEXTURE2D,
 	};
 
 	enum class StageFlag

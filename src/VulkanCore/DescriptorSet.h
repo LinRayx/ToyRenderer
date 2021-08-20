@@ -1,3 +1,8 @@
+// DescriptorSetLayout 和 DescriptorSet 需要分开
+// PSO中单独创建DescriptorSetLayout
+// Material 中拥有各自的DescriptorSet，然后绑定到PSO中
+// 在Build PSO的时候，同时Build每个Material的DescriptorSet
+
 #pragma once
 #ifndef DESCRIPTOR_SET_H
 #define DESCRIPTOR_SET_H
@@ -32,25 +37,30 @@ namespace Graphics
 			DescriptorType type;
 			shared_ptr<Buffer> buffer_ptr;
 			uint16_t binding;
+
+			VkImageView textureImageView;
+			VkSampler textureSampler;
 		};
 	public:
 		DescriptorSetCore(std::shared_ptr<Vulkan> vulkan_ptr, std::shared_ptr<DescriptorPool> desc_pool_ptr);
 		~DescriptorSetCore();
 		// void Add(DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
-		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr = nullptr);
-		void Compile(bool onlyLayout = false);
+		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
+		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, VkImageView textureImageView, VkSampler textureSampler);
+		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage);
+		void Compile(shared_ptr<DescriptorSetLayout> desc_layout_ptr);
 		bool Update();
 	private:
 		vector<descInfo> infos;
 		vector<VkWriteDescriptorSet> write_sets;
-		vector<int> slots_index;
+		vector<uint16_t> slots_index;
 
 		shared_ptr<DescriptorPool> desc_pool_ptr;
 		shared_ptr<Vulkan> vulkan_ptr;
 	public:
 		// i : swapchain  j : set
 		vector<vector<VkDescriptorSet>> descriptorSets;
-		shared_ptr<DescriptorSetLayout> desc_layout_ptr;
+		
 	};
 
 	class DescriptorSetLayout : public Graphics

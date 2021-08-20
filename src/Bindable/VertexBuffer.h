@@ -26,6 +26,7 @@ namespace Bind
 		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data);
 		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, const Dcb::VertexBuffer& vbuf, bool onlyLayout = false);
 		~VertexBuffer();
+		VkBuffer Get();
 		std::shared_ptr<Graphics::Buffer> buffer_ptr;
 	private:
 		int location = 0;

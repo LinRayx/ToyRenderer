@@ -3,6 +3,7 @@ layout (location = 0) in vec3 worldNormal;
 layout (location = 1) in vec3 worldPos;
 layout (location = 0) out vec4 outColor;
 
+
 layout (set = 0, binding = 1) uniform SceneParam
 {
 	vec3 viewPos;
@@ -28,4 +29,5 @@ void main() {
 	vec3 result = (diffuse + specular) * vec3(1, 1, 1);
 
 	outColor = vec4(result, 1);
+
 }

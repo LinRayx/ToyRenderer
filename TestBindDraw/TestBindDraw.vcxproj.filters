@@ -198,6 +198,12 @@
     <ClInclude Include="..\src\RenderSystem\PhonePSO.h">
       <Filter>头文件\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Bindable\Texture.h">
+      <Filter>头文件\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\Material.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -307,6 +313,9 @@
     </ClCompile>
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp">
       <Filter>源文件\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\Material.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

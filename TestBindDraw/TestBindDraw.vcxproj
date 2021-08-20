@@ -153,9 +153,11 @@
     <ClInclude Include="..\src\Bindable\PipelineLayout.h" />
     <ClInclude Include="..\src\Bindable\PixelShader.h" />
     <ClInclude Include="..\src\Bindable\Shader.h" />
+    <ClInclude Include="..\src\Bindable\Texture.h" />
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\Drawable.h" />
+    <ClInclude Include="..\src\Drawable\Material.h" />
     <ClInclude Include="..\src\Drawable\Model.h" />
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
     <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h" />
@@ -203,6 +205,7 @@
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
     <ClCompile Include="..\src\Drawable\Drawable.cpp" />
+    <ClCompile Include="..\src\Drawable\Material.cpp" />
     <ClCompile Include="..\src\Drawable\Model.cpp" />
     <ClCompile Include="..\src\DynamicVariable\DynamicConstant.cpp" />
     <ClCompile Include="..\src\DynamicVariable\LayoutCodex.cpp" />

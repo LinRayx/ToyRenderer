@@ -12,6 +12,9 @@
 
 #include "DynamicVariable/DynamicVertex.h"
 
+#include "Drawable/Material.h"
+#include "Drawable/Model.h"
+
 #include <memory>
 #include <vector>
 
@@ -28,7 +31,7 @@ namespace RenderSystem
 		{}
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 		{}
-		virtual void Update(shared_ptr<Graphics::CommandBuffer> cmd)
+		virtual void Update(int cur)
 		{}
 		virtual void Add(Bind::VertexBuffer& vbuf, Graphics::DescriptorSetCore& desc)
 		{}
@@ -44,11 +47,10 @@ namespace RenderSystem
 		shared_ptr<Bind::PixelShader> pShader_ptr;
 
 		// Layout
-		shared_ptr<Graphics::DescriptorSetCore> desc_ptr;
+		shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr;
 		shared_ptr<Bind::VertexBuffer> vBuffer_ptr;
 
-		std::vector<Bind::VertexBuffer> vBuffer_ptrs;
-		std::vector<shared_ptr<Graphics::DescriptorSetCore>> desc_ptrs;
+		std::vector< Draw::Model* > models;
 	};
 }
 
