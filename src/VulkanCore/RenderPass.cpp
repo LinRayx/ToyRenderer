@@ -1,5 +1,6 @@
 #include "RenderPass.h"
 #include <stdexcept>
+#include <array>
 
 namespace Graphics {
 
@@ -18,7 +19,7 @@ namespace Graphics {
 
 	void RenderPass::CreateRenderPass()
 	{
-		
+		/*
 		std::vector< VkAttachmentDescription > attachments;
 		std::vector< VkAttachmentReference > ColorAttachmentRefs;
 		VkAttachmentReference depthAttachmentRef{};
@@ -54,7 +55,7 @@ namespace Graphics {
 		VkAttachmentDescription colorAttachmentResolve{};
 		colorAttachmentResolve.format = vulkan_ptr->swapchain.format;
 		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -68,7 +69,7 @@ namespace Graphics {
 
 		clearValues.resize(attachments.size());
 		for (auto it : clearValues) {
-			it.color = { {0.0f, 0.0f, 0.0f, 1.0f} };
+			it.color = { {1.f, 0.2f, 0.2f, 1.0f} };
 			it.depthStencil = { 1.0f, 0 };
 		}
 
@@ -94,6 +95,63 @@ namespace Graphics {
 		renderPassInfo.subpassCount = 1;
 		renderPassInfo.pSubpasses = &subpass;
 		renderPassInfo.dependencyCount = 1;
+		renderPassInfo.pDependencies = &dependency;*/
+
+		VkAttachmentDescription colorAttachment{};
+		colorAttachment.format = vulkan_ptr->swapchain.format;
+		colorAttachment.samples = msaaSamples;
+		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		VkAttachmentDescription depthAttachment{};
+		depthAttachment.format = vulkan_ptr->findDepthFormat();
+		depthAttachment.samples = msaaSamples;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		clearValues.resize(2);
+		clearValues[0].color = { 0.0, 0, 0, 1 };
+		clearValues[1].depthStencil = { 1.0, 0 };
+
+		VkAttachmentReference colorAttachmentRef{};
+		colorAttachmentRef.attachment = 0;
+		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		VkAttachmentReference depthAttachmentRef{};
+		depthAttachmentRef.attachment = 1;
+		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		VkSubpassDescription subpass{};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &colorAttachmentRef;
+		subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+
+		VkSubpassDependency dependency{};
+		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependency.dstSubpass = 0;
+		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependency.srcAccessMask = 0;
+		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+		std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+		VkRenderPassCreateInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		renderPassInfo.pAttachments = attachments.data();
+		renderPassInfo.subpassCount = 1;
+		renderPassInfo.pSubpasses = &subpass;
+		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;
 
 		if (vkCreateRenderPass(vulkan_ptr->device.device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
@@ -104,10 +162,11 @@ namespace Graphics {
 		for (size_t i = 0; i < framebuffers.size(); i++) {
 			std::vector<VkImageView> atts;
 
-			for (size_t j = 0; j < resources.size(); ++j) {
-				atts.emplace_back(resources[j].imageView);
-			}
+			//for (size_t j = 0; j < resources.size(); ++j) {
+			//	atts.emplace_back(resources[j].imageView);
+			//}
 			atts.emplace_back(vulkan_ptr->swapchain.image_views[i]);
+			atts.emplace_back(resources[0].imageView);
 
 			VkFramebufferCreateInfo framebufferInfo{};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

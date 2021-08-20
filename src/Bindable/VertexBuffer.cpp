@@ -24,7 +24,7 @@ namespace Bind
 
 		bindingDescription.binding = 0;
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-		bindingDescription.stride = vbuf.SizeBytes();
+		bindingDescription.stride = vbuf.GetLayout().Size();
 		if (onlyLayout) return;
 		buffer_ptr = std::make_shared<Graphics::Buffer>(_vulkan_ptr, Graphics::BufferUsage::VERTEX_BUFFER, vbuf.SizeBytes(), (void*)vbuf.GetData(), vbuf.Size());
 	}

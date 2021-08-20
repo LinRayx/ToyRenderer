@@ -24,5 +24,5 @@ void main()
     worldPos = vec3(mParam.model * pos);
 
     gl_Position = sParam.proj * sParam.view * mParam.model * pos;
-    gl_Position.y = -gl_Position.y;
+
 }

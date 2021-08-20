@@ -2,7 +2,7 @@
 layout (location = 0) in vec3 worldNormal;
 layout (location = 1) in vec3 worldPos;
 layout (location = 0) out vec4 outColor;
-
+//layout (location = 2) out vec4 swapChainColor;
 
 layout (set = 0, binding = 1) uniform SceneParam
 {

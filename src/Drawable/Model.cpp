@@ -25,7 +25,7 @@ namespace Draw {
 		Assimp::Importer imp;
 		const auto pScene = imp.ReadFile(file_path.c_str(),
 			aiProcess_Triangulate |
-			aiProcess_JoinIdenticalVertices |
+			//aiProcess_JoinIdenticalVertices |
 			aiProcess_ConvertToLeftHanded |
 			aiProcess_GenNormals |
 			aiProcess_CalcTangentSpace
@@ -40,7 +40,10 @@ namespace Draw {
 			ParseMesh(*pScene->mMeshes[i]);
 		}
 
-		pRoot = ParseNode(*pScene->mRootNode, glm::mat4(1));
+		auto t = glm::mat4(1);
+		t[1][1] = -1;
+
+		pRoot = ParseNode(*pScene->mRootNode, t);
 	}
 
 	void Model::ParseMesh(const aiMesh& mesh)
@@ -49,16 +52,20 @@ namespace Draw {
 		Dcb::VertexBuffer vbuf(
 			std::move(
 				Dcb::VertexLayout{}
-				.Append(VertexLayout::Position2D)
+				.Append(VertexLayout::Position3D)
 				.Append(VertexLayout::Normal)
 			)
 		);
 
+
 		for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
+			//glm::vec3 tt = *reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i]));
+			//std::cout << tt.x << " " << tt.y << " " << tt.z << std::endl;
 			vbuf.EmplaceBack(
-				*reinterpret_cast<glm::vec3*>(&mesh.mVertices[i]),
-				*reinterpret_cast<glm::vec3*>(&mesh.mNormals[i])
+				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
+				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i]))
 			);
+			//std::cout << mesh.mVertices[i].x <<" " << mesh.mVertices[i].y << " " << mesh.mVertices[i].z << std::endl;
 		}
 
 		std::vector<unsigned short> indices;
@@ -111,7 +118,9 @@ namespace Draw {
 	{
 		for (size_t i = 0; i < items.size(); ++i) {
 			scene_ptr->Update(&items[i].material);
+			items[i].material.Update(cur);
 		}
+		
 	}
 
 	void Model::BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr)

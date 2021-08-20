@@ -24,11 +24,11 @@ namespace RenderSystem
 			)
 		);
 
-		vBuffer_ptr = make_shared<Bind::VertexBuffer>(vulkan_ptr, vbuf, true);
+		
 
 		renderpass_ptr = make_shared<Graphics::RenderPass>(vulkan_ptr, image_ptr);
 
-		renderpass_ptr->AddResource("Color1", false);
+		//renderpass_ptr->AddResource("Color1", false);
 		renderpass_ptr->AddResource("Depth", true);
 
 		renderpass_ptr->CreateRenderPass();
@@ -45,7 +45,7 @@ namespace RenderSystem
 
 	void PhonePSO::BuildPipeline()
 	{
-
+		vBuffer_ptr = models[0]->items[0].mesh.vertex_buffer;
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		auto bindingDescription = vBuffer_ptr->bindingDescription;
@@ -86,6 +86,7 @@ namespace RenderSystem
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
+
 		VkRect2D scissor = { .extent = vulkan_ptr->GetSwapchain().extent };
 
 		VkPipelineViewportStateCreateInfo viewport_info = {};
@@ -101,7 +102,7 @@ namespace RenderSystem
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = VK_CULL_MODE_NONE;
+		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
 		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -110,7 +111,7 @@ namespace RenderSystem
 		multisampling.sampleShadingEnable = VK_FALSE;
 		multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-		vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments(2);
+		vector<VkPipelineColorBlendAttachmentState> colorBlendAttachments(1);
 		for (size_t i = 0; i < colorBlendAttachments.size(); ++i) {
 			colorBlendAttachments[i].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 			colorBlendAttachments[i].blendEnable = VK_FALSE;
