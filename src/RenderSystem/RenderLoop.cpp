@@ -13,6 +13,7 @@ namespace RenderSystem
 		desc_pool_ptr = make_shared<Graphics::DescriptorPool>(vulkan_ptr);
 		image_ptr = make_shared<Graphics::Image>(vulkan_ptr);
 		scene_ptr = make_shared<Control::Scene>(vulkan_ptr, vulkan_ptr->width, vulkan_ptr->height);
+		texture_ptr = make_shared<Draw::Texture>(vulkan_ptr, cmdBuf_ptr, image_ptr);
 
 		frameT_ptr = std::make_shared<FrameTimer>();
 	}
@@ -30,9 +31,10 @@ namespace RenderSystem
 	{
 		PhonePSO* phonePSO = new PhonePSO(vulkan_ptr, desc_pool_ptr, image_ptr);
 		
-		Draw::Model* model = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, "../assets/bunny/bunny.obj");
-		phonePSO->Add(model);
-
+		Draw::Model* model1 = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, texture_ptr, "../assets/gobber/GoblinX.obj");
+		// Draw::Model* model2 = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, "../assets/plane.obj");
+		phonePSO->Add(model1);
+		// phonePSO->Add(model2);
 		pso_vecs.emplace_back(phonePSO);
 		
 	}

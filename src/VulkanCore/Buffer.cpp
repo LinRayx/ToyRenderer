@@ -42,6 +42,33 @@ namespace Graphics {
 		}
 	}
 
+	void Buffer::CreateBuffer(shared_ptr<Vulkan> vulkan_ptr, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
+	{
+		VkBufferCreateInfo bufferInfo{};
+		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		bufferInfo.size = size;
+		bufferInfo.usage = usage;
+		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+		if (vkCreateBuffer(vulkan_ptr->device.device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create buffer!");
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetBufferMemoryRequirements(vulkan_ptr->device.device, buffer, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = vulkan_ptr->findMemoryType(memRequirements.memoryTypeBits, properties);
+
+		if (vkAllocateMemory(vulkan_ptr->device.device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+			throw std::runtime_error("failed to allocate buffer memory!");
+		}
+
+		vkBindBufferMemory(vulkan_ptr->device.device, buffer, bufferMemory, 0);
+	}
+
 	void Buffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory)
 	{
 		VkBufferCreateInfo bufferInfo{};
@@ -87,6 +114,8 @@ namespace Graphics {
 			break;
 		case BufferUsage::UNIFORM:
 			return VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+		case BufferUsage::INDEX_BUFFER:
+			return VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 		default:
 			break;
 		}

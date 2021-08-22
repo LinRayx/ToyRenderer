@@ -4,6 +4,7 @@
 
 #include "Bindable.h"
 #include "Buffer.h"
+#include <vector>
 
 namespace Bind
 {
@@ -11,10 +12,12 @@ namespace Bind
 	{
 	public:
 		IndexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data);
+		IndexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, const std::vector<unsigned short>& vbuf);
 		~IndexBuffer();
-		Bindable* Bind() noexcept;
-	private:
 		std::shared_ptr<Graphics::Buffer> buffer_ptr;
+		size_t GetCount();
+	private:
+		size_t elem_count;
 	};
 }
 

@@ -15,6 +15,8 @@ namespace Draw
 		void AddLayout(std::string key, Dcb::RawLayout&& layout,
 			Graphics::LayoutType layoutType, Graphics::DescriptorType descType, Graphics::StageFlag stage);
 
+		void AddTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler);
+
 		template<typename T>
 		void Update(std::string key1, std::string key2, T value)
 		{

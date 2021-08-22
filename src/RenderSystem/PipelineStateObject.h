@@ -4,6 +4,7 @@
 #include "Bindable/VertexShader.h"
 #include "Bindable/PixelShader.h"
 #include "Bindable/VertexBuffer.h"
+#include "Bindable/IndexBuffer.h"
 
 #include "VulkanCore/RenderPass.h"
 #include "VulkanCore/DescriptorSet.h"

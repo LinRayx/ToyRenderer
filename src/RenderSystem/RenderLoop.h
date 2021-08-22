@@ -6,6 +6,7 @@
 #include "FrameTimer.h"
 #include "RenderSystem/PhonePSO.h"
 #include "VulkanCore/CommandQueue.h"
+#include "Drawable/Texture.h"
 
 namespace RenderSystem
 {
@@ -51,6 +52,7 @@ namespace RenderSystem
 		shared_ptr<Graphics::CommandQueue> cmdQue_ptr;
 		shared_ptr<Graphics::CommandPool> cmdPool_ptr;
 		shared_ptr<Graphics::Synchronization> sync_ptr;
+		shared_ptr<Draw::Texture> texture_ptr;
 
 		shared_ptr<Control::Scene> scene_ptr;
 

@@ -78,7 +78,6 @@ namespace Graphics
 					descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					descriptorWrite.descriptorCount = 1;
 					descriptorWrite.pImageInfo = &imageInfos[j];
-				
 				}
 				else {
 					bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[i];
@@ -128,7 +127,7 @@ namespace Graphics
 			VkDescriptorSetLayoutBinding samplerLayoutBinding{};
 			samplerLayoutBinding.binding = static_cast<uint32_t>(bindings.size());
 			samplerLayoutBinding.descriptorCount = 1;
-			samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			samplerLayoutBinding.descriptorType = Graphics::GetDescriptorType(type);
 			samplerLayoutBinding.pImmutableSamplers = nullptr;
 			samplerLayoutBinding.stageFlags = Graphics::GetStageFlag(stage);
 			bindings.emplace_back(samplerLayoutBinding);

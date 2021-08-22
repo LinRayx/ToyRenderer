@@ -24,6 +24,7 @@ namespace Graphics
 	enum class BufferUsage
 	{
 		VERTEX_BUFFER,
+		INDEX_BUFFER,
 		UNIFORM,
 	};
 

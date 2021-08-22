@@ -126,9 +126,6 @@
     <ClInclude Include="..\src\Bindable\VertexShader.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Drawable\Drawable.h">
-      <Filter>头文件\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Utils\string_utils.h">
       <Filter>头文件\Utils</Filter>
     </ClInclude>
@@ -204,6 +201,12 @@
     <ClInclude Include="..\src\Drawable\Material.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\Texture.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\GloableClass.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -235,9 +238,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp">
       <Filter>源文件\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Drawable\Drawable.cpp">
-      <Filter>源文件\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="..\src\imgui\imgui_vulkan.cpp">
       <Filter>源文件\imgui</Filter>
@@ -315,7 +315,10 @@
       <Filter>源文件\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Drawable\Material.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\Texture.cpp">
+      <Filter>源文件\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

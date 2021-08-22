@@ -13,7 +13,7 @@ namespace RenderSystem
 		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
 		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
 		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::TEXTURE2D, Graphics::StageFlag::FRAGMENT);
 
 		using namespace Dcb;
 		Dcb::VertexBuffer vbuf(
@@ -23,8 +23,6 @@ namespace RenderSystem
 				.Append(VertexLayout::Normal)
 			)
 		);
-
-		
 
 		renderpass_ptr = make_shared<Graphics::RenderPass>(vulkan_ptr, image_ptr);
 
@@ -102,7 +100,7 @@ namespace RenderSystem
 		rasterizer.rasterizerDiscardEnable = VK_FALSE;
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
-		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+		rasterizer.cullMode = VK_CULL_MODE_NONE;
 		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -192,13 +190,16 @@ namespace RenderSystem
 			for (size_t modelIndex = 0; modelIndex < models.size(); ++modelIndex) {
 				for (size_t itemIndex = 0; itemIndex < models[modelIndex]->items.size(); ++itemIndex) {
 					VkBuffer vertexBuffers[] = { models[modelIndex]->items[itemIndex].mesh.vertex_buffer->Get() };
+					auto indexBuffer = models[modelIndex]->items[itemIndex].mesh.index_buffer;
 					VkDeviceSize offsets[] = { 0 };
 					auto& material = models[modelIndex]->items[itemIndex].material;
 
 					vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
+					vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer->buffer_ptr->buffers[0], 0, VK_INDEX_TYPE_UINT16);
 					vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_layout_ptr->pipelineLayout, 0,
 						static_cast<uint32_t>(material.desc_ptr->descriptorSets[i].size()), material.desc_ptr->descriptorSets[i].data(), 0, nullptr);
-					vkCmdDraw(drawCmdBuffers[i], static_cast<uint32_t>(models[modelIndex]->items[itemIndex].mesh.vertex_buffer->buffer_ptr->elem_count), 1, 0, 0);
+					//vkCmdDraw(drawCmdBuffers[i], static_cast<uint32_t>(models[modelIndex]->items[itemIndex].mesh.vertex_buffer->buffer_ptr->elem_count), 1, 0, 0);
+					vkCmdDrawIndexed(drawCmdBuffers[i], static_cast<uint32_t>(indexBuffer->GetCount()), 1, 0, 0, 0);
 				}
 			}
 

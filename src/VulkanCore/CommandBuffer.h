@@ -38,6 +38,11 @@ namespace Graphics
 			vkFreeCommandBuffers(vulkan_ptr->device.device, cmdPool_ptr->cmdPool, static_cast<uint32_t>(drawCmdBuffers.size()), drawCmdBuffers.data());
 		}
 
+		VkCommandBuffer beginSingleTimeCommands();
+		void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+		void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+		void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+		void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	private:
 		shared_ptr<Vulkan> vulkan_ptr;
 		shared_ptr<CommandPool> cmdPool_ptr;

@@ -17,15 +17,18 @@ namespace Draw {
 	}
 
 	Model::Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
+		shared_ptr<Draw::Texture> texture_ptr,
 		std::string file_path)
 	{
 		this->vulkan_ptr = vulkan_ptr;
 		this->scene_ptr = scene_ptr;
 		this->desc_pool = desc_pool;
+		this->texture_ptr = texture_ptr;
+
 		Assimp::Importer imp;
 		const auto pScene = imp.ReadFile(file_path.c_str(),
 			aiProcess_Triangulate |
-			//aiProcess_JoinIdenticalVertices |
+			aiProcess_JoinIdenticalVertices |
 			aiProcess_ConvertToLeftHanded |
 			aiProcess_GenNormals |
 			aiProcess_CalcTangentSpace
@@ -37,7 +40,7 @@ namespace Draw {
 		}
 
 		for (size_t i = 0; i < pScene->mNumMeshes; ++i) {
-			ParseMesh(*pScene->mMeshes[i]);
+			ParseMesh(*pScene->mMeshes[i], pScene->mMaterials[pScene->mMeshes[i]->mMaterialIndex]);
 		}
 
 		auto t = glm::mat4(1);
@@ -46,7 +49,7 @@ namespace Draw {
 		pRoot = ParseNode(*pScene->mRootNode, t);
 	}
 
-	void Model::ParseMesh(const aiMesh& mesh)
+	void Model::ParseMesh(const aiMesh& mesh, const aiMaterial* material)
 	{
 		using namespace Dcb;
 		Dcb::VertexBuffer vbuf(
@@ -54,6 +57,7 @@ namespace Draw {
 				Dcb::VertexLayout{}
 				.Append(VertexLayout::Position3D)
 				.Append(VertexLayout::Normal)
+				.Append(VertexLayout::Texture2D)
 			)
 		);
 
@@ -63,7 +67,8 @@ namespace Draw {
 			//std::cout << tt.x << " " << tt.y << " " << tt.z << std::endl;
 			vbuf.EmplaceBack(
 				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
-				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i]))
+				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
+				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i])
 			);
 			//std::cout << mesh.mVertices[i].x <<" " << mesh.mVertices[i].y << " " << mesh.mVertices[i].z << std::endl;
 		}
@@ -78,13 +83,21 @@ namespace Draw {
 			indices.push_back(face.mIndices[1]);
 			indices.push_back(face.mIndices[2]);
 		}
-		Mesh t_mesh(vulkan_ptr, vbuf);
+
+		int cnt = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		
+		Mesh t_mesh(vulkan_ptr, vbuf, indices);
 		Material mat(vulkan_ptr, desc_pool);
 		scene_ptr->InitSceneData(&mat);
 		
 		Dcb::RawLayout transBuf;
 		transBuf.Add<Dcb::Matrix>("modelTrans");
 		mat.AddLayout("Model", std::move(transBuf), Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
+		
+		for (int i = 0; i < cnt; ++i) {
+			string key = "texture_diffuse_" + to_string(i);
+			mat.AddTexture(Graphics::LayoutType::MODEL, Graphics::StageFlag::FRAGMENT, texture_ptr->nameToTex[key].textureImageView, texture_ptr->nameToTex[key].textureSampler);
+		}
 
 		items.emplace_back(DrawItem( std::move(t_mesh), std::move(mat) ));
 	}
@@ -92,7 +105,6 @@ namespace Draw {
 	std::unique_ptr<Node> Model::ParseNode(const aiNode& node, glm::mat4 nowTrans)
 	{
 		const glm::mat4* tmp = reinterpret_cast<const glm::mat4* >(&node.mTransformation);
-		
 		
 		nowTrans = (*tmp) * nowTrans;
 
@@ -130,6 +142,19 @@ namespace Draw {
 		}
 	}
 
+	int Model::loadMaterialTextures(const aiMaterial* mat, aiTextureType type, string typeName)
+	{
+		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+		{
+			aiString str;
+			mat->GetTexture(type, i, &str);
+
+			texture_ptr->CreateTexture(string("../assets/gobber/") + str.C_Str(), typeName + "_" + to_string(i));
+		}
+
+		return mat->GetTextureCount(type);
+	}
+
 
 	Node::Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform)
 		: curMeshes(std::move(meshPtrs))
@@ -142,8 +167,9 @@ namespace Draw {
 		childPtrs.push_back(std::move(pChild));
 	}
 
-	Mesh::Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf)
+	Mesh::Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf)
 	{
 		vertex_buffer = make_shared<Bind::VertexBuffer>(vulkan_ptr, vbuf);
+		index_buffer = make_shared<Bind::IndexBuffer>(vulkan_ptr, ibuf);
 	}
 }

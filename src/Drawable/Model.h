@@ -10,14 +10,16 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "VertexBuffer.h"
-#include "Drawable.h"
 #include "Scene.h"
+
 #include "Drawable/Material.h"
+#include "Drawable/Texture.h"
+
+#include "Bindable/IndexBuffer.h"
+
 
 namespace Draw
 {
-
-
 	class ModelBase
 	{
 	protected:
@@ -36,8 +38,9 @@ namespace Draw
 	{
 		friend class Model;
 	public:
-		Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf);
+		Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf);
 		shared_ptr<Bind::VertexBuffer> vertex_buffer;
+		shared_ptr<Bind::IndexBuffer> index_buffer;
 
 	};
 
@@ -64,9 +67,10 @@ namespace Draw
 	public:
 
 		Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
+			shared_ptr<Draw::Texture> texture_ptr,
 			std::string file_path);
 
-		void ParseMesh(const aiMesh& mesh);
+		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
 
 		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 nowTrans);
 
@@ -85,7 +89,9 @@ namespace Draw
 
 		shared_ptr<Control::Scene> scene_ptr;
 		shared_ptr<Graphics::DescriptorPool> desc_pool;
-
+		shared_ptr<Draw::Texture> texture_ptr;
+	private:
+		int loadMaterialTextures(const aiMaterial* mat, aiTextureType type, string typeName);
 	};
 }
 

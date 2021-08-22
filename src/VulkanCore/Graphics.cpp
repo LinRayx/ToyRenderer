@@ -10,6 +10,8 @@ namespace Graphics
 		case DescriptorType::UNIFORM:
 			return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			break;
+		case DescriptorType::TEXTURE2D:
+			return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		default:
 			break;
 		}
