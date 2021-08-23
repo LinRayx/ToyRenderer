@@ -68,7 +68,7 @@ namespace Draw
 
 		Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
 			shared_ptr<Draw::Texture> texture_ptr,
-			std::string file_path);
+			std::string file_path, std::string directory);
 
 		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
 
@@ -91,6 +91,7 @@ namespace Draw
 		shared_ptr<Graphics::DescriptorPool> desc_pool;
 		shared_ptr<Draw::Texture> texture_ptr;
 	private:
+		std::string directory;
 		int loadMaterialTextures(const aiMaterial* mat, aiTextureType type, string typeName);
 	};
 }

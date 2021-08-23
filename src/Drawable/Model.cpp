@@ -18,8 +18,9 @@ namespace Draw {
 
 	Model::Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
 		shared_ptr<Draw::Texture> texture_ptr,
-		std::string file_path)
+		std::string file_path, std::string directory)
 	{
+		this->directory = directory;
 		this->vulkan_ptr = vulkan_ptr;
 		this->scene_ptr = scene_ptr;
 		this->desc_pool = desc_pool;
@@ -149,7 +150,7 @@ namespace Draw {
 			aiString str;
 			mat->GetTexture(type, i, &str);
 
-			texture_ptr->CreateTexture(string("../assets/gobber/") + str.C_Str(), typeName + "_" + to_string(i));
+			texture_ptr->CreateTexture(directory + str.C_Str(), typeName + "_" + to_string(i));
 		}
 
 		return mat->GetTextureCount(type);

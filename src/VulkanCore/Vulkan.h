@@ -124,9 +124,6 @@ namespace Graphics {
 		Vulkan(int width = 800, int height = 600);
 		~Vulkan();
 
-		void BeginFrame();
-		void EndFrame();
-
 	private:
 		/*! Creates all Vulkan objects that are created up to device creation. This
 			includes the instance, the physical device and the device. It depends on

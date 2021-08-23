@@ -118,4 +118,23 @@ namespace Graphics
 
         endSingleTimeCommands(commandBuffer);
     }
+    void CommandBuffer::Begin()
+    {
+        for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
+            VkCommandBufferBeginInfo beginInfo{};
+            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+            if (vkBeginCommandBuffer(drawCmdBuffers[i], &beginInfo) != VK_SUCCESS) {
+                throw std::runtime_error("failed to begin recording command buffer!");
+            }
+        }
+    }
+    void CommandBuffer::End()
+    {
+        for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
+            if (vkEndCommandBuffer(drawCmdBuffers[i]) != VK_SUCCESS) {
+                throw std::runtime_error("failed to record command buffer!");
+            }
+        }
+    }
 }

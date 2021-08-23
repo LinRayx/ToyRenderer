@@ -165,12 +165,6 @@ namespace RenderSystem
 	{
 		auto& drawCmdBuffers = cmd->drawCmdBuffers;
 		for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
-			VkCommandBufferBeginInfo beginInfo{};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-			if (vkBeginCommandBuffer(drawCmdBuffers[i], &beginInfo) != VK_SUCCESS) {
-				throw std::runtime_error("failed to begin recording command buffer!");
-			}
 
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -204,10 +198,6 @@ namespace RenderSystem
 			}
 
 			vkCmdEndRenderPass(drawCmdBuffers[i]);
-
-			if (vkEndCommandBuffer(drawCmdBuffers[i]) != VK_SUCCESS) {
-				throw std::runtime_error("failed to record command buffer!");
-			}
 		}
 	}
 

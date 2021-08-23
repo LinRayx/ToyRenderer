@@ -4,9 +4,7 @@
 #include <cstring>
 #include <stdexcept>
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_vulkan.h"
+
 
 namespace Graphics {
 
@@ -38,14 +36,6 @@ namespace Graphics {
 		}
 
 		glfwSetWindowSize(swapchain.window, width, height);
-		// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
-		// Setup Platform/Renderer backends
-		ImGui_ImplGlfw_InitForVulkan(swapchain.window, true);
 	}
 
 	Vulkan::~Vulkan()
@@ -54,14 +44,6 @@ namespace Graphics {
 		destroy_vulkan_device(&device);
 	}
 
-	void Vulkan::BeginFrame()
-	{
-
-	}
-
-	void Vulkan::EndFrame()
-	{
-	}
 
 	int Vulkan::create_vulkan_device(device_t* device, const char* application_internal_name, uint32_t physical_device_index, VkBool32 request_ray_tracing)
 	{

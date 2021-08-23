@@ -73,6 +73,9 @@
     <Filter Include="源文件\Exception">
       <UniqueIdentifier>{e0720bd2-f95f-4976-9107-9d7ea0e91505}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\imgui">
+      <UniqueIdentifier>{02f6aef8-44c8-4d63-95a8-1be4cb304f3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -207,6 +210,9 @@
     <ClInclude Include="..\src\Utils\GloableClass.h">
       <Filter>头文件\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\imgui\ImguiManager.h">
+      <Filter>头文件\imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -319,6 +325,15 @@
     </ClCompile>
     <ClCompile Include="..\src\Drawable\Texture.cpp">
       <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\imgui\ImguiManager.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\imgui\backends\imgui_impl_vulkan.cpp">
+      <Filter>源文件\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\CommandQueue.cpp">
+      <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

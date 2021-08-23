@@ -165,6 +165,7 @@
     <ClInclude Include="..\src\DynamicVariable\DynamicVertex.h" />
     <ClInclude Include="..\src\Exception\ChiliException.h" />
     <ClInclude Include="..\src\Exception\ModelException.h" />
+    <ClInclude Include="..\src\imgui\ImguiManager.h" />
     <ClInclude Include="..\src\RenderSystem\FrameTimer.h" />
     <ClInclude Include="..\src\RenderSystem\PhonePSO.h" />
     <ClInclude Include="..\src\RenderSystem\PipelineStateObject.h" />
@@ -195,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\include\imgui\backends\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\include\imgui\imgui.cpp" />
     <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
@@ -213,6 +215,7 @@
     <ClCompile Include="..\src\DynamicVariable\DynamicVertex.cpp" />
     <ClCompile Include="..\src\Exception\ChiliException.cpp" />
     <ClCompile Include="..\src\Exception\ModelException.cpp" />
+    <ClCompile Include="..\src\imgui\ImguiManager.cpp" />
     <ClCompile Include="..\src\imgui\imgui_vulkan.cpp" />
     <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp" />
     <ClCompile Include="..\src\RenderSystem\PhonePSO.cpp" />
@@ -224,6 +227,7 @@
     <ClCompile Include="..\src\Test\test.cpp" />
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp" />
     <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp" />
+    <ClCompile Include="..\src\VulkanCore\CommandQueue.cpp" />
     <ClCompile Include="..\src\VulkanCore\DescriptorPool.cpp" />
     <ClCompile Include="..\src\VulkanCore\DescriptorSet.cpp" />
     <ClCompile Include="..\src\VulkanCore\Graphics.cpp" />

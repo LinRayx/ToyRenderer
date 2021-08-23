@@ -7,6 +7,7 @@
 #include "RenderSystem/PhonePSO.h"
 #include "VulkanCore/CommandQueue.h"
 #include "Drawable/Texture.h"
+#include "imgui/ImguiManager.h"
 
 namespace RenderSystem
 {
@@ -18,32 +19,7 @@ namespace RenderSystem
 		~RenderLoop();
 		void Init();
 
-		void Loop()
-		{
-			for (size_t i = 0; i < pso_vecs.size(); ++i) {
-				pso_vecs[i]->BuildPipeline();
-				pso_vecs[i]->BuildCommandBuffer(cmdBuf_ptr);
-			}
-			cmdQue_ptr->SetCommandBuffer(cmdBuf_ptr);
-
-			while (vulkan_ptr->WindowShouldClose())
-			{
-				glfwPollEvents();
-				if (glfwGetKey(vulkan_ptr->swapchain.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-					printf("Escape pressed. Shutting down.\n");
-					break;
-				}
-				frameT_ptr->Record();
-
-				scene_ptr->camera_ptr->Control_camera(vulkan_ptr->swapchain.window, frameT_ptr->Get());
-				int imageIndex = cmdQue_ptr->GetCurImageIndex();
-				for (size_t i = 0; i < pso_vecs.size(); ++i) {
-					pso_vecs[i]->Update(imageIndex);
-				}
-
-				cmdQue_ptr->Submit();
-			}
-		}
+		void Loop();
 	private:
 		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr;
@@ -52,6 +28,8 @@ namespace RenderSystem
 		shared_ptr<Graphics::CommandQueue> cmdQue_ptr;
 		shared_ptr<Graphics::CommandPool> cmdPool_ptr;
 		shared_ptr<Graphics::Synchronization> sync_ptr;
+		shared_ptr<GUI::ImguiManager> gui_ptr;
+		
 		shared_ptr<Draw::Texture> texture_ptr;
 
 		shared_ptr<Control::Scene> scene_ptr;

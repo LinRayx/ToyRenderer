@@ -12,6 +12,10 @@ namespace Graphics
 	public:
 		DescriptorPool(std::shared_ptr<Vulkan> vulkan_ptr);
 		~DescriptorPool();
+		VkDescriptorPool GetPool()
+		{
+			return descriptorPool;
+		}
 	private:
 		VkDescriptorPool descriptorPool;
 		std::shared_ptr<Vulkan> vulkan_ptr;
