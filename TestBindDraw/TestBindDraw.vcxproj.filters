@@ -213,6 +213,12 @@
     <ClInclude Include="..\src\imgui\ImguiManager.h">
       <Filter>头文件\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\ModelWindow.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\ModelWindowBase.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -334,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\CommandQueue.cpp">
       <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\ModelWindow.cpp">
+      <Filter>源文件\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

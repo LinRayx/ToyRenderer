@@ -212,5 +212,9 @@ namespace RenderSystem
 	{
 		models.push_back(model);
 	}
+	std::vector<Draw::Model*>& PhonePSO::GetModels()
+	{
+		return models;
+	}
 }
 

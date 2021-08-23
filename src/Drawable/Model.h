@@ -16,10 +16,11 @@
 #include "Drawable/Texture.h"
 
 #include "Bindable/IndexBuffer.h"
-
+#include "Drawable/ModelWindowBase.h"
 
 namespace Draw
 {
+
 	class ModelBase
 	{
 	protected:
@@ -47,11 +48,17 @@ namespace Draw
 	class Node
 	{
 	public:
-		Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform) ;
-		void AddChild(std::unique_ptr<Node> pChild) ;
+		Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform, const char* name, int id) ;
+		void AddChild(std::unique_ptr<Node> pChild);
+		void Accept(ModelWindowBase* window);
+		int GetId();
+		string GetName();
+		bool HasChild();
 	private:
 		vector<std::unique_ptr<Node>> childPtrs;
 		vector< Mesh* > curMeshes;
+		string name;
+		int id;
 		glm::mat4 transform;
 	};
 
@@ -72,16 +79,13 @@ namespace Draw
 
 		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
 
-		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 nowTrans);
+		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 nowTrans, int& nextId);
 
 		void Update(int cur);
 
 		void BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr);
 
-		void Register(shared_ptr<Control::Scene> scene_ptr)
-		{
-			this->scene_ptr = scene_ptr;
-		}
+		void Accept(ModelWindowBase* window);
 
 		std::unique_ptr<Node> pRoot;
 		

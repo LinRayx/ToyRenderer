@@ -77,7 +77,7 @@ namespace Graphics {
 		instance_create_info.pApplicationInfo = &application_info;
 		instance_create_info.enabledExtensionCount = device->instance_extension_count;
 		instance_create_info.ppEnabledExtensionNames = device->instance_extension_names;
-#ifdef NDEBUG
+#ifndef NDEBUG
 		instance_create_info.enabledLayerCount = 0;
 #else
 		instance_create_info.enabledLayerCount = COUNT_OF(layer_names);

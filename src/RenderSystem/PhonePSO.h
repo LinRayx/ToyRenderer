@@ -17,6 +17,7 @@ namespace RenderSystem
 		
 		void Update(int cur);
 		void Add(Draw::Model* model);
+		std::vector< Draw::Model* >& GetModels();
 	private:
 
 	};

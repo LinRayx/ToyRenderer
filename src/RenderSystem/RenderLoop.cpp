@@ -37,7 +37,7 @@ namespace RenderSystem
 		phonePSO->Add(model1);
 		// phonePSO->Add(model2);
 		pso_vecs.emplace_back(phonePSO);
-		
+		modelWindows.resize(10);
 		gui_ptr->Init();
 		gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], vulkan_ptr->GetDevice().queue);
 	}
@@ -59,12 +59,15 @@ namespace RenderSystem
 
 			scene_ptr->camera_ptr->Control_camera(vulkan_ptr->swapchain.window, frameT_ptr->Get());
 			int imageIndex = cmdQue_ptr->GetCurImageIndex();
-			for (size_t i = 0; i < pso_vecs.size(); ++i) {
-				pso_vecs[i]->Update(imageIndex);
-			}
 
 			gui_ptr->beginFrame();
-
+			int cnt = 0;
+			for (size_t i = 0; i < pso_vecs.size(); ++i) {
+				auto models = pso_vecs[i]->GetModels();
+				for (size_t j = 0; j < models.size(); ++j) {
+					modelWindows[cnt++].SetModel(models[j]);
+				}
+			}
 			cmdBuf_ptr->Begin();
 			for (size_t i = 0; i < pso_vecs.size(); ++i) {
 				pso_vecs[i]->BuildCommandBuffer(cmdBuf_ptr);
@@ -73,7 +76,13 @@ namespace RenderSystem
 			gui_ptr->BuildCommandBuffer(cmdBuf_ptr);
 			cmdBuf_ptr->End();
 			cmdQue_ptr->SetCommandBuffer(cmdBuf_ptr);
+
+			for (size_t i = 0; i < pso_vecs.size(); ++i) {
+				pso_vecs[i]->Update(imageIndex);
+			}
+
 			cmdQue_ptr->Submit();
+
 		}
 	}
 

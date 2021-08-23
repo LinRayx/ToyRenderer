@@ -158,6 +158,8 @@
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\Material.h" />
     <ClInclude Include="..\src\Drawable\Model.h" />
+    <ClInclude Include="..\src\Drawable\ModelWindow.h" />
+    <ClInclude Include="..\src\Drawable\ModelWindowBase.h" />
     <ClInclude Include="..\src\Drawable\Texture.h" />
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
     <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h" />
@@ -209,6 +211,7 @@
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
     <ClCompile Include="..\src\Drawable\Material.cpp" />
     <ClCompile Include="..\src\Drawable\Model.cpp" />
+    <ClCompile Include="..\src\Drawable\ModelWindow.cpp" />
     <ClCompile Include="..\src\Drawable\Texture.cpp" />
     <ClCompile Include="..\src\DynamicVariable\DynamicConstant.cpp" />
     <ClCompile Include="..\src\DynamicVariable\LayoutCodex.cpp" />

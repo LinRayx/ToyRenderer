@@ -8,6 +8,7 @@
 #include "VulkanCore/CommandQueue.h"
 #include "Drawable/Texture.h"
 #include "imgui/ImguiManager.h"
+#include "Drawable/ModelWindow.h"
 
 namespace RenderSystem
 {
@@ -37,6 +38,8 @@ namespace RenderSystem
 		std::shared_ptr<FrameTimer> frameT_ptr;
 
 		vector<PipelineStateObject*> pso_vecs;
+
+		vector<Draw::ModelWindow> modelWindows;
 	};
 }
 

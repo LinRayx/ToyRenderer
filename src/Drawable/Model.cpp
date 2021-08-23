@@ -46,8 +46,8 @@ namespace Draw {
 
 		auto t = glm::mat4(1);
 		t[1][1] = -1;
-
-		pRoot = ParseNode(*pScene->mRootNode, t);
+		int nextId = 0;
+		pRoot = ParseNode(*pScene->mRootNode, t, nextId);
 	}
 
 	void Model::ParseMesh(const aiMesh& mesh, const aiMaterial* material)
@@ -103,7 +103,7 @@ namespace Draw {
 		items.emplace_back(DrawItem( std::move(t_mesh), std::move(mat) ));
 	}
 
-	std::unique_ptr<Node> Model::ParseNode(const aiNode& node, glm::mat4 nowTrans)
+	std::unique_ptr<Node> Model::ParseNode(const aiNode& node, glm::mat4 nowTrans, int& nextId)
 	{
 		const glm::mat4* tmp = reinterpret_cast<const glm::mat4* >(&node.mTransformation);
 		
@@ -118,10 +118,10 @@ namespace Draw {
 			items[meshIdx].material.Update("Model", "modelTrans", nowTrans);
 
 		}
-		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), *tmp);
+		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), *tmp, node.mName.C_Str(), nextId);
 		for (size_t i = 0; i < node.mNumChildren; i++)
 		{
-			pNode->AddChild(ParseNode(*node.mChildren[i], nowTrans));
+			pNode->AddChild(ParseNode(*node.mChildren[i], nowTrans, ++nextId));
 		}
 
 		return pNode;
@@ -143,6 +143,11 @@ namespace Draw {
 		}
 	}
 
+	void Model::Accept(ModelWindowBase* window)
+	{
+		pRoot->Accept(window);
+	}
+
 	int Model::loadMaterialTextures(const aiMaterial* mat, aiTextureType type, string typeName)
 	{
 		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -157,15 +162,41 @@ namespace Draw {
 	}
 
 
-	Node::Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform)
-		: curMeshes(std::move(meshPtrs))
+	Node::Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform, const char* name, int id)
+		: curMeshes(std::move(meshPtrs)), id(id)
 	{
 		this->transform = transform;
+		this->name = name;
 	}
 
 	void Node::AddChild(std::unique_ptr<Node> pChild)
 	{
 		childPtrs.push_back(std::move(pChild));
+	}
+
+	void Node::Accept(ModelWindowBase* window)
+	{
+		if (window->PushNode(*this)) {
+			for (auto& it : childPtrs) {
+				it->Accept(window);
+			}
+			window->PopNode(*this);
+		}
+	}
+
+	int Node::GetId()
+	{
+		return id;
+	}
+
+	string Node::GetName()
+	{
+		return name;
+	}
+
+	bool Node::HasChild()
+	{
+		return childPtrs.size() > 0;
 	}
 
 	Mesh::Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf)
