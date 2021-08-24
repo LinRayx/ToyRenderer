@@ -85,21 +85,10 @@ namespace Draw {
 			indices.push_back(face.mIndices[2]);
 		}
 
-		int cnt = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		
 		Mesh t_mesh(vulkan_ptr, vbuf, indices);
-		Material mat(vulkan_ptr, desc_pool);
+		PhoneMaterial mat(vulkan_ptr, desc_pool);
+		mat.LoadModelTexture(material, directory, mesh.mName.C_Str());
 		scene_ptr->InitSceneData(&mat);
-		
-		Dcb::RawLayout transBuf;
-		transBuf.Add<Dcb::Matrix>("modelTrans");
-		mat.AddLayout("Model", std::move(transBuf), Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		
-		for (int i = 0; i < cnt; ++i) {
-			string key = "texture_diffuse_" + to_string(i);
-			mat.AddTexture(Graphics::LayoutType::MODEL, Graphics::StageFlag::FRAGMENT, texture_ptr->nameToTex[key].textureImageView, texture_ptr->nameToTex[key].textureSampler);
-		}
-
 		items.emplace_back(DrawItem( std::move(t_mesh), std::move(mat) ));
 	}
 
@@ -115,7 +104,7 @@ namespace Draw {
 		for (size_t i = 0; i < node.mNumMeshes; i++)
 		{
 			const auto meshIdx = node.mMeshes[i];
-			items[meshIdx].material.Update("Model", "modelTrans", nowTrans);
+			items[meshIdx].material.SetValue("Model", "modelTrans", nowTrans);
 
 		}
 		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), *tmp, node.mName.C_Str(), nextId);

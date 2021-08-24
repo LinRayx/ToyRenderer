@@ -157,9 +157,12 @@
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\Material.h" />
+    <ClInclude Include="..\src\Drawable\MaterialBase.h" />
     <ClInclude Include="..\src\Drawable\Model.h" />
     <ClInclude Include="..\src\Drawable\ModelWindow.h" />
     <ClInclude Include="..\src\Drawable\ModelWindowBase.h" />
+    <ClInclude Include="..\src\Drawable\OutlineMaterial.h" />
+    <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
     <ClInclude Include="..\src\Drawable\Texture.h" />
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
     <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h" />
@@ -169,6 +172,7 @@
     <ClInclude Include="..\src\Exception\ModelException.h" />
     <ClInclude Include="..\src\imgui\ImguiManager.h" />
     <ClInclude Include="..\src\RenderSystem\FrameTimer.h" />
+    <ClInclude Include="..\src\RenderSystem\OutlinePSO.h" />
     <ClInclude Include="..\src\RenderSystem\PhonePSO.h" />
     <ClInclude Include="..\src\RenderSystem\PipelineStateObject.h" />
     <ClInclude Include="..\src\RenderSystem\RenderLoop.h" />
@@ -194,6 +198,7 @@
     <ClInclude Include="..\src\VulkanCore\RenderPass.h" />
     <ClInclude Include="..\src\VulkanCore\Synchronization.h" />
     <ClInclude Include="..\src\VulkanCore\Vulkan.h" />
+    <ClInclude Include="..\src\VulkanCore\VulkanInitalizers.hpp" />
     <ClInclude Include="..\src\VulkanCore\vulkan_core_headers.h" />
   </ItemGroup>
   <ItemGroup>
@@ -210,8 +215,11 @@
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
     <ClCompile Include="..\src\Drawable\Material.cpp" />
+    <ClCompile Include="..\src\Drawable\MaterialBase.cpp" />
     <ClCompile Include="..\src\Drawable\Model.cpp" />
     <ClCompile Include="..\src\Drawable\ModelWindow.cpp" />
+    <ClCompile Include="..\src\Drawable\OutlineMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\Texture.cpp" />
     <ClCompile Include="..\src\DynamicVariable\DynamicConstant.cpp" />
     <ClCompile Include="..\src\DynamicVariable\LayoutCodex.cpp" />
@@ -221,6 +229,7 @@
     <ClCompile Include="..\src\imgui\ImguiManager.cpp" />
     <ClCompile Include="..\src\imgui\imgui_vulkan.cpp" />
     <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp" />
+    <ClCompile Include="..\src\RenderSystem\OutlinePSO.cpp" />
     <ClCompile Include="..\src\RenderSystem\PhonePSO.cpp" />
     <ClCompile Include="..\src\RenderSystem\PipelineStateObject.cpp" />
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp" />
@@ -242,6 +251,7 @@
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.frag.glsl" />
     <None Include="..\src\shaders\desc_test.vert.glsl" />
+    <None Include="..\src\shaders\Outline.vert.glsl" />
     <None Include="..\src\shaders\Phone.frag.glsl" />
     <None Include="..\src\shaders\Phone.vert.glsl" />
   </ItemGroup>

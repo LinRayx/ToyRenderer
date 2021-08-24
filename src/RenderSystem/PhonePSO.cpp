@@ -3,7 +3,7 @@
 
 namespace RenderSystem
 {
-	PhonePSO::PhonePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr, shared_ptr<Graphics::Image> image_ptr) : PipelineStateObject(vulkan_ptr)
+	PhonePSO::PhonePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr) : PipelineStateObject(vulkan_ptr)
 	{
 		vShader_ptr = make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/Phone.vert.glsl", "../src/shaders", "main");
 		pShader_ptr = make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/Phone.frag.glsl", "../src/shaders", "main");
@@ -14,22 +14,7 @@ namespace RenderSystem
 		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
 		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
 		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::TEXTURE2D, Graphics::StageFlag::FRAGMENT);
-
-		using namespace Dcb;
-		Dcb::VertexBuffer vbuf(
-			std::move(
-				Dcb::VertexLayout{}
-				.Append(VertexLayout::Position3D)
-				.Append(VertexLayout::Normal)
-			)
-		);
-
-		renderpass_ptr = make_shared<Graphics::RenderPass>(vulkan_ptr, image_ptr);
-
-		//renderpass_ptr->AddResource("Color1", false);
-		renderpass_ptr->AddResource("Depth", true);
-
-		renderpass_ptr->CreateRenderPass();
+		desc_layout_ptr->Compile();
 	}
 
 	PhonePSO::~PhonePSO()
@@ -46,13 +31,10 @@ namespace RenderSystem
 		vBuffer_ptr = models[0]->items[0].mesh.vertex_buffer;
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		auto bindingDescription = vBuffer_ptr->bindingDescription;
-		auto attributeDescriptions = vBuffer_ptr->attributeDescriptions;
-
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vBuffer_ptr->attributeDescriptions.size());
+		vertexInputInfo.pVertexBindingDescriptions = &vBuffer_ptr->bindingDescription;;
+		vertexInputInfo.pVertexAttributeDescriptions = vBuffer_ptr->attributeDescriptions.data();
 
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -146,9 +128,9 @@ namespace RenderSystem
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDepthStencilState = &depth_stencil_info;
 
-		desc_layout_ptr->Compile();
+		
 		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
-		pipelineInfo.renderPass = renderpass_ptr->renderPass;
+		pipelineInfo.renderPass = Graphics::nameToRenderPass["default"]->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -166,16 +148,15 @@ namespace RenderSystem
 		auto& drawCmdBuffers = cmd->drawCmdBuffers;
 		for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
 
+			auto& rp = Graphics::nameToRenderPass["default"];
 			VkRenderPassBeginInfo renderPassInfo{};
 			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = renderpass_ptr->renderPass;
-			renderPassInfo.framebuffer = renderpass_ptr->framebuffers[i];
+			renderPassInfo.renderPass = rp->renderPass;
+			renderPassInfo.framebuffer = rp->framebuffers[i];
 			renderPassInfo.renderArea.offset = { 0, 0 };
 			renderPassInfo.renderArea.extent = vulkan_ptr->GetSwapchain().extent;
-
-
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(renderpass_ptr->clearValues.size());
-			renderPassInfo.pClearValues = renderpass_ptr->clearValues.data();
+			renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
+			renderPassInfo.pClearValues = rp->clearValues.data();
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 

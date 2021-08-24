@@ -33,17 +33,16 @@ namespace Draw
 		void createTextureImage(std::string path, TextureData& texData);
 		void createTextureImageView(TextureData& texData);
 		void createTextureSampler(TextureData& texData);
-		
-
 
 		shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
 		shared_ptr<Graphics::Image> image_ptr;
-
-		
 	};
 
+	extern Texture* textureManager;
+	void InitTextureMgr(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::Image> image_ptr);
 
+	void DestroyTextureMgr();
 }
 
 #endif // !DRAW_TEXTURE_H

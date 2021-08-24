@@ -13,29 +13,17 @@ namespace Control
 	{
 	}
 
-	void Scene::InitSceneData(Draw::Material* material)
+	void Scene::InitSceneData(Draw::MaterialBase* material)
 	{
-		Dcb::RawLayout layout;
-		layout.Add<Dcb::Matrix>("viewMat");
-		layout.Add<Dcb::Matrix>("projMat");
-
-		Dcb::RawLayout layout2;
-		layout2.Add<Dcb::Float3>("viewPos");
-		layout2.Add<Dcb::Float3>("direLightDir");
-		layout2.Add<Dcb::Float3>("direLightColor");
-
-		material->AddLayout("ViewAndProj", std::move(layout), Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		material->AddLayout("Light", std::move(layout2), Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
-
-		material->Update("Light", "direLightDir", directionLight.direciton);
-		material->Update("Light", "direLightColor", directionLight.color);
 	}
 
-	void Scene::Update(Draw::Material* material)
+	void Scene::Update(Draw::MaterialBase* material)
 	{
-		material->Update("ViewAndProj", "viewMat", camera_ptr->GetViewMatrix());
-		material->Update("ViewAndProj", "projMat", camera_ptr->GetProjectMatrix());
-		material->Update("Light", "viewPos", camera_ptr->GetViewPos());
+		material->SetValue("ViewAndProj", "viewMat", camera_ptr->GetViewMatrix());
+		material->SetValue("ViewAndProj", "projMat", camera_ptr->GetProjectMatrix());
+		material->SetValue("Light", "viewPos", camera_ptr->GetViewPos());
+		material->SetValue("Light", "direLightDir", directionLight.direciton);
+		material->SetValue("Light", "direLightColor", directionLight.color);
 	}
 
 }

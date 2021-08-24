@@ -30,7 +30,7 @@ namespace RenderSystem
 
 	void RenderLoop::Init()
 	{
-		PhonePSO* phonePSO = new PhonePSO(vulkan_ptr, desc_pool_ptr, image_ptr);
+		PhonePSO* phonePSO = new PhonePSO(vulkan_ptr, desc_pool_ptr);
 		
 		Draw::Model* model1 = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, texture_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
 		// Draw::Model* model2 = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, "../assets/plane.obj");

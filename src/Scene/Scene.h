@@ -8,7 +8,7 @@
 #include <memory>
 #include <iostream>
 
-#include "Drawable/Material.h"
+#include "Drawable/MaterialBase.h"
 
 using namespace std;
 
@@ -20,8 +20,8 @@ namespace Control
 		Scene(shared_ptr<Graphics::Vulkan> vulkan_ptr, int width, int height);
 		~Scene();
 
-		void InitSceneData(Draw::Material* material);
-		void Update(Draw::Material* material);
+		void InitSceneData(Draw::MaterialBase* material);
+		void Update(Draw::MaterialBase* material);
 
 		shared_ptr<Camera> camera_ptr;
 

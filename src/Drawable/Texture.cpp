@@ -14,6 +14,8 @@ namespace Draw
 
 	void Texture::CreateTexture(std::string path, std::string texName)
 	{
+		if (nameToTex.count(texName) == 0)
+			return;
 		TextureData texData;
 		createTextureImage(path, texData);
 		createTextureImageView(texData);
@@ -88,6 +90,18 @@ namespace Draw
         if (vkCreateSampler(vulkan_ptr->GetDevice().device, &samplerInfo, nullptr, &texData.textureSampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
+	}
+
+	Texture* textureManager;
+
+	void InitTextureMgr(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::Image> image_ptr)
+	{
+		textureManager = new Texture(vulkan_ptr, cmdBuf_ptr, image_ptr);
+	}
+
+	void DestroyTextureMgr()
+	{
+		delete textureManager;
 	}
 
 }

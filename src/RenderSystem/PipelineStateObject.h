@@ -36,6 +36,9 @@ namespace RenderSystem
 		{}
 		virtual void Add(Bind::VertexBuffer& vbuf, Graphics::DescriptorSetCore& desc)
 		{}
+
+		virtual void Add(Draw::Model* model) {};
+
 		virtual std::vector< Draw::Model* >& GetModels()
 		{
 			std::vector < Draw::Model*> v;
@@ -45,10 +48,8 @@ namespace RenderSystem
 	protected:
 		shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		
-		shared_ptr<Graphics::RenderPass> renderpass_ptr;
 		shared_ptr<Graphics::Pipeline> pipeline_ptr;
 		
-
 		shared_ptr<Bind::VertexShader> vShader_ptr;
 		shared_ptr<Bind::PixelShader> pShader_ptr;
 

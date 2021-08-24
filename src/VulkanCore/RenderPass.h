@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <string>
+#include <map>
 using namespace std;
 
 namespace Draw
@@ -54,6 +55,10 @@ namespace Graphics {
 		std::vector<VkFramebuffer> framebuffers;
 		std::vector<VkClearValue> clearValues;
 	};
+	
+	extern map<string, RenderPass*> nameToRenderPass;
+
+	void InitRenderPass(shared_ptr<Vulkan> vulkan_ptr, shared_ptr<Image> image_ptr);
 
 }
 #endif // !RENDER_PASS_H

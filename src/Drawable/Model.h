@@ -12,11 +12,12 @@
 #include "VertexBuffer.h"
 #include "Scene.h"
 
-#include "Drawable/Material.h"
+#include "Drawable/PhoneMaterial.h"
 #include "Drawable/Texture.h"
 
 #include "Bindable/IndexBuffer.h"
 #include "Drawable/ModelWindowBase.h"
+
 
 namespace Draw
 {
@@ -64,9 +65,9 @@ namespace Draw
 
 	struct DrawItem
 	{
-		DrawItem(Mesh mesh, Material mat) : mesh(mesh), material(mat) {}
+		DrawItem(Mesh mesh, MaterialBase mat) : mesh(mesh), material(mat) {}
 		Mesh mesh;
-		Material material;
+		MaterialBase material;
 	};
 
 	class Model : public ModelBase

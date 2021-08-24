@@ -9,14 +9,13 @@ namespace RenderSystem
 	class PhonePSO : public PipelineStateObject
 	{
 	public:
-		PhonePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr,
-			shared_ptr<Graphics::Image> image_ptr);
+		PhonePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr);
 		~PhonePSO();
 		virtual void BuildPipeline() override;
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd) override;
 		
-		void Update(int cur);
-		void Add(Draw::Model* model);
+		virtual void Update(int cur) override;
+		virtual void Add(Draw::Model* model) override;
 		std::vector< Draw::Model* >& GetModels();
 	private:
 

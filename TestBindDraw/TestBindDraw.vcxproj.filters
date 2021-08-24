@@ -219,6 +219,21 @@
     <ClInclude Include="..\src\Drawable\ModelWindowBase.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\RenderSystem\OutlinePSO.h">
+      <Filter>头文件\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\VulkanCore\VulkanInitalizers.hpp">
+      <Filter>头文件\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\OutlineMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\MaterialBase.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\PhoneMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -344,6 +359,18 @@
     <ClCompile Include="..\src\Drawable\ModelWindow.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\RenderSystem\OutlinePSO.cpp">
+      <Filter>源文件\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\MaterialBase.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\OutlineMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -356,6 +383,9 @@
       <Filter>源文件\Shaders</Filter>
     </None>
     <None Include="..\src\shaders\Phone.frag.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Outline.vert.glsl">
       <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>

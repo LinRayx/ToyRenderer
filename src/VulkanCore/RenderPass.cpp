@@ -201,4 +201,15 @@ namespace Graphics {
 			resource.imageView = image_ptr->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 		}
 	}
+
+	map<string, RenderPass*> nameToRenderPass;
+
+	void InitRenderPass(shared_ptr<Vulkan> vulkan_ptr, shared_ptr<Image> image_ptr)
+	{
+		RenderPass* rp = new RenderPass(vulkan_ptr, image_ptr);
+		rp->AddResource("Depth", true);
+		rp->CreateRenderPass();
+		nameToRenderPass["default"] = rp;
+	}
+
 }
