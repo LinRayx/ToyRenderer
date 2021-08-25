@@ -43,8 +43,9 @@ namespace Graphics
 		submitInfo.pWaitSemaphores = waitSemaphores.data();
 		submitInfo.pWaitDstStageMask = waitStages;
 
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &cmdBuf_ptr->drawCmdBuffers[imageIndex];
+		submitInfo.commandBufferCount = cmdBufs.size();
+
+		submitInfo.pCommandBuffers = cmdBufs.data();
 
 		signalSemaphores.emplace_back(sync_ptr->renderComplete[currentFrame]);
 		submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
@@ -55,7 +56,7 @@ namespace Graphics
 		if (vkQueueSubmit(vulkan_ptr->device.queue, 1, &submitInfo, sync_ptr->waitFences[currentFrame]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to submit draw command buffer!");
 		}
-
+		vkQueueWaitIdle(vulkan_ptr->device.queue);
 		VkPresentInfoKHR presentInfo{};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 

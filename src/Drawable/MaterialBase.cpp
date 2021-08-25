@@ -6,6 +6,7 @@ namespace Draw
 		: vulkan_ptr(vulkan_ptr)
 	{
 		desc_ptr = std::make_shared<Graphics::DescriptorSetCore>(vulkan_ptr, desc_pool_ptr);
+		dsstate_ptr = nullptr;
 		Dcb::RawLayout layout;
 		layout.Add<Dcb::Matrix>("viewMat");
 		layout.Add<Dcb::Matrix>("projMat");
@@ -50,8 +51,9 @@ namespace Draw
 		{
 			aiString str;
 			mat->GetTexture(type, i, &str);
-			Draw::textureManager->CreateTexture(directory + str.C_Str(), meshName + "_" + getTypeName(type));
-			addTexture(Graphics::LayoutType::MODEL, Graphics::StageFlag::FRAGMENT, Draw::textureManager->nameToTex[meshName].textureImageView, Draw::textureManager->nameToTex[meshName].textureSampler);
+			string key = meshName + "_" + getTypeName(type);
+			Draw::textureManager->CreateTexture(directory + str.C_Str(), key);
+			addTexture(Graphics::LayoutType::MODEL, Graphics::StageFlag::FRAGMENT, Draw::textureManager->nameToTex[key].textureImageView, Draw::textureManager->nameToTex[key].textureSampler);
 		}
 		SetValue("TextureFlags", "Has" + getTypeName(type) + "Tex", mat->GetTextureCount(type) > 0);
 		return mat->GetTextureCount(type);

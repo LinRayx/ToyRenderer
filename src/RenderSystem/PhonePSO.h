@@ -17,6 +17,8 @@ namespace RenderSystem
 		virtual void Update(int cur) override;
 		virtual void Add(Draw::Model* model) override;
 		std::vector< Draw::Model* >& GetModels();
+	protected:
+		virtual void buildPipeline(Draw::DrawItem* item) override;
 	private:
 
 	};

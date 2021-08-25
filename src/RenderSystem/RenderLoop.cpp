@@ -8,6 +8,8 @@ namespace RenderSystem
 		vulkan_ptr = make_shared<Graphics::Vulkan>();
 		cmdPool_ptr = make_shared<Graphics::CommandPool>(vulkan_ptr);
 		cmdBuf_ptr = make_shared<Graphics::CommandBuffer>(vulkan_ptr, cmdPool_ptr);
+		ui_cmdBuf_ptr = make_shared<Graphics::CommandBuffer>(vulkan_ptr, cmdPool_ptr);
+		
 		sync_ptr = make_shared<Graphics::Synchronization>(vulkan_ptr);
 		cmdQue_ptr = make_shared<Graphics::CommandQueue>(vulkan_ptr, sync_ptr);
 		desc_pool_ptr = make_shared<Graphics::DescriptorPool>(vulkan_ptr);
@@ -30,6 +32,10 @@ namespace RenderSystem
 
 	void RenderLoop::Init()
 	{
+
+		Graphics::InitRenderPass(vulkan_ptr, image_ptr);
+		Draw::InitTextureMgr(vulkan_ptr, cmdBuf_ptr, image_ptr);
+
 		PhonePSO* phonePSO = new PhonePSO(vulkan_ptr, desc_pool_ptr);
 		
 		Draw::Model* model1 = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, texture_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
@@ -47,6 +53,12 @@ namespace RenderSystem
 		for (size_t i = 0; i < pso_vecs.size(); ++i) {
 			pso_vecs[i]->BuildPipeline();
 		}
+		cmdBuf_ptr->Begin();
+		for (size_t i = 0; i < pso_vecs.size(); ++i) {
+			pso_vecs[i]->BuildCommandBuffer(cmdBuf_ptr);
+		}
+		cmdBuf_ptr->End();
+
 
 		while (vulkan_ptr->WindowShouldClose())
 		{
@@ -60,30 +72,32 @@ namespace RenderSystem
 			scene_ptr->camera_ptr->Control_camera(vulkan_ptr->swapchain.window, frameT_ptr->Get());
 			int imageIndex = cmdQue_ptr->GetCurImageIndex();
 
-			gui_ptr->beginFrame();
-			int cnt = 0;
-			for (size_t i = 0; i < pso_vecs.size(); ++i) {
-				auto models = pso_vecs[i]->GetModels();
-				for (size_t j = 0; j < models.size(); ++j) {
-					modelWindows[cnt++].SetModel(models[j]);
-				}
-			}
-			cmdBuf_ptr->Begin();
-			for (size_t i = 0; i < pso_vecs.size(); ++i) {
-				pso_vecs[i]->BuildCommandBuffer(cmdBuf_ptr);
-			}
-
-			gui_ptr->BuildCommandBuffer(cmdBuf_ptr);
-			cmdBuf_ptr->End();
-			cmdQue_ptr->SetCommandBuffer(cmdBuf_ptr);
-
 			for (size_t i = 0; i < pso_vecs.size(); ++i) {
 				pso_vecs[i]->Update(imageIndex);
 			}
-
+			
+			cmdQue_ptr->AddCommandBuffer(cmdBuf_ptr->drawCmdBuffers[imageIndex]);
+			// renderGUI(imageIndex);
 			cmdQue_ptr->Submit();
-
 		}
+	}
+
+	void RenderLoop::renderGUI(int imageIndex)
+	{
+		gui_ptr->beginFrame();
+		int cnt = 0;
+		for (size_t i = 0; i < pso_vecs.size(); ++i) {
+			auto models = pso_vecs[i]->GetModels();
+			for (size_t j = 0; j < models.size(); ++j) {
+				modelWindows[cnt++].SetModel(models[j]);
+			}
+		}
+		ui_cmdBuf_ptr->Begin();
+		gui_ptr->BuildCommandBuffer(ui_cmdBuf_ptr);
+		ui_cmdBuf_ptr->End();
+		gui_ptr->endFrame();
+
+		cmdQue_ptr->AddCommandBuffer(ui_cmdBuf_ptr->drawCmdBuffers[imageIndex]);
 	}
 
 }

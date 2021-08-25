@@ -5,7 +5,7 @@ namespace Control
 	Camera::Camera(int sc_width, int sc_height, float move_speed, float move_sen) 
 		: sc_width(sc_width), sc_height(sc_height)
 	{
-		Position = glm::vec3(0, 0, 3);
+		Position = glm::vec3(0, -10, 5);
 		WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		Front = glm::vec3(0.0f, 0.0f, -1.0f);
 		Zoom = 45.0f;

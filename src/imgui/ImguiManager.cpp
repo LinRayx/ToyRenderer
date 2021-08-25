@@ -92,6 +92,11 @@ namespace GUI
         ImGui::End();
     }
 
+    void ImguiManager::endFrame()
+    {
+        ImGui::EndFrame();
+    }
+
     bool ImguiManager::GetData()
     {
         // Rendering

@@ -21,9 +21,15 @@ namespace Graphics
 			this->cmdBuf_ptr = cmdBuf_ptr;
 		}
 
+		void AddCommandBuffer(VkCommandBuffer& cmdBuf)
+		{
+			cmdBufs.emplace_back(cmdBuf);
+		}
+
 		void Submit()
 		{
 			drawFrame();
+			cmdBufs.clear();
 		}
 
 		int GetCurImageIndex();
@@ -39,7 +45,7 @@ namespace Graphics
 		std::shared_ptr<Vulkan> vulkan_ptr;
 		std::shared_ptr<Synchronization> sync_ptr;
 		std::shared_ptr<CommandBuffer> cmdBuf_ptr;
-
+		std::vector<VkCommandBuffer> cmdBufs;
 	};
 }
 

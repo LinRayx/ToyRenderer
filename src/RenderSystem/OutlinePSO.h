@@ -24,6 +24,7 @@ namespace RenderSystem
 
 		shared_ptr<Bind::VertexShader> v_outlineShader_ptr;
 		shared_ptr<Bind::PixelShader> p_outlineShader_ptr;
+		
 
 		VkPipeline pipelineStencil;
 		VkPipeline pipelineOutline;

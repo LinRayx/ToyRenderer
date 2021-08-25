@@ -26,6 +26,7 @@ namespace GUI
 		void Init();
 		void UpLoadFont(VkCommandBuffer command_buffer, VkQueue g_Queue);
 		void beginFrame();
+		void endFrame();
 
 		bool GetData();
 

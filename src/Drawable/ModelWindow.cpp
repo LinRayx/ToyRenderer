@@ -1,5 +1,9 @@
 #include "ModelWindow.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+
 namespace Draw
 {
 	ModelWindow::ModelWindow()
@@ -40,6 +44,32 @@ namespace Draw
 		ImGui::Begin("Model");
 		ImGui::Columns(2, nullptr, true);
 		model->Accept(this);
+		ImGui::NextColumn();
+		if (pSelectedNode != nullptr)
+		{
+			bool dirty = false;
+			const auto dcheck = [&dirty](bool changed) {dirty = dirty || changed; };
+			auto& tf = ResolveTransform();
+			ImGui::TextColored({ 0.4f,1.0f,0.6f,1.0f }, "Translation");
+			dcheck(ImGui::SliderFloat("X", &tf.x, -60.f, 60.f));
+			dcheck(ImGui::SliderFloat("Y", &tf.y, -60.f, 60.f));
+			dcheck(ImGui::SliderFloat("Z", &tf.z, -60.f, 60.f));
+			ImGui::TextColored({ 0.4f,1.0f,0.6f,1.0f }, "Orientation");
+			dcheck(ImGui::SliderAngle("X-rotation", &tf.xRot, -180.0f, 180.0f));
+			dcheck(ImGui::SliderAngle("Y-rotation", &tf.yRot, -180.0f, 180.0f));
+			dcheck(ImGui::SliderAngle("Z-rotation", &tf.zRot, -180.0f, 180.0f));
+			if (dirty)
+			{
+				glm::mat4 imat = glm::mat4(1.0f);
+				imat[1][1] = -1;
+				imat = glm::translate(imat, glm::vec3(tf.x, tf.y, tf.z));
+				imat = glm::rotate(imat, tf.xRot, glm::vec3(1, 0, 0));
+				imat = glm::rotate(imat, tf.yRot, glm::vec3(0, 1, 0));
+				imat = glm::rotate(imat, tf.zRot, glm::vec3(0, 0, 1));
+
+				pSelectedNode->SetTransform(imat);
+			}
+		}
 		ImGui::End();
 	}
 }

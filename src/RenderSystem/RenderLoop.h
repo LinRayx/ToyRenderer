@@ -22,10 +22,14 @@ namespace RenderSystem
 
 		void Loop();
 	private:
+
+		void renderGUI(int imageIndex);
+
 		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr;
 		shared_ptr<Graphics::Image> image_ptr;
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
+		shared_ptr<Graphics::CommandBuffer> ui_cmdBuf_ptr;
 		shared_ptr<Graphics::CommandQueue> cmdQue_ptr;
 		shared_ptr<Graphics::CommandPool> cmdPool_ptr;
 		shared_ptr<Graphics::Synchronization> sync_ptr;

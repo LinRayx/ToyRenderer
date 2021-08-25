@@ -9,6 +9,8 @@
 #include <assimp/scene.h>
 #include "Drawable/Texture.h"
 
+#include "Bindable/DepthStencilState.h";
+
 namespace Draw
 {
 	class MaterialBase
@@ -22,12 +24,19 @@ namespace Draw
 		}
 		void Update(int cur);
 
+		void SetState(Bind::DepthStencilStateType type)
+		{
+			depthStencilType = type;
+		}
+
 		void Compile(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr);
 
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName) {}
 
 
 		std::shared_ptr<Graphics::DescriptorSetCore> desc_ptr;
+
+		Bind::DepthStencilStateType depthStencilType = Bind::DepthStencilStateType::Default;
 
 		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		std::map<std::string, shared_ptr<Graphics::Buffer>> buffer_ptrs;

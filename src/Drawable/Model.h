@@ -49,15 +49,18 @@ namespace Draw
 	class Node
 	{
 	public:
-		Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform, const char* name, int id) ;
+		Node(std::vector<Mesh*> meshPtrs, std::vector<MaterialBase*> matPtrs, const glm::mat4& transform, const char* name, int id) ;
 		void AddChild(std::unique_ptr<Node> pChild);
 		void Accept(ModelWindowBase* window);
 		int GetId();
 		string GetName();
 		bool HasChild();
+		glm::mat4& GetTransform();
+		void SetTransform(glm::mat4 transform);
 	private:
 		vector<std::unique_ptr<Node>> childPtrs;
 		vector< Mesh* > curMeshes;
+		vector< MaterialBase* > curMats;
 		string name;
 		int id;
 		glm::mat4 transform;

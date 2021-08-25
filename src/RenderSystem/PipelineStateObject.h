@@ -13,7 +13,6 @@
 
 #include "DynamicVariable/DynamicVertex.h"
 
-#include "Drawable/Material.h"
 #include "Drawable/Model.h"
 
 #include <memory>
@@ -46,6 +45,9 @@ namespace RenderSystem
 		}
 
 	protected:
+
+		virtual void buildPipeline(Draw::DrawItem* item) {}
+
 		shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		
 		shared_ptr<Graphics::Pipeline> pipeline_ptr;
@@ -58,6 +60,7 @@ namespace RenderSystem
 		shared_ptr<Bind::VertexBuffer> vBuffer_ptr;
 
 		std::vector< Draw::Model* > models;
+		std::vector< Draw::DrawItem* > drawItems;
 	};
 }
 

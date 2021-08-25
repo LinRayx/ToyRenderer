@@ -3,6 +3,8 @@
 
 #include "Exception/ModelException.h"
 #include "DynamicVertex.h"
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Draw {
 
@@ -45,7 +47,7 @@ namespace Draw {
 		}
 
 		auto t = glm::mat4(1);
-		t[1][1] = -1;
+		t[1][1] = -1;	
 		int nextId = 0;
 		pRoot = ParseNode(*pScene->mRootNode, t, nextId);
 	}
@@ -97,17 +99,19 @@ namespace Draw {
 		const glm::mat4* tmp = reinterpret_cast<const glm::mat4* >(&node.mTransformation);
 		
 		nowTrans = (*tmp) * nowTrans;
-
+		// cout << glm::to_string(nowTrans) << endl;
 		std::vector<Mesh*> curMeshPtrs;
 		curMeshPtrs.reserve(node.mNumMeshes);
-
+		std::vector<MaterialBase*> curMatPtrs;
+		curMatPtrs.reserve(node.mNumMeshes);
 		for (size_t i = 0; i < node.mNumMeshes; i++)
 		{
 			const auto meshIdx = node.mMeshes[i];
 			items[meshIdx].material.SetValue("Model", "modelTrans", nowTrans);
-
+			curMatPtrs.push_back(&items[meshIdx].material);
+			curMeshPtrs.push_back(&items[meshIdx].mesh);
 		}
-		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), *tmp, node.mName.C_Str(), nextId);
+		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), std::move(curMatPtrs), *tmp, node.mName.C_Str(), nextId);
 		for (size_t i = 0; i < node.mNumChildren; i++)
 		{
 			pNode->AddChild(ParseNode(*node.mChildren[i], nowTrans, ++nextId));
@@ -151,8 +155,9 @@ namespace Draw {
 	}
 
 
-	Node::Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform, const char* name, int id)
-		: curMeshes(std::move(meshPtrs)), id(id)
+	Node::Node(std::vector<Mesh*> meshPtrs, std::vector<MaterialBase*> matPtrs,
+		const glm::mat4& transform, const char* name, int id)
+		: curMeshes(std::move(meshPtrs)), curMats(std::move(matPtrs)), id(id)
 	{
 		this->transform = transform;
 		this->name = name;
@@ -186,6 +191,23 @@ namespace Draw {
 	bool Node::HasChild()
 	{
 		return childPtrs.size() > 0;
+	}
+
+	glm::mat4& Node::GetTransform()
+	{
+		return transform;
+	}
+
+	void Node::SetTransform(glm::mat4 transform)
+	{
+		this->transform *= transform;
+		for (auto& mat : curMats) {
+			mat->SetValue("Model", "modelTrans", transform);
+		}
+		for (auto& child : childPtrs) {
+			child->SetTransform(transform);
+		}
+		// material.SetValue("Model", "modelTrans", nowTrans);
 	}
 
 	Mesh::Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf)

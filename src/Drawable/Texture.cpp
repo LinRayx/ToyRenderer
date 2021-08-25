@@ -14,7 +14,7 @@ namespace Draw
 
 	void Texture::CreateTexture(std::string path, std::string texName)
 	{
-		if (nameToTex.count(texName) == 0)
+		if (nameToTex.count(texName) > 0)
 			return;
 		TextureData texData;
 		createTextureImage(path, texData);

@@ -76,6 +76,9 @@
     <Filter Include="头文件\imgui">
       <UniqueIdentifier>{02f6aef8-44c8-4d63-95a8-1be4cb304f3a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Utils">
+      <UniqueIdentifier>{17f2efb2-a814-4b45-8c48-ab437d22b9c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -201,9 +204,6 @@
     <ClInclude Include="..\src\Bindable\Texture.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Drawable\Material.h">
-      <Filter>头文件\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Drawable\Texture.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
@@ -233,6 +233,9 @@
     </ClInclude>
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h">
       <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Bindable\DepthStencilState.h">
+      <Filter>头文件\Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -341,9 +344,6 @@
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp">
       <Filter>源文件\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Drawable\Material.cpp">
-      <Filter>源文件\Drawable</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Drawable\Texture.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
@@ -371,6 +371,12 @@
     <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Utils\GloableClass.cpp">
+      <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Bindable\DepthStencilState.cpp">
+      <Filter>源文件\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -386,6 +392,9 @@
       <Filter>源文件\Shaders</Filter>
     </None>
     <None Include="..\src\shaders\Outline.vert.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Outline.frag.glsl">
       <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>

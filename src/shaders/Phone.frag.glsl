@@ -12,15 +12,24 @@ layout (set = 0, binding = 1) uniform SceneParam
 	vec3 directLightDir;
 	vec3 directLightColor;
 }sParam;
-
-layout (set = 1, binding = 1) uniform sampler2D diffuse_tex;
+layout(set = 1, binding = 1) uniform ModelParam{
+	bool hasDiffuseTex;
+	bool hasSpecularTex;
+} mParam;
+layout (set = 1, binding = 2) uniform sampler2D diffuse_tex;
+layout(set = 1, binding = 3) uniform sampler2D specular_tex;
 
 void main() {
 
-	vec3 diffuseColor = texture(diffuse_tex, texCoord).rgb;
+	vec3 diffuseColor;
+	if (mParam.hasDiffuseTex) {
+		diffuseColor = texture(diffuse_tex, texCoord).rgb;
+	}
+	else {
+		diffuseColor = vec3(1, 1, 1);
+	}
+	vec3 ambient = 0.3 * diffuseColor;
 
-	float specularStrength = 0.5;
-	vec3 ambient = vec3(0.3f);
 	vec3 norm = normalize(worldNormal);
 	vec3 viewDir = normalize(sParam.viewPos-worldPos);
 	
@@ -30,11 +39,18 @@ void main() {
 	float diff = max(dot(norm, -lightDir), 0.0);
 	vec3 diffuse = diff * diffuseColor;
 	
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-	vec3 specular = specularStrength * spec * sParam.directLightColor;
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(norm, halfwayDir), 0.0), 32.0);
 
-	vec3 result = (diffuse + specular + ambient) * vec3(1, 1, 1);
+	vec3 specularColor;
+	if (mParam.hasSpecularTex) {
+		specularColor = texture(diffuse_tex, texCoord).rgb;
+	}
+	else {
+		specularColor = vec3(1, 1, 1);
+	}
 
-	outColor = vec4(result, 1);
+	vec3 specular = spec * specularColor;
 
+	outColor = vec4( (diffuse + specular) * sParam.directLightColor + ambient, 1);
 }

@@ -153,10 +153,10 @@
     <ClInclude Include="..\src\Bindable\PipelineLayout.h" />
     <ClInclude Include="..\src\Bindable\PixelShader.h" />
     <ClInclude Include="..\src\Bindable\Shader.h" />
+    <ClInclude Include="..\src\Bindable\DepthStencilState.h" />
     <ClInclude Include="..\src\Bindable\Texture.h" />
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
-    <ClInclude Include="..\src\Drawable\Material.h" />
     <ClInclude Include="..\src\Drawable\MaterialBase.h" />
     <ClInclude Include="..\src\Drawable\Model.h" />
     <ClInclude Include="..\src\Drawable\ModelWindow.h" />
@@ -208,13 +208,13 @@
     <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\src\Bindable\DepthStencilState.cpp" />
     <ClCompile Include="..\src\Bindable\DescriptorSets.cpp" />
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp" />
     <ClCompile Include="..\src\Bindable\PipelineLayout.cpp" />
     <ClCompile Include="..\src\Bindable\PixelShader.cpp" />
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
-    <ClCompile Include="..\src\Drawable\Material.cpp" />
     <ClCompile Include="..\src\Drawable\MaterialBase.cpp" />
     <ClCompile Include="..\src\Drawable\Model.cpp" />
     <ClCompile Include="..\src\Drawable\ModelWindow.cpp" />
@@ -237,6 +237,7 @@
     <ClCompile Include="..\src\Scene\DirectionLight.cpp" />
     <ClCompile Include="..\src\Scene\Scene.cpp" />
     <ClCompile Include="..\src\Test\test.cpp" />
+    <ClCompile Include="..\src\Utils\GloableClass.cpp" />
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp" />
     <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp" />
     <ClCompile Include="..\src\VulkanCore\CommandQueue.cpp" />
@@ -251,6 +252,7 @@
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.frag.glsl" />
     <None Include="..\src\shaders\desc_test.vert.glsl" />
+    <None Include="..\src\shaders\Outline.frag.glsl" />
     <None Include="..\src\shaders\Outline.vert.glsl" />
     <None Include="..\src\shaders\Phone.frag.glsl" />
     <None Include="..\src\shaders\Phone.vert.glsl" />
