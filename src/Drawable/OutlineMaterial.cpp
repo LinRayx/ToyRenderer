@@ -2,7 +2,7 @@
 
 namespace Draw
 {
-	OutlineMaterial::OutlineMaterial()
+	OutlineMaterial::OutlineMaterial() : MaterialBase()
 	{
 
 	}

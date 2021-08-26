@@ -18,15 +18,11 @@ namespace RenderSystem
 		virtual void BuildPipeline() override;
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd) override;
 
-		virtual void Update(int cur) override;
 		virtual void Add(Draw::Model* model) override;
+		void CollectDrawItems();
 	private:
+		Draw::MaterialType matType = Draw::MaterialType::Outline;
 
-		shared_ptr<Bind::VertexShader> v_outlineShader_ptr;
-		shared_ptr<Bind::PixelShader> p_outlineShader_ptr;
-		
-
-		VkPipeline pipelineStencil;
 		VkPipeline pipelineOutline;
 	};
 }

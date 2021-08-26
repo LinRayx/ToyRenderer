@@ -4,6 +4,7 @@
 #include <memory>
 #include "FrameTimer.h"
 #include "RenderSystem/PhonePSO.h"
+#include "RenderSystem/OutlinePSO.h"
 #include "VulkanCore/vulkan_core_headers.h"
 #include "Drawable/Texture.h"
 #include "imgui/ImguiManager.h"

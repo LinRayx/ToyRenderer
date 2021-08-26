@@ -13,10 +13,6 @@ namespace Control
 	{
 	}
 
-	void Scene::InitSceneData(Draw::MaterialBase* material)
-	{
-	}
-
 	void Scene::Update(Draw::MaterialBase* material)
 	{
 		material->SetValue("ViewAndProj", "viewMat", camera_ptr->GetViewMatrix());

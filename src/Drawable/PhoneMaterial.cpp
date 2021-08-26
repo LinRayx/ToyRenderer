@@ -2,7 +2,7 @@
 
 namespace Draw
 {
-	PhoneMaterial::PhoneMaterial()
+	PhoneMaterial::PhoneMaterial() : MaterialBase()
 	{
 		Dcb::RawLayout textureFlags;
 		textureFlags.Add<Dcb::Bool>("HasDiffuseTex");

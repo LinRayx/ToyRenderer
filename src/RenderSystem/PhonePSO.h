@@ -16,10 +16,12 @@ namespace RenderSystem
 		
 		virtual void Update(int cur) override;
 		virtual void Add(Draw::Model* model) override;
+		virtual void CollectDrawItems() override;
 		std::vector< Draw::Model* >& GetModels();
 	protected:
-		virtual void buildPipeline(Draw::DrawItem* item) override;
+		virtual void buildPipeline() override;
 	private:
+		Draw::MaterialType matType = Draw::MaterialType::Phone;
 		VkPipeline pipeline;
 	};
 }

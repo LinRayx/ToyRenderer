@@ -18,6 +18,8 @@ namespace RenderSystem
 		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
 		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
 		desc_layout_ptr->Compile();
+
+
 	}
 
 	PhonePSO::~PhonePSO()
@@ -31,47 +33,33 @@ namespace RenderSystem
 
 	void PhonePSO::BuildPipeline()
 	{
-		for (auto& item : drawItems) {
-			buildPipeline(item);
+		for (auto& model : models) {
+			model->BuildDesc(desc_layout_ptr, matType);
 		}
+		buildPipeline();
 	}
 
 	void PhonePSO::BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
+		CollectDrawItems();
 		auto& drawCmdBuffers = cmd->drawCmdBuffers;
 		for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
 
-			auto& rp = Graphics::nameToRenderPass["default"];
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = rp->renderPass;
-			renderPassInfo.framebuffer = rp->framebuffers[i];
-			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent;
-			renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
-			renderPassInfo.pClearValues = rp->clearValues.data();
-
-			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
 			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
-			for (size_t modelIndex = 0; modelIndex < models.size(); ++modelIndex) {
-				for (size_t itemIndex = 0; itemIndex < models[modelIndex]->items.size(); ++itemIndex) {
-					VkBuffer vertexBuffers[] = { models[modelIndex]->items[itemIndex].mesh.vertex_buffer->Get() };
-					auto indexBuffer = models[modelIndex]->items[itemIndex].mesh.index_buffer;
-					VkDeviceSize offsets[] = { 0 };
-					auto& material = models[modelIndex]->items[itemIndex].material;
-
-					vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
-					vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer->buffer_ptr->buffers[0], 0, VK_INDEX_TYPE_UINT16);
-					vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_layout_ptr->pipelineLayout, 0,
-						static_cast<uint32_t>(material.desc_ptr->descriptorSets[i].size()), material.desc_ptr->descriptorSets[i].data(), 0, nullptr);
-					//vkCmdDraw(drawCmdBuffers[i], static_cast<uint32_t>(models[modelIndex]->items[itemIndex].mesh.vertex_buffer->buffer_ptr->elem_count), 1, 0, 0);
-					vkCmdDrawIndexed(drawCmdBuffers[i], static_cast<uint32_t>(indexBuffer->GetCount()), 1, 0, 0, 0);
-				}
+			for (auto& item : drawItems) {
+				VkBuffer vertexBuffers[] = { item.mesh->vertex_buffer->Get() };
+				auto indexBuffer = item.mesh->index_buffer;
+				VkDeviceSize offsets[] = { 0 };
+				auto& material = item.material;
+				vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
+				vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer->buffer_ptr->buffers[0], 0, VK_INDEX_TYPE_UINT16);
+				vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_layout_ptr->pipelineLayout, 0,
+					static_cast<uint32_t>(material->desc_ptr->descriptorSets[i].size()), material->desc_ptr->descriptorSets[i].data(), 0, nullptr);
+				vkCmdDrawIndexed(drawCmdBuffers[i], static_cast<uint32_t>(indexBuffer->GetCount()), 1, 0, 0, 0);
 			}
 
-			vkCmdEndRenderPass(drawCmdBuffers[i]);
+			
 		}
 	}
 
@@ -85,18 +73,28 @@ namespace RenderSystem
 	void PhonePSO::Add(Draw::Model* model)
 	{
 		models.push_back(model);
-		for (size_t i = 0; i < model->items.size(); ++i) {
-			drawItems.emplace_back(&model->items[i]);
+		model->AddMaterial(matType);
+	}
+	void PhonePSO::CollectDrawItems()
+	{
+		for (auto& model : models) {
+			for (int i = 0; i < model->objects.size(); ++i) {
+				DrawItem drawItem(&model->objects[i].mesh, model->objects[i].materials[matType]);
+			}
+			for (auto& obj : model->objects) {
+				if (obj.materials.count(matType) == 0) continue;
+				DrawItem drawItem(&obj.mesh, obj.materials[matType]);
+				drawItems.emplace_back(std::move(drawItem));
+			}
 		}
 	}
+
 	std::vector<Draw::Model*>& PhonePSO::GetModels()
 	{
 		return models;
 	}
-	void PhonePSO::buildPipeline(Draw::DrawItem* item)
+	void PhonePSO::buildPipeline()
 	{
-		vBuffer_ptr = item->mesh.vertex_buffer;
-
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
@@ -177,13 +175,6 @@ namespace RenderSystem
 		colorBlending.blendConstants[2] = 0.0f;
 		colorBlending.blendConstants[3] = 0.0f;
 
-		VkPipelineDepthStencilStateCreateInfo depth_stencil_info = {};
-		depth_stencil_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-		depth_stencil_info.depthTestEnable = VK_TRUE;
-		depth_stencil_info.depthWriteEnable = VK_TRUE;
-		depth_stencil_info.depthCompareOp = VK_COMPARE_OP_LESS;
-
-
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = 2;
@@ -194,7 +185,7 @@ namespace RenderSystem
 		pipelineInfo.pRasterizationState = &rasterizer;
 		pipelineInfo.pMultisampleState = &multisampling;
 		pipelineInfo.pColorBlendState = &colorBlending;
-		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(item->material.depthStencilType);
+		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::WriteStencil);
 		pipelineInfo.pDepthStencilState = &depthStencilState;
 
 		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
@@ -205,8 +196,6 @@ namespace RenderSystem
 		if (vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineInfo, NULL, &pipeline)) {
 			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
 		}
-
-		item->material.Compile(desc_layout_ptr);
 	}
 }
 

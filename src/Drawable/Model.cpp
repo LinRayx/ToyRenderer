@@ -23,8 +23,7 @@ namespace Draw {
 	{
 		this->directory = directory;
 		this->scene_ptr = scene_ptr;
-
-		Assimp::Importer imp;
+		
 		const auto pScene = imp.ReadFile(file_path.c_str(),
 			aiProcess_Triangulate |
 			aiProcess_JoinIdenticalVertices |
@@ -50,50 +49,15 @@ namespace Draw {
 
 	void Model::ParseMesh(const aiMesh& mesh, const aiMaterial* material)
 	{
-		using namespace Dcb;
-		Dcb::VertexBuffer vbuf(
-			std::move(
-				Dcb::VertexLayout{}
-				.Append(VertexLayout::Position3D)
-				.Append(VertexLayout::Normal)
-				.Append(VertexLayout::Texture2D)
-			)
-		);
+		Mesh t_mesh(mesh, material, directory);
 
-
-		for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
-			vbuf.EmplaceBack(
-				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
-				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
-				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i])
-			);
-		}
-
-		std::vector<unsigned short> indices;
-		indices.reserve(mesh.mNumFaces * 3);
-		for (unsigned int i = 0; i < mesh.mNumFaces; i++)
-		{
-			const auto& face = mesh.mFaces[i];
-			assert(face.mNumIndices == 3);
-			indices.push_back(face.mIndices[0]);
-			indices.push_back(face.mIndices[1]);
-			indices.push_back(face.mIndices[2]);
-		}
-
-		Mesh t_mesh(vbuf, indices);
-		PhoneMaterial mat;
-		mat.LoadModelTexture(material, directory, mesh.mName.C_Str());
-		mat.SetState(Bind::DepthStencilStateType::WriteStencil);
-		scene_ptr->InitSceneData(&mat);
-		items.emplace_back(DrawItem( std::move(t_mesh), std::move(mat) ));
+		objects.emplace_back(Object(std::move(t_mesh)));
 	}
 
 	std::unique_ptr<Node> Model::ParseNode(const aiNode& node, glm::mat4 nowTrans, int& nextId)
 	{
 		const glm::mat4* tmp = reinterpret_cast<const glm::mat4* >(&node.mTransformation);
-		
-		nowTrans = (*tmp) * nowTrans;
-		// cout << glm::to_string(nowTrans) << endl;
+		// nowTrans *= *tmp;
 		std::vector<Mesh*> curMeshPtrs;
 		curMeshPtrs.reserve(node.mNumMeshes);
 		std::vector<MaterialBase*> curMatPtrs;
@@ -101,9 +65,8 @@ namespace Draw {
 		for (size_t i = 0; i < node.mNumMeshes; i++)
 		{
 			const auto meshIdx = node.mMeshes[i];
-			items[meshIdx].material.SetValue("Model", "modelTrans", nowTrans);
-			curMatPtrs.push_back(&items[meshIdx].material);
-			curMeshPtrs.push_back(&items[meshIdx].mesh);
+			objects[meshIdx].mesh.SetTransform(nowTrans);
+			curMeshPtrs.push_back(&objects[meshIdx].mesh);
 		}
 		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), std::move(curMatPtrs), *tmp, node.mName.C_Str(), nextId);
 		for (size_t i = 0; i < node.mNumChildren; i++)
@@ -116,17 +79,19 @@ namespace Draw {
 
 	void Model::Update(int cur)
 	{
-		for (size_t i = 0; i < items.size(); ++i) {
-			scene_ptr->Update(&items[i].material);
-			items[i].material.Update(cur);
+		for (auto& obj : objects) {
+			for (auto& mat : obj.materials) {
+				scene_ptr->Update(mat.second);
+				mat.second->Update(cur);
+			}
 		}
-		
 	}
 
-	void Model::BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr)
+	void Model::BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr, MaterialType matType)
 	{
-		for (auto it : items) {
-			it.material.Compile(desc_layout_ptr);
+		for (auto& obj : objects) {
+			if (obj.materials.count(matType) == 0) continue;
+			obj.materials[matType]->Compile(desc_layout_ptr);
 		}
 	}
 
@@ -135,19 +100,27 @@ namespace Draw {
 		pRoot->Accept(window);
 	}
 
-	int Model::loadMaterialTextures(const aiMaterial* mat, aiTextureType type, string typeName)
+	void Model::AddMaterial(MaterialType type)
 	{
-		for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
-		{
-			aiString str;
-			mat->GetTexture(type, i, &str);
+		for (auto& it : objects) {
+			MaterialBase* material = nullptr;
+			switch (type)
+			{
+			case Draw::MaterialType::Phone:
+				material = new PhoneMaterial;
+				break;
+			case Draw::MaterialType::Outline:
+				material = new OutlineMaterial;
+				break;
+			default:
+				break;
+			}
 
-			Draw::textureManager->CreateTexture(directory + str.C_Str(), typeName + "_" + to_string(i));
+			it.mesh.SetMaterial(material);
+			material->SetValue("Model", "modelTrans", it.mesh.GetTransform());
+			it.materials[type] = material;
 		}
-
-		return mat->GetTextureCount(type);
 	}
-
 
 	Node::Node(std::vector<Mesh*> meshPtrs, std::vector<MaterialBase*> matPtrs,
 		const glm::mat4& transform, const char* name, int id)
@@ -204,9 +177,62 @@ namespace Draw {
 		// material.SetValue("Model", "modelTrans", nowTrans);
 	}
 
-	Mesh::Mesh(const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf)
+	void Node::Traverse(vector<Mesh*> meshes)
 	{
+		
+	}
+
+	Mesh::Mesh(const aiMesh& mesh, const aiMaterial* material, string directoy)
+	{
+		dire = directoy;
+		this->material = material;
+		this->name = mesh.mName.C_Str();
+
+		using namespace Dcb;
+		Dcb::VertexBuffer vbuf(
+			std::move(
+				Dcb::VertexLayout{}
+				.Append(VertexLayout::Position3D)
+				.Append(VertexLayout::Normal)
+				.Append(VertexLayout::Texture2D)
+			)
+		);
+
+
+		for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
+			vbuf.EmplaceBack(
+				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
+				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
+				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i])
+			);
+		}
+
+		std::vector<unsigned short> ibuf;
+		ibuf.reserve(mesh.mNumFaces * 3);
+		for (unsigned int i = 0; i < mesh.mNumFaces; i++)
+		{
+			const auto& face = mesh.mFaces[i];
+			assert(face.mNumIndices == 3);
+			ibuf.push_back(face.mIndices[0]);
+			ibuf.push_back(face.mIndices[1]);
+			ibuf.push_back(face.mIndices[2]);
+		}
+
 		vertex_buffer = make_shared<Bind::VertexBuffer>(vbuf);
 		index_buffer = make_shared<Bind::IndexBuffer>(ibuf);
+
+
+	}
+	void Mesh::SetMaterial(MaterialBase* mat)
+	{
+		mat->LoadModelTexture(material, dire, name);
+	}
+	void Mesh::SetTransform(glm::mat4 trans)
+	{
+		this->transform = trans;
+	}
+	glm::mat4 Mesh::GetTransform()
+	{
+		return transform;
 	}
 }

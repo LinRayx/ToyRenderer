@@ -127,11 +127,23 @@ namespace Graphics
             if (vkBeginCommandBuffer(drawCmdBuffers[i], &beginInfo) != VK_SUCCESS) {
                 throw std::runtime_error("failed to begin recording command buffer!");
             }
+
+            auto& rp = nameToRenderPass["default"];
+            VkRenderPassBeginInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = rp->renderPass;
+            renderPassInfo.framebuffer = rp->framebuffers[i];
+            renderPassInfo.renderArea.offset = { 0, 0 };
+            renderPassInfo.renderArea.extent = Vulkan::getInstance()->GetSwapchain().extent;
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
+            renderPassInfo.pClearValues = rp->clearValues.data();
+            vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         }
     }
     void CommandBuffer::End()
     {
         for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
+            vkCmdEndRenderPass(drawCmdBuffers[i]);
             if (vkEndCommandBuffer(drawCmdBuffers[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to record command buffer!");
             }

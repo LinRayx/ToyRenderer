@@ -20,7 +20,6 @@ namespace Control
 		Scene(int width, int height);
 		~Scene();
 
-		void InitSceneData(Draw::MaterialBase* material);
 		void Update(Draw::MaterialBase* material);
 
 		shared_ptr<Camera> camera_ptr;

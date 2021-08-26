@@ -32,12 +32,15 @@ namespace RenderSystem
 		Draw::InitTextureMgr(cmdBuf_ptr);
 
 		PhonePSO* phonePSO = new PhonePSO();
+		OutlinePSO* outlinePSO = new OutlinePSO();
 		
 		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
 		// Draw::Model* model2 = new Draw::Model(Vulkan::getInstance(), scene_ptr, DescriptorPool::getInstance(), "../assets/plane.obj");
 		phonePSO->Add(model1);
+		outlinePSO->Add(model1);
 		// phonePSO->Add(model2);
 		pso_vecs.emplace_back(phonePSO);
+		pso_vecs.emplace_back(outlinePSO);
 		modelWindows.resize(10);
 		gui_ptr->Init();
 		gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], Graphics::Vulkan::getInstance()->GetDevice().queue);

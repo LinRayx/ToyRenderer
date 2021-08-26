@@ -12,6 +12,11 @@
 
 namespace Draw
 {
+	enum class MaterialType
+	{
+		Phone = 0,
+		Outline
+	};
 	class MaterialBase
 	{
 	public:

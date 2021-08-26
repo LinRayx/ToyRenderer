@@ -22,29 +22,55 @@ namespace RenderSystem
 {
 	class PipelineStateObject
 	{
+
 	public:
-		PipelineStateObject() {}
+		PipelineStateObject() {
+			using namespace Dcb;
+			Dcb::VertexBuffer vbuf(
+				std::move(
+					Dcb::VertexLayout{}
+					.Append(VertexLayout::Position3D)
+					.Append(VertexLayout::Normal)
+					.Append(VertexLayout::Texture2D)
+				)
+			);
+			vBuffer_ptr = make_shared<Bind::VertexBuffer>(vbuf, true);
+		}
 
 		virtual void BuildPipeline()
 		{}
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 		{}
 		virtual void Update(int cur)
-		{}
-		virtual void Add(Bind::VertexBuffer& vbuf, Graphics::DescriptorSetCore& desc)
-		{}
+		{
+			for (size_t i = 0; i < models.size(); ++i) {
+				models[i]->Update(cur);
+			}
+		}
 
-		virtual void Add(Draw::Model* model) {};
+		virtual void Add(Draw::Model* model) {
+		
+		};
 
 		virtual std::vector< Draw::Model* >& GetModels()
 		{
-			std::vector < Draw::Model*> v;
-			return v;
+			return models;
+		}
+
+		virtual void CollectDrawItems()
+		{
 		}
 
 	protected:
+		struct DrawItem
+		{
+			DrawItem(Draw::Mesh* mesh, Draw::MaterialBase* material)
+				: mesh(mesh), material(material) {}
+			Draw::Mesh* mesh;
+			Draw::MaterialBase* material;
+		};
 
-		virtual void buildPipeline(Draw::DrawItem* item) {}
+		virtual void buildPipeline() {}
 				
 		shared_ptr<Bind::VertexShader> vShader_ptr;
 		shared_ptr<Bind::PixelShader> pShader_ptr;
@@ -54,7 +80,7 @@ namespace RenderSystem
 		shared_ptr<Bind::VertexBuffer> vBuffer_ptr;
 
 		std::vector< Draw::Model* > models;
-		std::vector< Draw::DrawItem* > drawItems;
+		std::vector< DrawItem > drawItems;
 	};
 }
 

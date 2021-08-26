@@ -13,12 +13,13 @@
 #include "VertexBuffer.h"
 #include "Scene.h"
 
-#include "Drawable/PhoneMaterial.h"
+
 #include "Drawable/Texture.h"
 
 #include "Bindable/IndexBuffer.h"
 #include "Drawable/ModelWindowBase.h"
-
+#include "Drawable/PhoneMaterial.h"
+#include "Drawable/OutlineMaterial.h"
 
 namespace Draw
 {
@@ -39,10 +40,17 @@ namespace Draw
 	{
 		friend class Model;
 	public:
-		Mesh(const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf);
+		Mesh(const aiMesh& mesh, const aiMaterial* material, string directoy);
 		shared_ptr<Bind::VertexBuffer> vertex_buffer;
 		shared_ptr<Bind::IndexBuffer> index_buffer;
-		// unique_ptr<MaterialBase> material;
+		void SetMaterial(MaterialBase* mat);
+		void SetTransform(glm::mat4 trans);
+		glm::mat4 GetTransform();
+	private:
+		const aiMaterial* material;
+		string dire;
+		string name;
+		glm::mat4 transform;
 	};
 
 	class Node
@@ -56,6 +64,8 @@ namespace Draw
 		bool HasChild();
 		glm::mat4& GetTransform();
 		void SetTransform(glm::mat4 transform);
+		void Traverse(vector<Mesh*> meshes);
+
 	private:
 		vector<std::unique_ptr<Node>> childPtrs;
 		vector< Mesh* > curMeshes;
@@ -63,13 +73,6 @@ namespace Draw
 		string name;
 		int id;
 		glm::mat4 transform;
-	};
-
-	struct DrawItem
-	{
-		DrawItem(Mesh mesh, MaterialBase mat) : mesh(mesh), material(mat) {}
-		Mesh mesh;
-		MaterialBase material;
 	};
 
 	class Model : public ModelBase
@@ -85,18 +88,28 @@ namespace Draw
 
 		void Update(int cur);
 
-		void BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr);
+		void BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr, MaterialType matType);
 
 		void Accept(ModelWindowBase* window);
 
+		void AddMaterial(MaterialType type);
+
 		std::unique_ptr<Node> pRoot;
 		
-		vector<DrawItem> items;
+		vector<Mesh> meshes;
 
 		shared_ptr<Control::Scene> scene_ptr;
+
+		struct Object
+		{
+			Object(Mesh mesh) : mesh(std::move(mesh)) {}
+			Mesh mesh;
+			std::map<MaterialType, MaterialBase*> materials;
+		};
+		vector<Object> objects;
 	private:
+		Assimp::Importer imp;
 		std::string directory;
-		int loadMaterialTextures(const aiMaterial* mat, aiTextureType type, string typeName);
 	};
 }
 
