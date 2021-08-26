@@ -1,9 +1,8 @@
 #ifndef MATERIAL_BASE_H
 #define MATERIAL_BASE_H
 
-#include "VulkanCore/Vulkan.h"
-#include "VulkanCore/DescriptorPool.h"
-#include "VulkanCore/DescriptorSet.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 #include <map>
 #include "DynamicVariable/DynamicConstant.h"
 #include <assimp/scene.h>
@@ -16,7 +15,7 @@ namespace Draw
 	class MaterialBase
 	{
 	public:
-		MaterialBase(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr);
+		MaterialBase();
 		template<typename T>
 		void SetValue(std::string key1, std::string key2, T value)
 		{
@@ -38,7 +37,6 @@ namespace Draw
 
 		Bind::DepthStencilStateType depthStencilType = Bind::DepthStencilStateType::Default;
 
-		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		std::map<std::string, shared_ptr<Graphics::Buffer>> buffer_ptrs;
 		std::map<std::string, shared_ptr<Dcb::Buffer>> bufs;
 	protected:

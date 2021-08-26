@@ -12,25 +12,30 @@ namespace Graphics
 	{
 		friend class CommandBuffer;
 	public:
-		CommandPool(std::shared_ptr<Vulkan> vulkan_ptr) : vulkan_ptr(vulkan_ptr)
-		{
-			VkCommandPoolCreateInfo cmdPoolInfo = {};
-			cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-			cmdPoolInfo.queueFamilyIndex = vulkan_ptr->device.queue_family_index;
-			cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-			if (vkCreateCommandPool(vulkan_ptr->device.device, &cmdPoolInfo, vulkan_ptr->device.allocator, &cmdPool))
-			{
-				exit(1);
+		static CommandPool* getInstance() {
+			if (instance == NULL) {
+				instance = new CommandPool();
 			}
-		}
-		~CommandPool()
-		{
-			vkDestroyCommandPool(vulkan_ptr->device.device, cmdPool, vulkan_ptr->device.allocator);
+			return instance;
 		}
 	private:
-		std::shared_ptr<Vulkan> vulkan_ptr;
+		CommandPool();
+		~CommandPool();
+	private:
+
+		class Deletor {
+		public:
+			~Deletor() {
+				if (CommandPool::instance != NULL)
+					delete CommandPool::instance;
+			}
+		};
+		static Deletor deletor;
+		static CommandPool* instance;
+
 		VkCommandPool cmdPool;
 	};
+
 }
 
 #endif // !COMMAND_POOL_H

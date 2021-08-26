@@ -6,8 +6,7 @@
 
 namespace Draw
 {
-	Texture::Texture(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, 
-		shared_ptr<Graphics::Image> image_ptr ) : vulkan_ptr(vulkan_ptr), cmdBuf_ptr(cmdBuf_ptr), image_ptr(image_ptr)
+	Texture::Texture( shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr) :  cmdBuf_ptr(cmdBuf_ptr)
 	{
 
 	}
@@ -41,33 +40,33 @@ namespace Draw
 		}
 
 
-		Graphics::Buffer::CreateBuffer(vulkan_ptr, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+		Graphics::Buffer::CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			stagingBuffer, stagingBufferMemory);
 		void* data;
 
-		vkMapMemory(vulkan_ptr->GetDevice().device, stagingBufferMemory, 0, imageSize, 0, &data);
+		vkMapMemory(Graphics::Vulkan::getInstance()->GetDevice().device, stagingBufferMemory, 0, imageSize, 0, &data);
 		memcpy(data, pixels, static_cast<size_t>(imageSize));
-		vkUnmapMemory(vulkan_ptr->GetDevice().device, stagingBufferMemory);
+		vkUnmapMemory(Graphics::Vulkan::getInstance()->GetDevice().device, stagingBufferMemory);
 
 		stbi_image_free(pixels);
 
-		image_ptr->createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+		Graphics::Image::getInstance()->createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
 		cmdBuf_ptr->transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		cmdBuf_ptr->copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 		cmdBuf_ptr->transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		vkDestroyBuffer(vulkan_ptr->GetDevice().device, stagingBuffer, nullptr);
-		vkFreeMemory(vulkan_ptr->GetDevice().device, stagingBufferMemory, nullptr);
+		vkDestroyBuffer(Graphics::Vulkan::getInstance()->GetDevice().device, stagingBuffer, nullptr);
+		vkFreeMemory(Graphics::Vulkan::getInstance()->GetDevice().device, stagingBufferMemory, nullptr);
 	}
 
 	void Texture::createTextureImageView(TextureData& texData)
 	{
-		texData.textureImageView = image_ptr->createImageView(texData.textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		texData.textureImageView = Graphics::Image::getInstance()->createImageView(texData.textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 	}
 
 	void Texture::createTextureSampler(TextureData& texData)
 	{
         VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(vulkan_ptr->GetDevice().physical_device, &properties);
+        vkGetPhysicalDeviceProperties(Graphics::Vulkan::getInstance()->GetDevice().physical_device, &properties);
 
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -87,16 +86,16 @@ namespace Draw
         samplerInfo.maxLod = static_cast<float>(1);
         samplerInfo.mipLodBias = 0.0f;
 
-        if (vkCreateSampler(vulkan_ptr->GetDevice().device, &samplerInfo, nullptr, &texData.textureSampler) != VK_SUCCESS) {
+        if (vkCreateSampler(Graphics::Vulkan::getInstance()->GetDevice().device, &samplerInfo, nullptr, &texData.textureSampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
 	}
 
 	Texture* textureManager;
 
-	void InitTextureMgr(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::Image> image_ptr)
+	void InitTextureMgr(shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr)
 	{
-		textureManager = new Texture(vulkan_ptr, cmdBuf_ptr, image_ptr);
+		textureManager = new Texture(cmdBuf_ptr);
 	}
 
 	void DestroyTextureMgr()

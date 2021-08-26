@@ -12,15 +12,33 @@ namespace Graphics {
 		friend class RenderPass;
 
 	public:
-		Image(shared_ptr<Vulkan> _vulkan_ptr) : vulkan_ptr(_vulkan_ptr) {}
-		~Image();
+		static Image* getInstance() {
+			if (instance == NULL) {
+				instance = new Image();
+			}
+			return instance;
+		}
+
+
 
 		void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 		VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
 	private:
-		shared_ptr<Vulkan> vulkan_ptr;
+		Image() {}
+		~Image();
+
+		class Deletor {
+		public:
+			~Deletor() {
+				if (Image::instance != NULL)
+					delete Image::instance;
+			}
+		};
+		static Deletor deletor;
+		static Image* instance;
 	};
+
 }
 
 #endif // !IMAGE_H

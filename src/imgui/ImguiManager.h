@@ -1,10 +1,8 @@
 #ifndef IMGUI_MANAGER_H
 #define IMGUI_MANAGER_H
 
-#include "VulkanCore/Vulkan.h"
-#include "VulkanCore/DescriptorPool.h"
-#include "VulkanCore/RenderPass.h"
-#include "VulkanCore/CommandQueue.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 
 #include <memory>
 #include "imgui.h"
@@ -20,8 +18,7 @@ namespace GUI
 			VkRenderPass renderPass;
 		} wd;
 	public:
-		ImguiManager(std::shared_ptr<Graphics::Vulkan> vulkan_ptr,
-		std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr );
+		ImguiManager( );
 		~ImguiManager();
 		void Init();
 		void UpLoadFont(VkCommandBuffer command_buffer, VkQueue g_Queue);
@@ -43,9 +40,7 @@ namespace GUI
 		}
 
 		void createRenderPass();
-
-		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
-		std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr;	 
+ 
 
 		bool update = true;
 

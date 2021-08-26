@@ -3,10 +3,9 @@
 #ifndef VULKAN_H
 #define VULKAN_H
 
-
-
 #include "Graphics.h"
 #include <vector>
+#include <memory>
 
 namespace Draw
 {
@@ -18,7 +17,8 @@ namespace RenderSystem
 	class RenderLoop;
 }
 
-namespace Graphics {
+namespace Graphics 
+{
 
 	class Vulkan : public Graphics{
 		friend class RenderPass;
@@ -120,7 +120,7 @@ namespace Graphics {
 			std::vector<VkImageView> image_views;
 		} swapchain_t;
 
-	public:
+	private:
 		Vulkan(int width = 800, int height = 600);
 		~Vulkan();
 
@@ -222,12 +222,32 @@ public:
 		{
 			return swapchain.image_count;
 		}
+
+		static Vulkan* getInstance() {
+			if (instance == NULL) {
+				instance = new Vulkan();
+			}
+			return instance;
+		}
+
 	private:
+
+		class Deletor {
+		public:
+			~Deletor() {
+				if (Vulkan::instance != NULL)
+					delete Vulkan::instance;
+			}
+		};
+		static Deletor deletor;
+
 		device_t device;
 		swapchain_t swapchain;
 		int width;
 		int height;
+		static Vulkan* instance;
 	};
+	
 }
 
 #endif // !VULKAN_H

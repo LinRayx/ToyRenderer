@@ -53,7 +53,7 @@ namespace Graphics {
 		}
 
 		VkAttachmentDescription colorAttachmentResolve{};
-		colorAttachmentResolve.format = vulkan_ptr->swapchain.format;
+		colorAttachmentResolve.format = Vulkan::getInstance()->swapchain.format;
 		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -98,7 +98,7 @@ namespace Graphics {
 		renderPassInfo.pDependencies = &dependency;*/
 
 		VkAttachmentDescription colorAttachment{};
-		colorAttachment.format = vulkan_ptr->swapchain.format;
+		colorAttachment.format = Vulkan::getInstance()->swapchain.format;
 		colorAttachment.samples = msaaSamples;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -108,7 +108,7 @@ namespace Graphics {
 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
 		VkAttachmentDescription depthAttachment{};
-		depthAttachment.format = vulkan_ptr->findDepthFormat();
+		depthAttachment.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
 		depthAttachment.samples = msaaSamples;
 		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -154,18 +154,18 @@ namespace Graphics {
 		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;
 
-		if (vkCreateRenderPass(vulkan_ptr->device.device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+		if (vkCreateRenderPass(Vulkan::getInstance()->device.device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create render pass!");
 		}
 
-		framebuffers.resize(vulkan_ptr->swapchain.image_count);
+		framebuffers.resize(Vulkan::getInstance()->swapchain.image_count);
 		for (size_t i = 0; i < framebuffers.size(); i++) {
 			std::vector<VkImageView> atts;
 
 			//for (size_t j = 0; j < resources.size(); ++j) {
 			//	atts.emplace_back(resources[j].imageView);
 			//}
-			atts.emplace_back(vulkan_ptr->swapchain.image_views[i]);
+			atts.emplace_back(Vulkan::getInstance()->swapchain.image_views[i]);
 			atts.emplace_back(resources[0].imageView);
 
 			VkFramebufferCreateInfo framebufferInfo{};
@@ -173,11 +173,11 @@ namespace Graphics {
 			framebufferInfo.renderPass = renderPass;
 			framebufferInfo.attachmentCount = static_cast<uint32_t>(atts.size());
 			framebufferInfo.pAttachments = atts.data();
-			framebufferInfo.width = vulkan_ptr->swapchain.extent.width;
-			framebufferInfo.height = vulkan_ptr->swapchain.extent.height;
+			framebufferInfo.width = Vulkan::getInstance()->swapchain.extent.width;
+			framebufferInfo.height = Vulkan::getInstance()->swapchain.extent.height;
 			framebufferInfo.layers = 1;
 
-			if (vkCreateFramebuffer(vulkan_ptr->device.device, &framebufferInfo, nullptr, &framebuffers[i]) != VK_SUCCESS) {
+			if (vkCreateFramebuffer(Vulkan::getInstance()->device.device, &framebufferInfo, nullptr, &framebuffers[i]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to create framebuffer!");
 			}
 		}
@@ -185,28 +185,28 @@ namespace Graphics {
 
 	void RenderPass::createColorResources(ImageResource& resource)
 	{
-		resource.format = vulkan_ptr->swapchain.format;
+		resource.format = Vulkan::getInstance()->swapchain.format;
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 		if (resource.isDepth)
 		{
-			resource.format = vulkan_ptr->findDepthFormat();
+			resource.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
 			usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		}
 		
-		image_ptr->createImage(vulkan_ptr->swapchain.extent.width, vulkan_ptr->swapchain.extent.height, 1, msaaSamples, resource.format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, resource.image, resource.imageMemory);
+		Image::getInstance()->createImage(Vulkan::getInstance()->swapchain.extent.width, Vulkan::getInstance()->swapchain.extent.height, 1, msaaSamples, resource.format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, resource.image, resource.imageMemory);
 		if (resource.isDepth) {
-			resource.imageView = image_ptr->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+			resource.imageView = Image::getInstance()->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 		}
 		else {
-			resource.imageView = image_ptr->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+			resource.imageView = Image::getInstance()->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 		}
 	}
 
 	map<string, RenderPass*> nameToRenderPass;
 
-	void InitRenderPass(shared_ptr<Vulkan> vulkan_ptr, shared_ptr<Image> image_ptr)
+	void InitRenderPass()
 	{
-		RenderPass* rp = new RenderPass(vulkan_ptr, image_ptr);
+		RenderPass* rp = new RenderPass();
 		rp->AddResource("Depth", true);
 		rp->CreateRenderPass();
 		nameToRenderPass["default"] = rp;

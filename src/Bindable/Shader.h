@@ -1,7 +1,8 @@
 #pragma once
 #ifndef SHADER_H
 #define SHADER_H
-#include "Vulkan.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 #include <memory>
 #include <string>
 
@@ -41,7 +42,7 @@ namespace Bind
 			uint32_t* spirv_code;
 		} shader_t;
 	public:
-		Shader(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr) : vulkan_ptr(_vulkan_ptr) {}
+		Shader()  {}
 		void CompileShader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage, 
 			shader_t* shader);
 	private:
@@ -51,7 +52,7 @@ namespace Bind
 		void destroy_shader(shader_t* shader);
 
 	private:
-		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
+
 		
 	};
 }

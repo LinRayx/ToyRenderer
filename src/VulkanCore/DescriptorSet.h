@@ -42,7 +42,7 @@ namespace Graphics
 			VkSampler textureSampler;
 		};
 	public:
-		DescriptorSetCore(std::shared_ptr<Vulkan> vulkan_ptr, std::shared_ptr<DescriptorPool> desc_pool_ptr);
+		DescriptorSetCore();
 		~DescriptorSetCore();
 		// void Add(DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
 		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
@@ -55,8 +55,6 @@ namespace Graphics
 		vector<VkWriteDescriptorSet> write_sets;
 		vector<uint16_t> slots_index;
 
-		shared_ptr<DescriptorPool> desc_pool_ptr;
-		shared_ptr<Vulkan> vulkan_ptr;
 	public:
 		// i : swapchain  j : set
 		vector<vector<VkDescriptorSet>> descriptorSets;
@@ -69,22 +67,19 @@ namespace Graphics
 		friend class Draw::Drawable;
 		friend class CommandBuffer;
 	public:
-		DescriptorSetLayout(shared_ptr<Vulkan> vulkan_ptr) : vulkan_ptr(vulkan_ptr) {
+		DescriptorSetLayout()  {
 			layout_bindings.resize(static_cast<size_t>(LayoutType::COUNT));
 			descLayouts.resize(static_cast<size_t>(LayoutType::COUNT));
 		}
 		~DescriptorSetLayout()
 		{
 			for (auto descriptorSetLayout : descLayouts)
-				vkDestroyDescriptorSetLayout( vulkan_ptr->device.device, descriptorSetLayout, vulkan_ptr->device.allocator);
+				vkDestroyDescriptorSetLayout( Vulkan::getInstance()->device.device, descriptorSetLayout, Vulkan::getInstance()->device.allocator);
 		}
 		void add(DescriptorType type, StageFlag stage, vector<VkDescriptorSetLayoutBinding>& bindings);
 		void Add(LayoutType layout_type, DescriptorType desc_type, StageFlag stage);
 		void Compile();
 	private:
-
-		shared_ptr<Vulkan> vulkan_ptr;
-
 		vector<VkDescriptorSetLayout> descLayouts;
 		vector<vector<VkDescriptorSetLayoutBinding>> layout_bindings;
 	public:

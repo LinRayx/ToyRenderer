@@ -10,15 +10,31 @@ namespace Graphics
 	{
 		friend class DescriptorSetCore;
 	public:
-		DescriptorPool(std::shared_ptr<Vulkan> vulkan_ptr);
-		~DescriptorPool();
+		static DescriptorPool* getInstance() {
+			if (instance == NULL) {
+				instance = new DescriptorPool();
+			}
+			return instance;
+		}
+
 		VkDescriptorPool GetPool()
 		{
 			return descriptorPool;
 		}
 	private:
+		DescriptorPool();
+		~DescriptorPool();
+		class Deletor {
+		public:
+			~Deletor() {
+				if (DescriptorPool::instance != NULL)
+					delete DescriptorPool::instance;
+			}
+		};
+		static Deletor deletor;
+
+		static DescriptorPool* instance;
 		VkDescriptorPool descriptorPool;
-		std::shared_ptr<Vulkan> vulkan_ptr;
 	};
 }
 

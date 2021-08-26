@@ -24,7 +24,7 @@ namespace Graphics {
 
 	public:
 		~RenderPass();
-		RenderPass(shared_ptr<Vulkan> _vulkan_ptr, shared_ptr<Image> _image_ptr) : vulkan_ptr(_vulkan_ptr), image_ptr(_image_ptr) {}
+		RenderPass() {}
 		void AddResource(std::string name, bool isDepth = false);
 		void CreateRenderPass();
 	private:
@@ -42,10 +42,6 @@ namespace Graphics {
 
 		void createColorResources(ImageResource& resource);
 	private:
-		
-		
-		shared_ptr<Vulkan> vulkan_ptr;
-		shared_ptr<Image> image_ptr;
 		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
 		std::vector<ImageResource> resources;
@@ -55,10 +51,10 @@ namespace Graphics {
 		std::vector<VkFramebuffer> framebuffers;
 		std::vector<VkClearValue> clearValues;
 	};
-	
+
+
 	extern map<string, RenderPass*> nameToRenderPass;
 
-	void InitRenderPass(shared_ptr<Vulkan> vulkan_ptr, shared_ptr<Image> image_ptr);
-
+	void InitRenderPass();
 }
 #endif // !RENDER_PASS_H

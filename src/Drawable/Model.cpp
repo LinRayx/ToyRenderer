@@ -18,15 +18,11 @@ namespace Draw {
 		return mat;
 	}
 
-	Model::Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
-		shared_ptr<Draw::Texture> texture_ptr,
+	Model::Model(shared_ptr<Control::Scene> scene_ptr,
 		std::string file_path, std::string directory)
 	{
 		this->directory = directory;
-		this->vulkan_ptr = vulkan_ptr;
 		this->scene_ptr = scene_ptr;
-		this->desc_pool = desc_pool;
-		this->texture_ptr = texture_ptr;
 
 		Assimp::Importer imp;
 		const auto pScene = imp.ReadFile(file_path.c_str(),
@@ -66,14 +62,11 @@ namespace Draw {
 
 
 		for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
-			//glm::vec3 tt = *reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i]));
-			//std::cout << tt.x << " " << tt.y << " " << tt.z << std::endl;
 			vbuf.EmplaceBack(
 				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
 				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
 				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i])
 			);
-			//std::cout << mesh.mVertices[i].x <<" " << mesh.mVertices[i].y << " " << mesh.mVertices[i].z << std::endl;
 		}
 
 		std::vector<unsigned short> indices;
@@ -87,9 +80,10 @@ namespace Draw {
 			indices.push_back(face.mIndices[2]);
 		}
 
-		Mesh t_mesh(vulkan_ptr, vbuf, indices);
-		PhoneMaterial mat(vulkan_ptr, desc_pool);
+		Mesh t_mesh(vbuf, indices);
+		PhoneMaterial mat;
 		mat.LoadModelTexture(material, directory, mesh.mName.C_Str());
+		mat.SetState(Bind::DepthStencilStateType::WriteStencil);
 		scene_ptr->InitSceneData(&mat);
 		items.emplace_back(DrawItem( std::move(t_mesh), std::move(mat) ));
 	}
@@ -148,7 +142,7 @@ namespace Draw {
 			aiString str;
 			mat->GetTexture(type, i, &str);
 
-			texture_ptr->CreateTexture(directory + str.C_Str(), typeName + "_" + to_string(i));
+			Draw::textureManager->CreateTexture(directory + str.C_Str(), typeName + "_" + to_string(i));
 		}
 
 		return mat->GetTextureCount(type);
@@ -210,9 +204,9 @@ namespace Draw {
 		// material.SetValue("Model", "modelTrans", nowTrans);
 	}
 
-	Mesh::Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf)
+	Mesh::Mesh(const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf)
 	{
-		vertex_buffer = make_shared<Bind::VertexBuffer>(vulkan_ptr, vbuf);
-		index_buffer = make_shared<Bind::IndexBuffer>(vulkan_ptr, ibuf);
+		vertex_buffer = make_shared<Bind::VertexBuffer>(vbuf);
+		index_buffer = make_shared<Bind::IndexBuffer>(ibuf);
 	}
 }

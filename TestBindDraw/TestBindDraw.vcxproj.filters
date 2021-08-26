@@ -99,9 +99,6 @@
     <ClInclude Include="..\src\VulkanCore\Image.h">
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\VulkanCore\Pipeline.h">
-      <Filter>头文件\VulkanCore</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\VulkanCore\RenderPass.h">
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
@@ -115,9 +112,6 @@
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Bindable\IndexBuffer.h">
-      <Filter>头文件\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Bindable\PipelineLayout.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Bindable\PixelShader.h">
@@ -153,9 +147,6 @@
     <ClInclude Include="..\src\DynamicVariable\LayoutCodex.h">
       <Filter>头文件\DynamicVariable</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Bindable\DescriptorSets.h">
-      <Filter>头文件\Bindable</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\VulkanCore\CommandQueue.h">
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
@@ -169,9 +160,6 @@
       <Filter>头文件\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\src\VulkanCore\DescriptorPool.h">
-      <Filter>头文件\VulkanCore</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\VulkanCore\PipelineLayout.h">
       <Filter>头文件\VulkanCore</Filter>
     </ClInclude>
     <ClInclude Include="..\src\RenderSystem\FrameTimer.h">
@@ -200,9 +188,6 @@
     </ClInclude>
     <ClInclude Include="..\src\RenderSystem\PhonePSO.h">
       <Filter>头文件\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Bindable\Texture.h">
-      <Filter>头文件\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Drawable\Texture.h">
       <Filter>头文件\Drawable</Filter>
@@ -376,6 +361,12 @@
     </ClCompile>
     <ClCompile Include="..\src\Bindable\DepthStencilState.cpp">
       <Filter>源文件\Bindable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\CommandPool.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\vulkan_core_headers.cpp">
+      <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

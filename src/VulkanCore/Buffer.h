@@ -15,11 +15,11 @@ namespace Graphics {
 		friend class CommandBuffer;
 		friend class DescriptorSetCore;
 	public:
-		Buffer(shared_ptr<Vulkan> _vulkan_ptr, BufferUsage type, size_t size);
-		Buffer(shared_ptr<Vulkan> _vulkan_ptr, BufferUsage type, size_t size, void* data, size_t elem_count);
+		Buffer(BufferUsage type, size_t size);
+		Buffer(BufferUsage type, size_t size, void* data, size_t elem_count);
 		~Buffer();
 		void UpdateData(uint32_t currentImage, size_t size, const char* newData);
-		static void CreateBuffer(shared_ptr<Vulkan> vulkan_ptr, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+		static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
 	private:
 		void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
@@ -27,7 +27,6 @@ namespace Graphics {
 
 		std::vector<VkDeviceMemory> buffersMemorys;
 		VkBufferUsageFlags getUsage(BufferUsage type);
-		shared_ptr<Vulkan> vulkan_ptr;
 		size_t size;
 		
 		bool update;

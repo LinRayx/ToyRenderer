@@ -5,9 +5,9 @@ namespace Graphics
 	int CommandQueue::GetCurImageIndex()
 	{
 		imageIndex = 0;
-		vkWaitForFences(vulkan_ptr->device.device, 1, &sync_ptr->waitFences[currentFrame], VK_TRUE, UINT64_MAX);
+		vkWaitForFences(Vulkan::getInstance()->device.device, 1, &sync_ptr->waitFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-		VkResult result = vkAcquireNextImageKHR(vulkan_ptr->device.device, vulkan_ptr->swapchain.swapchain, UINT64_MAX, sync_ptr->presentComplete[currentFrame], VK_NULL_HANDLE, &imageIndex);
+		VkResult result = vkAcquireNextImageKHR(Vulkan::getInstance()->device.device, Vulkan::getInstance()->swapchain.swapchain, UINT64_MAX, sync_ptr->presentComplete[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) {
 			std::cout << "VK_ERROR_OUT_OF_DATE_KHR" << std::endl;
@@ -19,7 +19,7 @@ namespace Graphics
 		}
 
 		if (sync_ptr->imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-			vkWaitForFences(vulkan_ptr->device.device, 1, &sync_ptr->imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+			vkWaitForFences(Vulkan::getInstance()->device.device, 1, &sync_ptr->imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
 		}
 
 		sync_ptr->imagesInFlight[imageIndex] = sync_ptr->waitFences[currentFrame];
@@ -51,25 +51,25 @@ namespace Graphics
 		submitInfo.signalSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());
 		submitInfo.pSignalSemaphores = signalSemaphores.data();
 
-		vkResetFences(vulkan_ptr->device.device, 1, &sync_ptr->waitFences[currentFrame]);
+		vkResetFences(Vulkan::getInstance()->device.device, 1, &sync_ptr->waitFences[currentFrame]);
 
-		if (vkQueueSubmit(vulkan_ptr->device.queue, 1, &submitInfo, sync_ptr->waitFences[currentFrame]) != VK_SUCCESS) {
+		if (vkQueueSubmit(Vulkan::getInstance()->device.queue, 1, &submitInfo, sync_ptr->waitFences[currentFrame]) != VK_SUCCESS) {
 			throw std::runtime_error("failed to submit draw command buffer!");
 		}
-		vkQueueWaitIdle(vulkan_ptr->device.queue);
+		vkQueueWaitIdle(Vulkan::getInstance()->device.queue);
 		VkPresentInfoKHR presentInfo{};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
 		presentInfo.waitSemaphoreCount = static_cast<uint32_t>(signalSemaphores.size());;
 		presentInfo.pWaitSemaphores = signalSemaphores.data();
 
-		VkSwapchainKHR swapChains[] = { vulkan_ptr->swapchain.swapchain };
+		VkSwapchainKHR swapChains[] = { Vulkan::getInstance()->swapchain.swapchain };
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 
 		presentInfo.pImageIndices = &imageIndex;
 
-		VkResult result = vkQueuePresentKHR(vulkan_ptr->device.queue, &presentInfo);
+		VkResult result = vkQueuePresentKHR(Vulkan::getInstance()->device.queue, &presentInfo);
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
 
@@ -78,6 +78,6 @@ namespace Graphics
 			throw std::runtime_error("failed to present swap chain image!");
 		}
 
-		currentFrame = (currentFrame + 1) % vulkan_ptr->swapchain.image_count;
+		currentFrame = (currentFrame + 1) % Vulkan::getInstance()->swapchain.image_count;
 	}
 }

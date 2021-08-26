@@ -2,11 +2,9 @@
 
 namespace Draw
 {
-	MaterialBase::MaterialBase(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr)
-		: vulkan_ptr(vulkan_ptr)
+	MaterialBase::MaterialBase()
 	{
-		desc_ptr = std::make_shared<Graphics::DescriptorSetCore>(vulkan_ptr, desc_pool_ptr);
-		dsstate_ptr = nullptr;
+		desc_ptr = std::make_shared<Graphics::DescriptorSetCore>();
 		Dcb::RawLayout layout;
 		layout.Add<Dcb::Matrix>("viewMat");
 		layout.Add<Dcb::Matrix>("projMat");
@@ -38,7 +36,7 @@ namespace Draw
 	void MaterialBase::addLayout(std::string key, Dcb::RawLayout&& layout, Graphics::LayoutType layoutType, Graphics::DescriptorType descType, Graphics::StageFlag stage)
 	{
 		bufs[key] = make_shared<Dcb::Buffer>(std::move(layout));
-		buffer_ptrs[key] = make_shared<Graphics::Buffer>(vulkan_ptr, Graphics::BufferUsage::UNIFORM, bufs[key]->GetSizeInBytes());
+		buffer_ptrs[key] = make_shared<Graphics::Buffer>(Graphics::BufferUsage::UNIFORM, bufs[key]->GetSizeInBytes());
 		desc_ptr->Add(layoutType, descType, stage, buffer_ptrs[key]);
 	}
 	void MaterialBase::addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler)

@@ -540,5 +540,6 @@ namespace Graphics {
 
 		throw std::runtime_error("failed to find suitable memory type!");
 	}
+	Vulkan* Vulkan::instance = NULL;
 
 }

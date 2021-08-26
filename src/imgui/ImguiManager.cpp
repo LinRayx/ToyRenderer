@@ -2,8 +2,7 @@
 
 namespace GUI
 {
-    ImguiManager::ImguiManager(std::shared_ptr<Graphics::Vulkan> vulkan_ptr,
-        std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr) : vulkan_ptr(vulkan_ptr), desc_pool_ptr(desc_pool_ptr)
+    ImguiManager::ImguiManager()
     {
     }
     ImguiManager::~ImguiManager()
@@ -21,19 +20,19 @@ namespace GUI
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
 		// Setup Platform/Renderer backends
-		ImGui_ImplGlfw_InitForVulkan(vulkan_ptr->GetSwapchain().window, true);
+		ImGui_ImplGlfw_InitForVulkan(Graphics::Vulkan::getInstance()->GetSwapchain().window, true);
         createRenderPass();
 		ImGui_ImplVulkan_InitInfo init_info = {};
-		init_info.Instance = vulkan_ptr->GetDevice().instance;
-		init_info.PhysicalDevice = vulkan_ptr->GetDevice().physical_device;
-		init_info.Device = vulkan_ptr->GetDevice().device;
-		init_info.QueueFamily = vulkan_ptr->GetDevice().queue_family_index;
-		init_info.Queue = vulkan_ptr->GetDevice().queue;
+		init_info.Instance = Graphics::Vulkan::getInstance()->GetDevice().instance;
+		init_info.PhysicalDevice = Graphics::Vulkan::getInstance()->GetDevice().physical_device;
+		init_info.Device = Graphics::Vulkan::getInstance()->GetDevice().device;
+		init_info.QueueFamily = Graphics::Vulkan::getInstance()->GetDevice().queue_family_index;
+		init_info.Queue = Graphics::Vulkan::getInstance()->GetDevice().queue;
 		init_info.PipelineCache = NULL;
-		init_info.DescriptorPool = desc_pool_ptr->GetPool();
-		init_info.Allocator = vulkan_ptr->GetDevice().allocator;
-		init_info.MinImageCount = vulkan_ptr->GetSwapchain().image_count;
-		init_info.ImageCount = vulkan_ptr->GetSwapchain().image_count;
+		init_info.DescriptorPool = Graphics::DescriptorPool::getInstance()->GetPool();
+		init_info.Allocator = Graphics::Vulkan::getInstance()->GetDevice().allocator;
+		init_info.MinImageCount = Graphics::Vulkan::getInstance()->GetSwapchain().image_count;
+		init_info.ImageCount = Graphics::Vulkan::getInstance()->GetSwapchain().image_count;
 		init_info.CheckVkResultFn = check_vk_result;
 		ImGui_ImplVulkan_Init(&init_info, renderPass);
 
@@ -62,7 +61,7 @@ namespace GUI
             err = vkQueueSubmit(g_Queue, 1, &end_info, VK_NULL_HANDLE);
             check_vk_result(err);
 
-            err = vkDeviceWaitIdle(vulkan_ptr->GetDevice().device);
+            err = vkDeviceWaitIdle(Graphics::Vulkan::getInstance()->GetDevice().device);
             check_vk_result(err);
             ImGui_ImplVulkan_DestroyFontUploadObjects();
         }
@@ -123,7 +122,7 @@ namespace GUI
             renderPassInfo.renderPass = renderPass;
             renderPassInfo.framebuffer = framebuffers[i];
             renderPassInfo.renderArea.offset = { 0, 0 };
-            renderPassInfo.renderArea.extent = vulkan_ptr->GetSwapchain().extent;
+            renderPassInfo.renderArea.extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent;
 
 
             renderPassInfo.clearValueCount = 1;
@@ -143,7 +142,7 @@ namespace GUI
         // Create the Render Pass
         {
             VkAttachmentDescription attachment = {};
-            attachment.format = vulkan_ptr->GetSwapchain().format;
+            attachment.format = Graphics::Vulkan::getInstance()->GetSwapchain().format;
             attachment.samples = VK_SAMPLE_COUNT_1_BIT;
             attachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
             attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -173,25 +172,25 @@ namespace GUI
             info.pSubpasses = &subpass;
             info.dependencyCount = 1;
             info.pDependencies = &dependency;
-            VkResult err = vkCreateRenderPass(vulkan_ptr->GetDevice().device, &info, vulkan_ptr->GetDevice().allocator, &renderPass);
+            VkResult err = vkCreateRenderPass(Graphics::Vulkan::getInstance()->GetDevice().device, &info, Graphics::Vulkan::getInstance()->GetDevice().allocator, &renderPass);
             check_vk_result(err);
 
-            framebuffers.resize(vulkan_ptr->GetSwapchain().image_count);
+            framebuffers.resize(Graphics::Vulkan::getInstance()->GetSwapchain().image_count);
             for (size_t i = 0; i < framebuffers.size(); i++) {
                 std::vector<VkImageView> atts;
 
-                atts.emplace_back(vulkan_ptr->GetSwapchain().image_views[i]);
+                atts.emplace_back(Graphics::Vulkan::getInstance()->GetSwapchain().image_views[i]);
 
                 VkFramebufferCreateInfo framebufferInfo{};
                 framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
                 framebufferInfo.renderPass = renderPass;
                 framebufferInfo.attachmentCount = static_cast<uint32_t>(atts.size());
                 framebufferInfo.pAttachments = atts.data();
-                framebufferInfo.width = vulkan_ptr->GetSwapchain().extent.width;
-                framebufferInfo.height = vulkan_ptr->GetSwapchain().extent.height;
+                framebufferInfo.width = Graphics::Vulkan::getInstance()->GetSwapchain().extent.width;
+                framebufferInfo.height = Graphics::Vulkan::getInstance()->GetSwapchain().extent.height;
                 framebufferInfo.layers = 1;
 
-                if (vkCreateFramebuffer(vulkan_ptr->GetDevice().device, &framebufferInfo, nullptr, &framebuffers[i]) != VK_SUCCESS) {
+                if (vkCreateFramebuffer(Graphics::Vulkan::getInstance()->GetDevice().device, &framebufferInfo, nullptr, &framebuffers[i]) != VK_SUCCESS) {
                     throw std::runtime_error("failed to create framebuffer!");
                 }
             }

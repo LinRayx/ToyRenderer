@@ -5,8 +5,7 @@
 
 namespace Graphics
 {
-	DescriptorSetCore::DescriptorSetCore(std::shared_ptr<Vulkan> vulkan_ptr, std::shared_ptr<DescriptorPool> desc_pool_ptr)
-		: vulkan_ptr(vulkan_ptr), desc_pool_ptr(desc_pool_ptr)
+	DescriptorSetCore::DescriptorSetCore()
 	{
 		write_sets.clear();
 		descriptorSets.clear();
@@ -42,7 +41,7 @@ namespace Graphics
 
 	void DescriptorSetCore::Compile(shared_ptr<DescriptorSetLayout> desc_layout_ptr)
 	{
-		descriptorSets.resize(vulkan_ptr->swapchain.image_count);
+		descriptorSets.resize(Vulkan::getInstance()->swapchain.image_count);
 		for (size_t i = 0; i < descriptorSets.size(); ++i) {
 			descriptorSets[i].resize(static_cast<size_t>(LayoutType::COUNT));
 			for (size_t j = 0; j < descriptorSets[i].size(); ++j) {
@@ -50,17 +49,17 @@ namespace Graphics
 				std::vector<VkDescriptorSetLayout> layouts(1, desc_layout_ptr->descLayouts[j]);
 				VkDescriptorSetAllocateInfo allocInfo{};
 				allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-				allocInfo.descriptorPool = desc_pool_ptr->descriptorPool;
+				allocInfo.descriptorPool = DescriptorPool::getInstance()->descriptorPool;
 				allocInfo.descriptorSetCount = 1;
 				allocInfo.pSetLayouts = layouts.data();
 
-				if (vkAllocateDescriptorSets(vulkan_ptr->device.device, &allocInfo, &descriptorSets[i][j]) != VK_SUCCESS) {
+				if (vkAllocateDescriptorSets(Vulkan::getInstance()->device.device, &allocInfo, &descriptorSets[i][j]) != VK_SUCCESS) {
 					throw std::runtime_error("failed to allocate descriptor sets!");
 				}
 			}
 		}
 
-		for (size_t i = 0; i < vulkan_ptr->swapchain.image_count; ++i) {
+		for (size_t i = 0; i < Vulkan::getInstance()->swapchain.image_count; ++i) {
 			write_sets.clear();
 			vector<VkDescriptorBufferInfo> bufferInfos(infos.size());
 			vector<VkDescriptorImageInfo > imageInfos(infos.size());
@@ -94,7 +93,7 @@ namespace Graphics
 				}
 				write_sets.emplace_back(std::move(descriptorWrite));
 			}	
-			vkUpdateDescriptorSets(vulkan_ptr->device.device, static_cast<uint32_t>(write_sets.size()), write_sets.data(), 0, nullptr);
+			vkUpdateDescriptorSets(Vulkan::getInstance()->device.device, static_cast<uint32_t>(write_sets.size()), write_sets.data(), 0, nullptr);
 		}
 
 	}
@@ -151,7 +150,7 @@ namespace Graphics
 			layoutInfo.bindingCount = static_cast<uint32_t>(layout_bindings[i].size());
 			layoutInfo.pBindings = layout_bindings[i].data();
 
-			if (vkCreateDescriptorSetLayout(vulkan_ptr->device.device, &layoutInfo, nullptr, &descLayouts[i]) != VK_SUCCESS) {
+			if (vkCreateDescriptorSetLayout(Vulkan::getInstance()->device.device, &layoutInfo, nullptr, &descLayouts[i]) != VK_SUCCESS) {
 				throw std::runtime_error("failed to create descriptor set layout!");
 			}
 		}
@@ -161,7 +160,7 @@ namespace Graphics
 		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descLayouts.size());
 		pipelineLayoutInfo.pSetLayouts = descLayouts.data();
 
-		if (vkCreatePipelineLayout(vulkan_ptr->device.device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+		if (vkCreatePipelineLayout(Vulkan::getInstance()->device.device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create pipeline layout!");
 		}
 	}

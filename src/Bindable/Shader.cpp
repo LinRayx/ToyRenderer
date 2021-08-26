@@ -19,7 +19,7 @@ namespace Bind
 
 	}
 	int Shader::compile_glsl_shader(shader_t* shader, const shader_request_t* request) {
-		auto device = vulkan_ptr->GetDevice();
+		auto device = Graphics::Vulkan::getInstance()->GetDevice();
 		if (!get_shader_stage_name(request->stage)) {
 			printf("Invalid stage specification %u passed for shader %s.", request->stage, request->shader_file_path);
 			return 1;
@@ -145,7 +145,7 @@ namespace Bind
 	}
 
 	void Shader::destroy_shader(shader_t* shader) {
-		auto device = vulkan_ptr->GetDevice();
+		auto device = Graphics::Vulkan::getInstance()->GetDevice();
 		if (shader->module) vkDestroyShaderModule(device.device, shader->module, device.allocator);
 		free(shader->spirv_code);
 		memset(shader, 0, sizeof(*shader));

@@ -3,9 +3,7 @@
 
 #include <string>
 #include <map>
-#include "VulkanCore/Vulkan.h"
-#include "VulkanCore/Buffer.h"
-#include "VulkanCore/CommandBuffer.h"
+#include "VulkanCore/vulkan_core_headers.h"
 #include <memory>
 
 namespace Draw
@@ -26,7 +24,7 @@ namespace Draw
 		};
 
 	public:
-		Texture(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::Image> image_ptr);
+		Texture(shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr);
 		void CreateTexture(std::string path, std::string texName);
 		std::map< std::string, TextureData > nameToTex;
 	private:
@@ -34,13 +32,12 @@ namespace Draw
 		void createTextureImageView(TextureData& texData);
 		void createTextureSampler(TextureData& texData);
 
-		shared_ptr<Graphics::Vulkan> vulkan_ptr;
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
-		shared_ptr<Graphics::Image> image_ptr;
+
 	};
 
 	extern Texture* textureManager;
-	void InitTextureMgr(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, shared_ptr<Graphics::Image> image_ptr);
+	void InitTextureMgr( shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr);
 
 	void DestroyTextureMgr();
 }

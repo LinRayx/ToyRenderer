@@ -3,19 +3,20 @@
 
 namespace RenderSystem
 {
-	PhonePSO::PhonePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr) : PipelineStateObject(vulkan_ptr)
-	{
-		vShader_ptr = make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/Phone.vert.glsl", "../src/shaders", "main");
-		pShader_ptr = make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/Phone.frag.glsl", "../src/shaders", "main");
-		pipeline_ptr = make_shared<Graphics::Pipeline>(vulkan_ptr);
-		desc_layout_ptr = make_shared<Graphics::DescriptorSetLayout>(vulkan_ptr);
+	PhonePSO::PhonePSO() : PipelineStateObject()
+	{	
+		using namespace Graphics;
+		vShader_ptr = make_shared<Bind::VertexShader>("../src/shaders/Phone.vert.glsl", "../src/shaders", "main");
+		pShader_ptr = make_shared<Bind::PixelShader>("../src/shaders/Phone.frag.glsl", "../src/shaders", "main");
 
-		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::TEXTURE2D, Graphics::StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::TEXTURE2D, Graphics::StageFlag::FRAGMENT);
+		desc_layout_ptr = make_shared<DescriptorSetLayout>();
+
+		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::VERTEX);
+		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::VERTEX);
+		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
 		desc_layout_ptr->Compile();
 	}
 
@@ -46,13 +47,13 @@ namespace RenderSystem
 			renderPassInfo.renderPass = rp->renderPass;
 			renderPassInfo.framebuffer = rp->framebuffers[i];
 			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = vulkan_ptr->GetSwapchain().extent;
+			renderPassInfo.renderArea.extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent;
 			renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
 			renderPassInfo.pClearValues = rp->clearValues.data();
 
 			vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_ptr->pipeline);
+			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 
 			for (size_t modelIndex = 0; modelIndex < models.size(); ++modelIndex) {
 				for (size_t itemIndex = 0; itemIndex < models[modelIndex]->items.size(); ++itemIndex) {
@@ -128,13 +129,13 @@ namespace RenderSystem
 		VkViewport viewport = {};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
-		viewport.width = (float)vulkan_ptr->GetSwapchain().extent.width;
-		viewport.height = (float)vulkan_ptr->GetSwapchain().extent.height;
+		viewport.width = (float)Graphics::Vulkan::getInstance()->GetSwapchain().extent.width;
+		viewport.height = (float)Graphics::Vulkan::getInstance()->GetSwapchain().extent.height;
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
 
-		VkRect2D scissor = { .extent = vulkan_ptr->GetSwapchain().extent };
+		VkRect2D scissor = { .extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent };
 
 		VkPipelineViewportStateCreateInfo viewport_info = {};
 		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -193,14 +194,15 @@ namespace RenderSystem
 		pipelineInfo.pRasterizationState = &rasterizer;
 		pipelineInfo.pMultisampleState = &multisampling;
 		pipelineInfo.pColorBlendState = &colorBlending;
-		pipelineInfo.pDepthStencilState = &Bind::depthStencilState_ptr->GetDepthStencilState(item->material.depthStencilType);
+		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(item->material.depthStencilType);
+		pipelineInfo.pDepthStencilState = &depthStencilState;
 
 		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
 		pipelineInfo.renderPass = Graphics::nameToRenderPass["default"]->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-		if (vkCreateGraphicsPipelines(vulkan_ptr->GetDevice().device, NULL, 1, &pipelineInfo, NULL, &pipeline_ptr->pipeline)) {
+		if (vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineInfo, NULL, &pipeline)) {
 			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
 		}
 

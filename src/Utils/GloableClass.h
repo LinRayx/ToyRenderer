@@ -1,7 +1,8 @@
 #ifndef GLOABLE_CLASS_H
 #define GLOABLE_CLASS_H
 
-#include "VulkanCore/Image.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 #include <glm/glm.hpp>
 
 namespace Gloable

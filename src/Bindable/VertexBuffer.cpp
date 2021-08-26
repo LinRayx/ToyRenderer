@@ -3,12 +3,8 @@
 
 namespace Bind
 {
-	VertexBuffer::VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data)
-	{
-		// buffer_ptr = std::make_shared<Graphics::Buffer>(_vulkan_ptr, size, data);
-	}
 
-	VertexBuffer::VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, const Dcb::VertexBuffer& vbuf, bool onlyLayout)
+	VertexBuffer::VertexBuffer(const Dcb::VertexBuffer& vbuf, bool onlyLayout)
 	{
 		for (size_t i = 0; i < vbuf.GetLayout().GetElementCount(); ++i)
 		{
@@ -26,7 +22,7 @@ namespace Bind
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 		bindingDescription.stride = vbuf.GetLayout().Size();
 		if (onlyLayout) return;
-		buffer_ptr = std::make_shared<Graphics::Buffer>(_vulkan_ptr, Graphics::BufferUsage::VERTEX_BUFFER, vbuf.SizeBytes(), (void*)vbuf.GetData(), vbuf.Size());
+		buffer_ptr = std::make_shared<Graphics::Buffer>(Graphics::BufferUsage::VERTEX_BUFFER, vbuf.SizeBytes(), (void*)vbuf.GetData(), vbuf.Size());
 	}
 
 	VertexBuffer::~VertexBuffer()

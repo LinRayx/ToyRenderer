@@ -7,11 +7,11 @@ namespace Graphics
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandPool = cmdPool_ptr->cmdPool;
+        allocInfo.commandPool = CommandPool::getInstance()->cmdPool;
         allocInfo.commandBufferCount = 1;
 
         VkCommandBuffer commandBuffer;
-        vkAllocateCommandBuffers(vulkan_ptr->GetDevice().device, &allocInfo, &commandBuffer);
+        vkAllocateCommandBuffers(Vulkan::getInstance()->GetDevice().device, &allocInfo, &commandBuffer);
 
         VkCommandBufferBeginInfo beginInfo{};
         beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -31,10 +31,10 @@ namespace Graphics
         submitInfo.commandBufferCount = 1;
         submitInfo.pCommandBuffers = &commandBuffer;
 
-        vkQueueSubmit(vulkan_ptr->device.queue, 1, &submitInfo, VK_NULL_HANDLE);
-        vkQueueWaitIdle(vulkan_ptr->device.queue);
+        vkQueueSubmit(Vulkan::getInstance()->device.queue, 1, &submitInfo, VK_NULL_HANDLE);
+        vkQueueWaitIdle(Vulkan::getInstance()->device.queue);
 
-        vkFreeCommandBuffers(vulkan_ptr->device.device, cmdPool_ptr->cmdPool, 1, &commandBuffer);
+        vkFreeCommandBuffers(Vulkan::getInstance()->device.device, CommandPool::getInstance()->cmdPool, 1, &commandBuffer);
     }
 
     void CommandBuffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {

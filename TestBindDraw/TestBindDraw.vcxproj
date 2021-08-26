@@ -148,13 +148,10 @@
   <ItemGroup>
     <ClInclude Include="..\src\Bindable\Bindable.h" />
     <ClInclude Include="..\src\Bindable\Bindable_heads.h" />
-    <ClInclude Include="..\src\Bindable\DescriptorSets.h" />
     <ClInclude Include="..\src\Bindable\IndexBuffer.h" />
-    <ClInclude Include="..\src\Bindable\PipelineLayout.h" />
     <ClInclude Include="..\src\Bindable\PixelShader.h" />
     <ClInclude Include="..\src\Bindable\Shader.h" />
     <ClInclude Include="..\src\Bindable\DepthStencilState.h" />
-    <ClInclude Include="..\src\Bindable\Texture.h" />
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\MaterialBase.h" />
@@ -193,8 +190,6 @@
     <ClInclude Include="..\src\VulkanCore\DescriptorSet.h" />
     <ClInclude Include="..\src\VulkanCore\Graphics.h" />
     <ClInclude Include="..\src\VulkanCore\Image.h" />
-    <ClInclude Include="..\src\VulkanCore\Pipeline.h" />
-    <ClInclude Include="..\src\VulkanCore\PipelineLayout.h" />
     <ClInclude Include="..\src\VulkanCore\RenderPass.h" />
     <ClInclude Include="..\src\VulkanCore\Synchronization.h" />
     <ClInclude Include="..\src\VulkanCore\Vulkan.h" />
@@ -240,6 +235,7 @@
     <ClCompile Include="..\src\Utils\GloableClass.cpp" />
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp" />
     <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp" />
+    <ClCompile Include="..\src\VulkanCore\CommandPool.cpp" />
     <ClCompile Include="..\src\VulkanCore\CommandQueue.cpp" />
     <ClCompile Include="..\src\VulkanCore\DescriptorPool.cpp" />
     <ClCompile Include="..\src\VulkanCore\DescriptorSet.cpp" />
@@ -248,6 +244,7 @@
     <ClCompile Include="..\src\VulkanCore\Pipeline.cpp" />
     <ClCompile Include="..\src\VulkanCore\RenderPass.cpp" />
     <ClCompile Include="..\src\VulkanCore\Vulkan.cpp" />
+    <ClCompile Include="..\src\VulkanCore\vulkan_core_headers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.frag.glsl" />

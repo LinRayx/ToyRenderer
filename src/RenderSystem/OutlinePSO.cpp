@@ -2,19 +2,20 @@
 
 namespace RenderSystem
 {
-	OutlinePSO::OutlinePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr)
-		: PipelineStateObject(vulkan_ptr)
+	OutlinePSO::OutlinePSO()
+		: PipelineStateObject()
 	{
-		vShader_ptr = make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/Stencil.vert.glsl", "../src/shaders", "main");
-		pShader_ptr = make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/Stencil.frag.glsl", "../src/shaders", "main");
-		v_outlineShader_ptr = make_shared<Bind::VertexShader>(vulkan_ptr, "../src/shaders/Outline.vert.glsl", "../src/shaders", "main");
-		p_outlineShader_ptr = make_shared<Bind::PixelShader>(vulkan_ptr, "../src/shaders/Outline.frag.glsl", "../src/shaders", "main");
-		desc_layout_ptr = make_shared<Graphics::DescriptorSetLayout>(vulkan_ptr);
+		using namespace Graphics;
+		vShader_ptr = make_shared<Bind::VertexShader>("../src/shaders/Stencil.vert.glsl", "../src/shaders", "main");
+		pShader_ptr = make_shared<Bind::PixelShader>("../src/shaders/Stencil.frag.glsl", "../src/shaders", "main");
+		v_outlineShader_ptr = make_shared<Bind::VertexShader>( "../src/shaders/Outline.vert.glsl", "../src/shaders", "main");
+		p_outlineShader_ptr = make_shared<Bind::PixelShader>( "../src/shaders/Outline.frag.glsl", "../src/shaders", "main");
+		desc_layout_ptr = make_shared<DescriptorSetLayout>();
 
-		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_layout_ptr->Add(Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_layout_ptr->Add(Graphics::LayoutType::MODEL, Graphics::DescriptorType::TEXTURE2D, Graphics::StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::VERTEX);
+		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::VERTEX);
+		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
 		desc_layout_ptr->Compile();
 	}
 	void OutlinePSO::BuildPipeline()
@@ -85,7 +86,7 @@ namespace RenderSystem
 		depthStencilState.back.reference = 1;
 		depthStencilState.front = depthStencilState.back;
 
-		vkCreateGraphicsPipelines(vulkan_ptr->GetDevice().device, nullptr, 1, &pipelineCI, nullptr, &pipelineStencil);
+		vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, nullptr, 1, &pipelineCI, nullptr, &pipelineStencil);
 
 		// outline pipeline
 		depthStencilState.back.compareOp = VK_COMPARE_OP_NOT_EQUAL;	// only pass stencil test when A != B
@@ -98,7 +99,7 @@ namespace RenderSystem
 		stages[0].module = v_outlineShader_ptr->shader.module;
 		stages[1].module = p_outlineShader_ptr->shader.module;
 
-		vkCreateGraphicsPipelines(vulkan_ptr->GetDevice().device, nullptr, 1, &pipelineCI, nullptr, &pipelineOutline);
+		vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, nullptr, 1, &pipelineCI, nullptr, &pipelineOutline);
 	}
 
 	void OutlinePSO::BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
@@ -112,7 +113,7 @@ namespace RenderSystem
 			renderPassInfo.renderPass = rp->renderPass;
 			renderPassInfo.framebuffer = rp->framebuffers[i];
 			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = vulkan_ptr->GetSwapchain().extent;
+			renderPassInfo.renderArea.extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent;
 			renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
 			renderPassInfo.pClearValues = rp->clearValues.data();
 			

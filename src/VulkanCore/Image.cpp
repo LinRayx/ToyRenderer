@@ -25,23 +25,23 @@ namespace Graphics {
 		imageInfo.samples = numSamples;
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-		if (vkCreateImage(vulkan_ptr->device.device, &imageInfo, nullptr, &image) != VK_SUCCESS) {
+		if (vkCreateImage(Vulkan::getInstance()->device.device, &imageInfo, nullptr, &image) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create image!");
 		}
 
 		VkMemoryRequirements memRequirements;
-		vkGetImageMemoryRequirements(vulkan_ptr->device.device, image, &memRequirements);
+		vkGetImageMemoryRequirements(Vulkan::getInstance()->device.device, image, &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = vulkan_ptr->findMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = Vulkan::getInstance()->findMemoryType(memRequirements.memoryTypeBits, properties);
 
-		if (vkAllocateMemory(vulkan_ptr->device.device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+		if (vkAllocateMemory(Vulkan::getInstance()->device.device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate image memory!");
 		}
 
-		vkBindImageMemory(vulkan_ptr->device.device, image, imageMemory, 0);
+		vkBindImageMemory(Vulkan::getInstance()->device.device, image, imageMemory, 0);
 	}
 
 	VkImageView Image::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
@@ -58,11 +58,13 @@ namespace Graphics {
 		viewInfo.subresourceRange.layerCount = 1;
 
 		VkImageView imageView;
-		if (vkCreateImageView(vulkan_ptr->device.device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
+		if (vkCreateImageView(Vulkan::getInstance()->device.device, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create texture image view!");
 		}
 
 		return imageView;
 	}
+
+	Image* Image::instance = NULL;
 
 }

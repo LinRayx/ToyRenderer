@@ -12,42 +12,42 @@ namespace Graphics
 	{
 		friend class CommandQueue;
 	public:
-		Synchronization(std::shared_ptr<Vulkan> vulkan_ptr) : vulkan_ptr(vulkan_ptr)
+		Synchronization()
 		{
 			VkSemaphoreCreateInfo semaphoreCreateInfo = {};
 			semaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 			// VkResult res;
-			presentComplete.resize(vulkan_ptr->swapchain.image_count);
-			renderComplete.resize(vulkan_ptr->swapchain.image_count);
+			presentComplete.resize(Vulkan::getInstance()->swapchain.image_count);
+			renderComplete.resize(Vulkan::getInstance()->swapchain.image_count);
 
-			for (size_t i = 0; i < vulkan_ptr->swapchain.image_count; ++i) {
+			for (size_t i = 0; i < Vulkan::getInstance()->swapchain.image_count; ++i) {
 
-				if (vkCreateSemaphore(vulkan_ptr->device.device, &semaphoreCreateInfo, vulkan_ptr->device.allocator, &presentComplete[i]))
+				if (vkCreateSemaphore(Vulkan::getInstance()->device.device, &semaphoreCreateInfo, Vulkan::getInstance()->device.allocator, &presentComplete[i]))
 				{
 					exit(1);
 				}
-				if (vkCreateSemaphore(vulkan_ptr->device.device, &semaphoreCreateInfo, vulkan_ptr->device.allocator, &renderComplete[i]))
+				if (vkCreateSemaphore(Vulkan::getInstance()->device.device, &semaphoreCreateInfo, Vulkan::getInstance()->device.allocator, &renderComplete[i]))
 				{
 					exit(1);
 				}
 			}
-			waitFences.resize(vulkan_ptr->swapchain.image_count);
-			imagesInFlight.resize(vulkan_ptr->swapchain.image_count, VK_NULL_HANDLE);
+			waitFences.resize(Vulkan::getInstance()->swapchain.image_count);
+			imagesInFlight.resize(Vulkan::getInstance()->swapchain.image_count, VK_NULL_HANDLE);
 			VkFenceCreateInfo fenceCreateInfo = {};
 			fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 			fenceCreateInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 			for (auto& fence : waitFences) {
-				vkCreateFence(vulkan_ptr->device.device, &fenceCreateInfo, nullptr, &fence);
+				vkCreateFence(Vulkan::getInstance()->device.device, &fenceCreateInfo, nullptr, &fence);
 			}
 		}
 		~Synchronization()
 		{
-			for (size_t i = 0; i < vulkan_ptr->swapchain.image_count; ++i) {
-				vkDestroySemaphore(vulkan_ptr->device.device, presentComplete[i], vulkan_ptr->device.allocator);
-				vkDestroySemaphore(vulkan_ptr->device.device, renderComplete[i], vulkan_ptr->device.allocator);
+			for (size_t i = 0; i < Vulkan::getInstance()->swapchain.image_count; ++i) {
+				vkDestroySemaphore(Vulkan::getInstance()->device.device, presentComplete[i], Vulkan::getInstance()->device.allocator);
+				vkDestroySemaphore(Vulkan::getInstance()->device.device, renderComplete[i], Vulkan::getInstance()->device.allocator);
 			}
 			for (auto& fence : waitFences) {
-				vkDestroyFence(vulkan_ptr->device.device, fence, nullptr);
+				vkDestroyFence(Vulkan::getInstance()->device.device, fence, nullptr);
 			}
 		}
 	private:
@@ -55,7 +55,6 @@ namespace Graphics
 		std::vector<VkSemaphore> renderComplete;
 		std::vector<VkFence> waitFences;
 		std::vector<VkFence> imagesInFlight;
-		std::shared_ptr<Vulkan> vulkan_ptr;
 	};
 }
 

@@ -3,7 +3,8 @@
 #define VERTEX_BUFFER_H
 
 #include "Bindable.h"
-#include "Buffer.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 #include <memory>
 #include <vector>
 #include <glm/glm.hpp>
@@ -23,8 +24,7 @@ namespace Bind
 		VertexBuffer(VkVertexInputBindingDescription _bindingDescription, std::vector<VkVertexInputAttributeDescription> _attributeDescriptions) 
 			: bindingDescription(_bindingDescription), attributeDescriptions(_attributeDescriptions)
 		{}
-		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data);
-		VertexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, const Dcb::VertexBuffer& vbuf, bool onlyLayout = false);
+		VertexBuffer(const Dcb::VertexBuffer& vbuf, bool onlyLayout = false);
 		~VertexBuffer();
 		VkBuffer Get();
 		std::shared_ptr<Graphics::Buffer> buffer_ptr;

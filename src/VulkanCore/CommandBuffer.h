@@ -20,22 +20,22 @@ namespace Graphics
 	{
 		friend class CommandQueue;
 	public:
-		CommandBuffer(shared_ptr<Vulkan> vulkan_ptr, shared_ptr<CommandPool> cmdPool_ptr) : vulkan_ptr(vulkan_ptr), cmdPool_ptr(cmdPool_ptr)
+		CommandBuffer()
 		{
-			drawCmdBuffers.resize(vulkan_ptr->swapchain.image_count);
+			drawCmdBuffers.resize(Vulkan::getInstance()->swapchain.image_count);
 
 			VkCommandBufferAllocateInfo cmdBufAllocateInfo = {};
 			cmdBufAllocateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-			cmdBufAllocateInfo.commandPool = cmdPool_ptr->cmdPool;
+			cmdBufAllocateInfo.commandPool = CommandPool::getInstance()->cmdPool;
 			cmdBufAllocateInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 			cmdBufAllocateInfo.commandBufferCount = static_cast<uint32_t>(drawCmdBuffers.size());
 
-			vkAllocateCommandBuffers(vulkan_ptr->device.device, &cmdBufAllocateInfo, drawCmdBuffers.data());
+			vkAllocateCommandBuffers(Vulkan::getInstance()->device.device, &cmdBufAllocateInfo, drawCmdBuffers.data());
 		}
 
 		~CommandBuffer()
 		{
-			vkFreeCommandBuffers(vulkan_ptr->device.device, cmdPool_ptr->cmdPool, static_cast<uint32_t>(drawCmdBuffers.size()), drawCmdBuffers.data());
+			vkFreeCommandBuffers(Vulkan::getInstance()->device.device, CommandPool::getInstance()->cmdPool, static_cast<uint32_t>(drawCmdBuffers.size()), drawCmdBuffers.data());
 		}
 
 		VkCommandBuffer beginSingleTimeCommands();
@@ -47,8 +47,7 @@ namespace Graphics
 		void Begin();
 		void End();
 	private:
-		shared_ptr<Vulkan> vulkan_ptr;
-		shared_ptr<CommandPool> cmdPool_ptr;
+
 	public:
 		vector<VkCommandBuffer> drawCmdBuffers;
 	};

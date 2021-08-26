@@ -3,7 +3,8 @@
 #define INDEX_BUFFER_H
 
 #include "Bindable.h"
-#include "Buffer.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 #include <vector>
 
 namespace Bind
@@ -11,8 +12,7 @@ namespace Bind
 	class IndexBuffer : public Bindable
 	{
 	public:
-		IndexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, size_t size, void* data);
-		IndexBuffer(std::shared_ptr<Graphics::Vulkan> _vulkan_ptr, const std::vector<unsigned short>& vbuf);
+		IndexBuffer(const std::vector<unsigned short>& vbuf);
 		~IndexBuffer();
 		std::shared_ptr<Graphics::Buffer> buffer_ptr;
 		size_t GetCount();

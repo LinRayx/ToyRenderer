@@ -9,7 +9,7 @@ namespace RenderSystem
 	class PhonePSO : public PipelineStateObject
 	{
 	public:
-		PhonePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr);
+		PhonePSO();
 		~PhonePSO();
 		virtual void BuildPipeline() override;
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd) override;
@@ -20,7 +20,7 @@ namespace RenderSystem
 	protected:
 		virtual void buildPipeline(Draw::DrawItem* item) override;
 	private:
-
+		VkPipeline pipeline;
 	};
 }
 

@@ -1,8 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 #include "DynamicConstant.h"
-#include "Buffer.h"
-#include "DescriptorSet.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 #include "Camera.h"
 #include "DirectionLight.h"
 #include <memory>
@@ -17,7 +17,7 @@ namespace Control
 	class Scene
 	{
 	public:
-		Scene(shared_ptr<Graphics::Vulkan> vulkan_ptr, int width, int height);
+		Scene(int width, int height);
 		~Scene();
 
 		void InitSceneData(Draw::MaterialBase* material);
@@ -26,8 +26,7 @@ namespace Control
 		shared_ptr<Camera> camera_ptr;
 
 	private:
-		shared_ptr<Graphics::Vulkan> vulkan_ptr;
-		
+
 		DirectionLight directionLight;
 
 		int width;

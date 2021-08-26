@@ -6,10 +6,8 @@
 #include "Bindable/VertexBuffer.h"
 #include "Bindable/IndexBuffer.h"
 
-#include "VulkanCore/RenderPass.h"
-#include "VulkanCore/DescriptorSet.h"
-#include "VulkanCore/Pipeline.h"
-#include "VulkanCore/CommandBuffer.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 
 #include "DynamicVariable/DynamicVertex.h"
 
@@ -25,7 +23,7 @@ namespace RenderSystem
 	class PipelineStateObject
 	{
 	public:
-		PipelineStateObject(shared_ptr<Graphics::Vulkan> vulkan_ptr) : vulkan_ptr(vulkan_ptr) {}
+		PipelineStateObject() {}
 
 		virtual void BuildPipeline()
 		{}
@@ -47,11 +45,7 @@ namespace RenderSystem
 	protected:
 
 		virtual void buildPipeline(Draw::DrawItem* item) {}
-
-		shared_ptr<Graphics::Vulkan> vulkan_ptr;
-		
-		shared_ptr<Graphics::Pipeline> pipeline_ptr;
-		
+				
 		shared_ptr<Bind::VertexShader> vShader_ptr;
 		shared_ptr<Bind::PixelShader> pShader_ptr;
 

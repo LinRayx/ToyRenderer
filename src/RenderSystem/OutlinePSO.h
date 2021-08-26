@@ -12,7 +12,7 @@ namespace RenderSystem
 	class OutlinePSO : public PipelineStateObject
 	{
 	public:
-		OutlinePSO(shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool_ptr);
+		OutlinePSO();
 		~OutlinePSO();
 
 		virtual void BuildPipeline() override;

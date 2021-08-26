@@ -5,18 +5,13 @@ namespace RenderSystem
 
 	RenderLoop::RenderLoop()
 	{
-		vulkan_ptr = make_shared<Graphics::Vulkan>();
-		cmdPool_ptr = make_shared<Graphics::CommandPool>(vulkan_ptr);
-		cmdBuf_ptr = make_shared<Graphics::CommandBuffer>(vulkan_ptr, cmdPool_ptr);
-		ui_cmdBuf_ptr = make_shared<Graphics::CommandBuffer>(vulkan_ptr, cmdPool_ptr);
+		cmdBuf_ptr = make_shared<Graphics::CommandBuffer>();
+		ui_cmdBuf_ptr = make_shared<Graphics::CommandBuffer>();
 		
-		sync_ptr = make_shared<Graphics::Synchronization>(vulkan_ptr);
-		cmdQue_ptr = make_shared<Graphics::CommandQueue>(vulkan_ptr, sync_ptr);
-		desc_pool_ptr = make_shared<Graphics::DescriptorPool>(vulkan_ptr);
-		image_ptr = make_shared<Graphics::Image>(vulkan_ptr);
-		scene_ptr = make_shared<Control::Scene>(vulkan_ptr, vulkan_ptr->width, vulkan_ptr->height);
-		texture_ptr = make_shared<Draw::Texture>(vulkan_ptr, cmdBuf_ptr, image_ptr);
-		gui_ptr = make_shared<GUI::ImguiManager>(vulkan_ptr, desc_pool_ptr);
+		sync_ptr = make_shared<Graphics::Synchronization>();
+		cmdQue_ptr = make_shared<Graphics::CommandQueue>(sync_ptr);
+		scene_ptr = make_shared<Control::Scene>(Graphics::Vulkan::getInstance()->width, Graphics::Vulkan::getInstance()->height);
+		gui_ptr = make_shared<GUI::ImguiManager>();
 
 		frameT_ptr = std::make_shared<FrameTimer>();
 	}
@@ -33,19 +28,19 @@ namespace RenderSystem
 	void RenderLoop::Init()
 	{
 
-		Graphics::InitRenderPass(vulkan_ptr, image_ptr);
-		Draw::InitTextureMgr(vulkan_ptr, cmdBuf_ptr, image_ptr);
+		Graphics::InitRenderPass();
+		Draw::InitTextureMgr(cmdBuf_ptr);
 
-		PhonePSO* phonePSO = new PhonePSO(vulkan_ptr, desc_pool_ptr);
+		PhonePSO* phonePSO = new PhonePSO();
 		
-		Draw::Model* model1 = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, texture_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
-		// Draw::Model* model2 = new Draw::Model(vulkan_ptr, scene_ptr, desc_pool_ptr, "../assets/plane.obj");
+		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
+		// Draw::Model* model2 = new Draw::Model(Vulkan::getInstance(), scene_ptr, DescriptorPool::getInstance(), "../assets/plane.obj");
 		phonePSO->Add(model1);
 		// phonePSO->Add(model2);
 		pso_vecs.emplace_back(phonePSO);
 		modelWindows.resize(10);
 		gui_ptr->Init();
-		gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], vulkan_ptr->GetDevice().queue);
+		gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], Graphics::Vulkan::getInstance()->GetDevice().queue);
 	}
 
 	void RenderLoop::Loop()
@@ -60,16 +55,16 @@ namespace RenderSystem
 		cmdBuf_ptr->End();
 
 
-		while (vulkan_ptr->WindowShouldClose())
+		while (Graphics::Vulkan::getInstance()->WindowShouldClose())
 		{
 			glfwPollEvents();
-			if (glfwGetKey(vulkan_ptr->swapchain.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+			if (glfwGetKey(Graphics::Vulkan::getInstance()->swapchain.window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 				printf("Escape pressed. Shutting down.\n");
 				break;
 			}
 			frameT_ptr->Record();
 
-			scene_ptr->camera_ptr->Control_camera(vulkan_ptr->swapchain.window, frameT_ptr->Get());
+			scene_ptr->camera_ptr->Control_camera(Graphics::Vulkan::getInstance()->swapchain.window, frameT_ptr->Get());
 			int imageIndex = cmdQue_ptr->GetCurImageIndex();
 
 			for (size_t i = 0; i < pso_vecs.size(); ++i) {

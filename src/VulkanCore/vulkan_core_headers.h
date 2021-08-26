@@ -1,12 +1,22 @@
-#include "Vulkan.h"
-#include "Buffer.h"
-#include "CommandBuffer.h"
-#include "CommandPool.h"
-#include "CommandQueue.h"
-#include "Graphics.h"
-#include "Image.h"
-#include "Pipeline.h"
-#include "RenderPass.h"
-#include "Synchronization.h"
-#include "DescriptorPool.h"
-#include "DescriptorSet.h"
+#include "VulkanCore/Vulkan.h"
+#include "VulkanCore/CommandPool.h"
+#include "VulkanCore/Buffer.h"
+#include "VulkanCore/CommandBuffer.h"
+
+#include "VulkanCore/CommandQueue.h"
+#include "VulkanCore/Graphics.h"
+#include "VulkanCore/Image.h"
+
+#include "VulkanCore/RenderPass.h"
+#include "VulkanCore/Synchronization.h"
+#include "VulkanCore/DescriptorPool.h"
+#include "VulkanCore/DescriptorSet.h"
+#include "VulkanCore/VulkanInitalizers.hpp"
+
+namespace Graphics
+{
+	
+
+	
+
+}

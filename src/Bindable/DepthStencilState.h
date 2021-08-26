@@ -2,8 +2,7 @@
 #define STENCIL_STATE_H
 
 #include "Bindable/Bindable.h"
-#include "VulkanCore/Vulkan.h"
-#include "VulkanCore/VulkanInitalizers.hpp"
+#include "VulkanCore/vulkan_core_headers.h"
 #include <memory>
 
 namespace Bind

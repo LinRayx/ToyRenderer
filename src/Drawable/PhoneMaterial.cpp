@@ -2,8 +2,7 @@
 
 namespace Draw
 {
-	PhoneMaterial::PhoneMaterial(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr)
-		: MaterialBase(vulkan_ptr, desc_pool_ptr)
+	PhoneMaterial::PhoneMaterial()
 	{
 		Dcb::RawLayout textureFlags;
 		textureFlags.Add<Dcb::Bool>("HasDiffuseTex");

@@ -9,7 +9,7 @@ namespace Draw
 	class PhoneMaterial : public MaterialBase
 	{
 	public:
-		PhoneMaterial(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, std::shared_ptr<Graphics::DescriptorPool> desc_pool_ptr);
+		PhoneMaterial();
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName) override;
 	private:
 	};

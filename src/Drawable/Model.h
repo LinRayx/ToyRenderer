@@ -1,6 +1,7 @@
 #ifndef MODEL_H
 #define MODEL_H
-#include "Vulkan.h"
+#include "VulkanCore/vulkan_core_headers.h"
+
 #include <vector>
 #include <glm/glm.hpp>
 #include "Camera.h"
@@ -32,18 +33,16 @@ namespace Draw
 		} transform_s;
 
 		glm::mat4 getModelMatrix();
-
-		std::shared_ptr<Graphics::Vulkan> vulkan_ptr;
 	};
 
 	class Mesh
 	{
 		friend class Model;
 	public:
-		Mesh(shared_ptr<Graphics::Vulkan> vulkan_ptr, const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf);
+		Mesh(const Dcb::VertexBuffer& vbuf, const std::vector<unsigned short>& ibuf);
 		shared_ptr<Bind::VertexBuffer> vertex_buffer;
 		shared_ptr<Bind::IndexBuffer> index_buffer;
-
+		// unique_ptr<MaterialBase> material;
 	};
 
 	class Node
@@ -77,8 +76,7 @@ namespace Draw
 	{
 	public:
 
-		Model(std::shared_ptr<Graphics::Vulkan> vulkan_ptr, shared_ptr<Control::Scene> scene_ptr, shared_ptr<Graphics::DescriptorPool> desc_pool,
-			shared_ptr<Draw::Texture> texture_ptr,
+		Model(shared_ptr<Control::Scene> scene_ptr,
 			std::string file_path, std::string directory);
 
 		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
@@ -96,8 +94,6 @@ namespace Draw
 		vector<DrawItem> items;
 
 		shared_ptr<Control::Scene> scene_ptr;
-		shared_ptr<Graphics::DescriptorPool> desc_pool;
-		shared_ptr<Draw::Texture> texture_ptr;
 	private:
 		std::string directory;
 		int loadMaterialTextures(const aiMaterial* mat, aiTextureType type, string typeName);
