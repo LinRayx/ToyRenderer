@@ -21,6 +21,7 @@ namespace Draw
 		Phone = 0,
 		Outline,
 		Skybox,
+		ERROR,
 	};
 	class MaterialBase
 	{
@@ -38,7 +39,7 @@ namespace Draw
 			depthStencilType = type;
 		}
 
-		MaterialType GetMaterailType()
+		virtual MaterialType GetMaterailType()
 		{
 			return matType;
 		}
@@ -68,7 +69,7 @@ namespace Draw
 
 		string getTypeName(aiTextureType type);
 
-		MaterialType matType;
+		MaterialType matType = MaterialType::ERROR;
 
 		VkPipeline pipeline;
 		shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr;

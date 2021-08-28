@@ -22,6 +22,7 @@ namespace Draw
 		textureFlags.Add<Dcb::Bool>("HasDiffuseTex");
 		textureFlags.Add<Dcb::Bool>("HasSpecularTex");
 		addLayout("TextureFlags", std::move(textureFlags), LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
+		matType = MaterialType::Phone;
 	}
 	void PhoneMaterial::LoadModelTexture(const aiMaterial* material, string directory, string meshName)
 	{

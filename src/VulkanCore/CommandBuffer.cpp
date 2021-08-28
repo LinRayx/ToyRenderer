@@ -118,6 +118,30 @@ namespace Graphics
 
         endSingleTimeCommands(commandBuffer);
     }
+
+    void CommandBuffer::copyBufferToCubeImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layoutCount) {
+        std::vector<VkBufferImageCopy> bufferCopyRegions;
+        uint32_t offset = 0;
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+        for (uint32_t face = 0; face < 6; face++) {
+            VkBufferImageCopy bufferCopyRegion = {};
+            bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            bufferCopyRegion.imageSubresource.baseArrayLayer = face;
+            bufferCopyRegion.imageSubresource.layerCount = 1;
+            bufferCopyRegion.imageExtent.width = width;
+            bufferCopyRegion.imageExtent.height = height;
+            bufferCopyRegion.imageExtent.depth = 1;
+            bufferCopyRegion.bufferOffset = offset;
+            bufferCopyRegions.push_back(bufferCopyRegion);
+            offset += width * height * 4;
+        }
+
+        vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, static_cast<uint32_t>(bufferCopyRegions.size()),
+            bufferCopyRegions.data());
+
+        endSingleTimeCommands(commandBuffer);
+    }
+
     void CommandBuffer::Begin()
     {
         for (size_t i = 0; i < drawCmdBuffers.size(); i++) {

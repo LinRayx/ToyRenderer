@@ -30,6 +30,7 @@ namespace Draw
 
 		for (size_t i = 0; i < paths.size(); ++i) {
 			textures[i] = stbi_load(paths[i].c_str(), &data.texWidth, &data.texHeight, &data.texChannel, STBI_rgb_alpha);
+			cout << sizeof(*textures[i]) << endl;
 		}
 
 		VkDeviceSize imageSize = data.texWidth * data.texHeight * 4 * paths.size();
@@ -39,7 +40,7 @@ namespace Draw
 
 		vkMapMemory(Graphics::Vulkan::getInstance()->GetDevice().device, data.stagingBufferMemory, 0, imageSize, 0, &bufferData);
 		size_t offset = 0;
-		size_t sz = data.texWidth * data.texHeight * data.texChannel;
+		size_t sz = data.texWidth * data.texHeight * 4;
 		for (size_t i = 0; i < textures.size(); ++i) {
 			memcpy((char*)bufferData+offset, textures[i], sz);
 			offset += sz;
@@ -52,7 +53,7 @@ namespace Draw
 		
 		Graphics::Image::getInstance()->createCubeImage(data.texWidth, data.texHeight, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, data.textureImage, data.textureImageMemory);
 		cmdBuf_ptr->transitionImageLayout(data.textureImage, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6);
-		cmdBuf_ptr->copyBufferToImage(data.stagingBuffer, data.textureImage, static_cast<uint32_t>(data.texWidth), static_cast<uint32_t>(data.texHeight), 6);
+		cmdBuf_ptr->copyBufferToCubeImage(data.stagingBuffer, data.textureImage, static_cast<uint32_t>(data.texWidth), static_cast<uint32_t>(data.texHeight), 6);
 		cmdBuf_ptr->transitionImageLayout(data.textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6);
 		vkDestroyBuffer(Graphics::Vulkan::getInstance()->GetDevice().device, data.stagingBuffer, nullptr);
 		vkFreeMemory(Graphics::Vulkan::getInstance()->GetDevice().device, data.stagingBufferMemory, nullptr);

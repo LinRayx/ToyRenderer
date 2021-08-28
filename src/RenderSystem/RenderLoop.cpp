@@ -11,7 +11,7 @@ namespace RenderSystem
 		sync_ptr = make_shared<Graphics::Synchronization>();
 		cmdQue_ptr = make_shared<Graphics::CommandQueue>(sync_ptr);
 		scene_ptr = make_shared<Control::Scene>(Graphics::Vulkan::getInstance()->width, Graphics::Vulkan::getInstance()->height);
-		gui_ptr = make_shared<GUI::ImguiManager>();
+		// gui_ptr = make_shared<GUI::ImguiManager>();
 
 		frameT_ptr = std::make_shared<FrameTimer>();
 	}
@@ -57,11 +57,13 @@ namespace RenderSystem
 			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
 		}
 
+
+
 		cmdBuf_ptr->End();
 
 		modelWindows.resize(10);
-		gui_ptr->Init();
-		gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], Graphics::Vulkan::getInstance()->GetDevice().queue);
+		// gui_ptr->Init();
+		// gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], Graphics::Vulkan::getInstance()->GetDevice().queue);
 	}
 
 	void RenderLoop::Loop()

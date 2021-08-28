@@ -14,6 +14,7 @@ namespace Draw
 		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::VERTEX);
 
 		desc_layout_ptr->Compile();
+		matType = MaterialType::Outline;
 	}
 	void OutlineMaterial::Compile()
 	{

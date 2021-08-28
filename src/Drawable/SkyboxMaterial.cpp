@@ -19,6 +19,7 @@ namespace Draw
 		vShader_ptr = make_unique<Bind::VertexShader>("../src/shaders/skybox.vert.glsl", "../src/shaders", "main");
 		pShader_ptr = make_unique<Bind::PixelShader>("../src/shaders/skybox.frag.glsl", "../src/shaders", "main");
 		AddCubeTexture("skybox_texture");
+		matType = MaterialType::Skybox;
 	}
 	void SkyboxMaterial::AddCubeTexture(string skybox_texture_name)
 	{
