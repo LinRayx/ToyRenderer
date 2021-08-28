@@ -5,9 +5,18 @@
 
 #include <memory>
 #include <string>
+#include <map>
 
 namespace Bind
 {
+
+	enum class ShaderType
+	{
+		Phone,
+		Outline,
+		Skybox,
+	};
+
 	class Shader
 	{
 		friend class PixelShader;
@@ -33,6 +42,8 @@ namespace Bind
 
 
 		//! Bundles a Vulkan shader module with its SPIRV code
+
+	public:
 		typedef struct shader_s {
 			//! The Vulkan shader module
 			VkShaderModule module;
@@ -41,10 +52,14 @@ namespace Bind
 			//! The compiled SPIRV code
 			uint32_t* spirv_code;
 		} shader_t;
-	public:
 		Shader()  {}
+		Shader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage);
+		~Shader();
 		void CompileShader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage, 
 			shader_t* shader);
+
+		VkShaderModule GetShaderModule();
+
 	private:
 		int compile_glsl_shader(shader_t* shader, const shader_request_t* request);
 		const char* get_shader_stage_name(VkShaderStageFlags stage);
@@ -52,9 +67,35 @@ namespace Bind
 		void destroy_shader(shader_t* shader);
 
 	private:
-
+		shader_t shader;
 		
 	};
+
+	struct ShaderData
+	{
+		ShaderData()  {}
+		void operator=(const ShaderData& sd)
+		{
+			vert_shader = sd.vert_shader;
+			frag_shader = sd.frag_shader;
+		}
+
+		ShaderData(string name)
+		{
+			vert_shader = new Shader("../src/shaders/" + name + ".vert.glsl", "../src/shaders", "main", VK_SHADER_STAGE_VERTEX_BIT);
+			frag_shader = new Shader("../src/shaders/" + name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
+		~ShaderData()
+		{
+			delete vert_shader;
+			delete frag_shader;
+		}
+		Shader* vert_shader;
+		Shader* frag_shader;
+	};
+
+	extern std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;
+	void LoadShaders();
 }
 
 #endif // !SHADER_H

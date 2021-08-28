@@ -30,7 +30,6 @@ namespace Draw
 
 		for (size_t i = 0; i < paths.size(); ++i) {
 			textures[i] = stbi_load(paths[i].c_str(), &data.texWidth, &data.texHeight, &data.texChannel, STBI_rgb_alpha);
-			cout << sizeof(*textures[i]) << endl;
 		}
 
 		VkDeviceSize imageSize = data.texWidth * data.texHeight * 4 * paths.size();

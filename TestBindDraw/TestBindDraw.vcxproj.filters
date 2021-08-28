@@ -394,10 +394,10 @@
     <None Include="..\src\shaders\Outline.frag.glsl">
       <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="..\src\shaders\skybox.vert.glsl">
+    <None Include="..\src\shaders\Skybox.vert.glsl">
       <Filter>源文件\Shaders</Filter>
     </None>
-    <None Include="..\src\shaders\skybox.frag.glsl">
+    <None Include="..\src\shaders\Skybox.frag.glsl">
       <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>

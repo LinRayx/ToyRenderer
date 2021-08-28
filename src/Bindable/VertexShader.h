@@ -34,6 +34,8 @@ namespace Bind
 	public:
 		Shader::shader_t shader;
 	};
+
+	
 }
 
 #endif // !VERTEX_SHADER_H

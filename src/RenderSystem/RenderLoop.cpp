@@ -29,6 +29,7 @@ namespace RenderSystem
 	{
 		Graphics::InitRenderPass();
 		Draw::InitTextureMgr(cmdBuf_ptr);
+		Bind::LoadShaders();
 		
 		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
 		model1->AddMaterial(Draw::MaterialType::Phone);
@@ -53,11 +54,9 @@ namespace RenderSystem
 			model->BuildCommandBuffer(Draw::MaterialType::Phone, cmdBuf_ptr);
 		}
 
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
-		}
-
-
+		//for (auto& model : models) {
+		//	model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
+		//}
 
 		cmdBuf_ptr->End();
 

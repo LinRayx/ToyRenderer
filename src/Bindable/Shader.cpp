@@ -4,7 +4,15 @@
 
 namespace Bind
 {
-	void Shader::CompileShader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage, 
+	Shader::Shader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage)
+	{
+		CompileShader(shader_file_path, include_path, entry_point, stage, &this->shader);
+	}
+	Shader::~Shader()
+	{
+		destroy_shader(&this->shader);
+	}
+	void Shader::CompileShader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage,
 		shader_t* shader)
 	{
 		shader_request_t shader_request = {};
@@ -17,6 +25,10 @@ namespace Bind
 			exit(1);
 		}
 
+	}
+	VkShaderModule Shader::GetShaderModule()
+	{
+		return this->shader.module;
 	}
 	int Shader::compile_glsl_shader(shader_t* shader, const shader_request_t* request) {
 		auto device = Graphics::Vulkan::getInstance()->GetDevice();
@@ -152,4 +164,13 @@ namespace Bind
 	}
 
 
+
+	std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;
+
+	void LoadShaders()
+	{
+		shaderFactory[ShaderType::Skybox] = make_unique< ShaderData>("Skybox");
+		shaderFactory[ShaderType::Outline] = make_unique< ShaderData>("Outline");
+		shaderFactory[ShaderType::Phone] = make_unique< ShaderData>("Phone");
+	}
 }

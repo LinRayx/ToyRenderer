@@ -16,8 +16,6 @@ namespace Draw
 		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
 		desc_layout_ptr->Compile();
 
-		vShader_ptr = make_unique<Bind::VertexShader>("../src/shaders/skybox.vert.glsl", "../src/shaders", "main");
-		pShader_ptr = make_unique<Bind::PixelShader>("../src/shaders/skybox.frag.glsl", "../src/shaders", "main");
 		AddCubeTexture("skybox_texture");
 		matType = MaterialType::Skybox;
 	}
@@ -50,13 +48,13 @@ namespace Draw
 		VkPipelineShaderStageCreateInfo vertex_shader_stage = {};
 		vertex_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		vertex_shader_stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertex_shader_stage.module = vShader_ptr->shader.module;
+		vertex_shader_stage.module = Bind::shaderFactory[Bind::ShaderType::Skybox]->vert_shader->GetShaderModule();
 		vertex_shader_stage.pName = "main";
 
 		VkPipelineShaderStageCreateInfo frag_shader_stage = {};
 		frag_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		frag_shader_stage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		frag_shader_stage.module = pShader_ptr->shader.module;
+		frag_shader_stage.module = Bind::shaderFactory[Bind::ShaderType::Skybox]->frag_shader->GetShaderModule();
 		frag_shader_stage.pName = "main";
 
 		shaderStages.emplace_back(std::move(vertex_shader_stage));
