@@ -111,7 +111,6 @@ namespace GUI
 
     void ImguiManager::BuildCommandBuffer(std::shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr)
     {
-        
         bool is_minimized = GetData();
         if (is_minimized) return;
         auto& drawCmdBuffers = cmdBuf_ptr->drawCmdBuffers;

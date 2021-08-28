@@ -58,8 +58,6 @@ namespace RenderSystem
 					static_cast<uint32_t>(material->desc_ptr->descriptorSets[i].size()), material->desc_ptr->descriptorSets[i].data(), 0, nullptr);
 				vkCmdDrawIndexed(drawCmdBuffers[i], static_cast<uint32_t>(indexBuffer->GetCount()), 1, 0, 0, 0);
 			}
-
-			
 		}
 	}
 
@@ -189,7 +187,7 @@ namespace RenderSystem
 		pipelineInfo.pDepthStencilState = &depthStencilState;
 
 		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
-		pipelineInfo.renderPass = Graphics::nameToRenderPass["default"]->renderPass;
+		pipelineInfo.renderPass = Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 

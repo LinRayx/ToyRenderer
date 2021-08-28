@@ -16,6 +16,7 @@ namespace Bind
 		~IndexBuffer();
 		std::shared_ptr<Graphics::Buffer> buffer_ptr;
 		size_t GetCount();
+		VkBuffer Get();
 	private:
 		size_t elem_count;
 	};

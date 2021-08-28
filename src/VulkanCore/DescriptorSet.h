@@ -44,7 +44,7 @@ namespace Graphics
 	public:
 		DescriptorSetCore();
 		~DescriptorSetCore();
-		// void Add(DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
+
 		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
 		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, VkImageView textureImageView, VkSampler textureSampler);
 		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage);

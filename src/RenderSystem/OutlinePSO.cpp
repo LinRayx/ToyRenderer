@@ -118,7 +118,7 @@ namespace RenderSystem
 		pipelineInfo.pDepthStencilState = &depthStencilState;
 
 		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
-		pipelineInfo.renderPass = Graphics::nameToRenderPass["default"]->renderPass;
+		pipelineInfo.renderPass = Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 

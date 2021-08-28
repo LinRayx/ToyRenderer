@@ -11,6 +11,7 @@ namespace Draw
 	public:
 		PhoneMaterial();
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName) override;
+		virtual void Compile();
 	private:
 	};
 }

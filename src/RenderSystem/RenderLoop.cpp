@@ -18,29 +18,47 @@ namespace RenderSystem
 
 	RenderLoop::~RenderLoop()
 	{
-		for (size_t i = 0; i < pso_vecs.size(); ++i) {
-			if (pso_vecs[i] != nullptr) {
-				delete pso_vecs[i];
+		for (size_t i = 0; i < models.size(); ++i) {
+			if (models[i] != nullptr) {
+				delete models[i];
 			}
 		}
 	}
 
 	void RenderLoop::Init()
 	{
-
 		Graphics::InitRenderPass();
 		Draw::InitTextureMgr(cmdBuf_ptr);
-
-		PhonePSO* phonePSO = new PhonePSO();
-		OutlinePSO* outlinePSO = new OutlinePSO();
 		
 		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
-		// Draw::Model* model2 = new Draw::Model(Vulkan::getInstance(), scene_ptr, DescriptorPool::getInstance(), "../assets/plane.obj");
-		phonePSO->Add(model1);
-		outlinePSO->Add(model1);
-		// phonePSO->Add(model2);
-		pso_vecs.emplace_back(phonePSO);
-		pso_vecs.emplace_back(outlinePSO);
+		model1->AddMaterial(Draw::MaterialType::Phone);
+		model1->AddMaterial(Draw::MaterialType::Outline);
+
+		Draw::Model* model2 = new Draw::Model(scene_ptr, "../assets/cube.obj", "../assets/cube.obj");
+		model2->AddMaterial(Draw::MaterialType::Skybox);
+
+		models.emplace_back(model2);
+		models.emplace_back(model1);
+
+		cmdBuf_ptr->Begin();
+		for (auto& model : models) {
+			model->Compile();
+		}
+
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
+		}
+
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::Phone, cmdBuf_ptr);
+		}
+
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
+		}
+
+		cmdBuf_ptr->End();
+
 		modelWindows.resize(10);
 		gui_ptr->Init();
 		gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], Graphics::Vulkan::getInstance()->GetDevice().queue);
@@ -48,16 +66,6 @@ namespace RenderSystem
 
 	void RenderLoop::Loop()
 	{
-		for (size_t i = 0; i < pso_vecs.size(); ++i) {
-			pso_vecs[i]->BuildPipeline();
-		}
-		cmdBuf_ptr->Begin();
-		for (size_t i = 0; i < pso_vecs.size(); ++i) {
-			pso_vecs[i]->BuildCommandBuffer(cmdBuf_ptr);
-		}
-		cmdBuf_ptr->End();
-
-
 		while (Graphics::Vulkan::getInstance()->WindowShouldClose())
 		{
 			glfwPollEvents();
@@ -70,8 +78,8 @@ namespace RenderSystem
 			scene_ptr->camera_ptr->Control_camera(Graphics::Vulkan::getInstance()->swapchain.window, frameT_ptr->Get());
 			int imageIndex = cmdQue_ptr->GetCurImageIndex();
 
-			for (size_t i = 0; i < pso_vecs.size(); ++i) {
-				pso_vecs[i]->Update(imageIndex);
+			for (auto& model : models) {
+				model->Update(imageIndex);
 			}
 			
 			cmdQue_ptr->AddCommandBuffer(cmdBuf_ptr->drawCmdBuffers[imageIndex]);
@@ -84,12 +92,7 @@ namespace RenderSystem
 	{
 		gui_ptr->beginFrame();
 		int cnt = 0;
-		for (size_t i = 0; i < pso_vecs.size(); ++i) {
-			auto models = pso_vecs[i]->GetModels();
-			for (size_t j = 0; j < models.size(); ++j) {
-				modelWindows[cnt++].SetModel(models[j]);
-			}
-		}
+
 		ui_cmdBuf_ptr->Begin();
 		gui_ptr->BuildCommandBuffer(ui_cmdBuf_ptr);
 		ui_cmdBuf_ptr->End();

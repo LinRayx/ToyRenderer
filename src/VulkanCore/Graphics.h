@@ -12,6 +12,7 @@ namespace Graphics
 	{
 		UNIFORM,
 		TEXTURE2D,
+		TEXTURE_CUBE,
 	};
 
 	enum class StageFlag

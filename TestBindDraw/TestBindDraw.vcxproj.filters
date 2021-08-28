@@ -222,6 +222,9 @@
     <ClInclude Include="..\src\Bindable\DepthStencilState.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\SkyboxMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -368,6 +371,9 @@
     <ClCompile Include="..\src\VulkanCore\vulkan_core_headers.cpp">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\SkyboxMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -386,6 +392,12 @@
       <Filter>源文件\Shaders</Filter>
     </None>
     <None Include="..\src\shaders\Outline.frag.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\skybox.vert.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\skybox.frag.glsl">
       <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>

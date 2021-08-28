@@ -9,6 +9,7 @@ namespace Draw
 	{
 	public:
 		OutlineMaterial();
+		virtual void Compile();
 	};
 }
 

@@ -10,12 +10,12 @@
 #include <map>
 using namespace std;
 
-namespace Draw
-{
-	class Drawable;
-}
-
 namespace Graphics {
+
+	enum class RenderPassType
+	{
+		Default = 0,
+	};
 
 	class RenderPass : public Graphics
 	{
@@ -53,7 +53,7 @@ namespace Graphics {
 	};
 
 
-	extern map<string, RenderPass*> nameToRenderPass;
+	extern map<RenderPassType, RenderPass*> nameToRenderPass;
 
 	void InitRenderPass();
 }

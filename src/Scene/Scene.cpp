@@ -15,7 +15,12 @@ namespace Control
 
 	void Scene::Update(Draw::MaterialBase* material)
 	{
-		material->SetValue("ViewAndProj", "viewMat", camera_ptr->GetViewMatrix());
+		if (material->GetMaterailType() == Draw::MaterialType::Skybox) {
+			material->SetValue("ViewAndProj", "viewMat", glm::mat4(glm::mat3(camera_ptr->GetViewMatrix())));
+		}
+		else {
+			material->SetValue("ViewAndProj", "viewMat", camera_ptr->GetViewMatrix());
+		}
 		material->SetValue("ViewAndProj", "projMat", camera_ptr->GetProjectMatrix());
 		material->SetValue("Light", "viewPos", camera_ptr->GetViewPos());
 		material->SetValue("Light", "direLightDir", directionLight.direciton);

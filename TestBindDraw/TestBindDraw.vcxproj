@@ -160,6 +160,7 @@
     <ClInclude Include="..\src\Drawable\ModelWindowBase.h" />
     <ClInclude Include="..\src\Drawable\OutlineMaterial.h" />
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
+    <ClInclude Include="..\src\Drawable\SkyboxMaterial.h" />
     <ClInclude Include="..\src\Drawable\Texture.h" />
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
     <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="..\src\Drawable\ModelWindow.cpp" />
     <ClCompile Include="..\src\Drawable\OutlineMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\SkyboxMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\Texture.cpp" />
     <ClCompile Include="..\src\DynamicVariable\DynamicConstant.cpp" />
     <ClCompile Include="..\src\DynamicVariable\LayoutCodex.cpp" />
@@ -253,6 +255,8 @@
     <None Include="..\src\shaders\Outline.vert.glsl" />
     <None Include="..\src\shaders\Phone.frag.glsl" />
     <None Include="..\src\shaders\Phone.vert.glsl" />
+    <None Include="..\src\shaders\skybox.frag.glsl" />
+    <None Include="..\src\shaders\skybox.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

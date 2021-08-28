@@ -47,7 +47,7 @@ namespace Graphics
         endSingleTimeCommands(commandBuffer);
     }
 
-    void CommandBuffer::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout) {
+    void CommandBuffer::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layoutCount) {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkImageMemoryBarrier barrier{};
@@ -61,7 +61,7 @@ namespace Graphics
         barrier.subresourceRange.baseMipLevel = 0;
         barrier.subresourceRange.levelCount = 1;
         barrier.subresourceRange.baseArrayLayer = 0;
-        barrier.subresourceRange.layerCount = 1;
+        barrier.subresourceRange.layerCount = layoutCount;
 
         VkPipelineStageFlags sourceStage;
         VkPipelineStageFlags destinationStage;
@@ -96,7 +96,7 @@ namespace Graphics
         endSingleTimeCommands(commandBuffer);
     }
 
-    void CommandBuffer::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+    void CommandBuffer::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layoutCount) {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkBufferImageCopy region{};
@@ -106,7 +106,7 @@ namespace Graphics
         region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         region.imageSubresource.mipLevel = 0;
         region.imageSubresource.baseArrayLayer = 0;
-        region.imageSubresource.layerCount = 1;
+        region.imageSubresource.layerCount = layoutCount;
         region.imageOffset = { 0, 0, 0 };
         region.imageExtent = {
             width,
@@ -128,7 +128,7 @@ namespace Graphics
                 throw std::runtime_error("failed to begin recording command buffer!");
             }
 
-            auto& rp = nameToRenderPass["default"];
+            auto& rp = nameToRenderPass[RenderPassType::Default];
             VkRenderPassBeginInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
             renderPassInfo.renderPass = rp->renderPass;

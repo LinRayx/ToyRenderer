@@ -29,10 +29,27 @@ namespace Draw
 			it.second->UpdateData(cur, bufs[it.first]->GetSizeInBytes(), bufs[it.first]->GetData());
 		}
 	}
-	void MaterialBase::Compile(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr)
+	void MaterialBase::BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
-		desc_ptr->Compile(desc_layout_ptr);
+		auto& drawCmdBuffers = cmd->drawCmdBuffers;
+		for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
+			vkCmdBindPipeline(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+			VkBuffer vertexBuffers[] = { vBuffer_ptr->Get() };
+			auto indexBuffer = iBuffer_ptr->Get();
+			VkDeviceSize offsets[] = { 0 };
+			vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
+			vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_layout_ptr->pipelineLayout, 0,
+				static_cast<uint32_t>(desc_ptr->descriptorSets[i].size()), desc_ptr->descriptorSets[i].data(), 0, nullptr);
+			vkCmdDrawIndexed(drawCmdBuffers[i], static_cast<uint32_t>(iBuffer_ptr->GetCount()), 1, 0, 0, 0);
+		}
 	}
+	void MaterialBase::BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr, shared_ptr<Bind::IndexBuffer> iBuffer_ptr)
+	{
+		this->vBuffer_ptr = vBuffer_ptr;
+		this->iBuffer_ptr = iBuffer_ptr;
+	}
+
 	void MaterialBase::addLayout(std::string key, Dcb::RawLayout&& layout, Graphics::LayoutType layoutType, Graphics::DescriptorType descType, Graphics::StageFlag stage)
 	{
 		bufs[key] = make_shared<Dcb::Buffer>(std::move(layout));

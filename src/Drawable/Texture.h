@@ -26,10 +26,12 @@ namespace Draw
 	public:
 		Texture(shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr);
 		void CreateTexture(std::string path, std::string texName);
+		void CreateCubeTexture(vector<string> paths, std::string texName);
 		std::map< std::string, TextureData > nameToTex;
 	private:
 		void createTextureImage(std::string path, TextureData& texData);
-		void createTextureImageView(TextureData& texData);
+		void createTextureImageView(TextureData& texData, uint32_t layoutCount = 1);
+		void createCubeTextureImageView(TextureData& texData, uint32_t layoutCount = 6);
 		void createTextureSampler(TextureData& texData);
 
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;

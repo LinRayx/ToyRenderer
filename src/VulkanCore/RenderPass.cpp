@@ -195,21 +195,21 @@ namespace Graphics {
 		
 		Image::getInstance()->createImage(Vulkan::getInstance()->swapchain.extent.width, Vulkan::getInstance()->swapchain.extent.height, 1, msaaSamples, resource.format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, resource.image, resource.imageMemory);
 		if (resource.isDepth) {
-			resource.imageView = Image::getInstance()->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+			resource.imageView = Image::getInstance()->createImageView(resource.image, VK_IMAGE_VIEW_TYPE_2D, resource.format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 		}
 		else {
-			resource.imageView = Image::getInstance()->createImageView(resource.image, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+			resource.imageView = Image::getInstance()->createImageView(resource.image, VK_IMAGE_VIEW_TYPE_2D, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 		}
 	}
 
-	map<string, RenderPass*> nameToRenderPass;
+	map<RenderPassType, RenderPass*> nameToRenderPass;
 
 	void InitRenderPass()
 	{
 		RenderPass* rp = new RenderPass();
 		rp->AddResource("Depth", true);
 		rp->CreateRenderPass();
-		nameToRenderPass["default"] = rp;
+		nameToRenderPass[RenderPassType::Default] = rp;
 	}
 
 }

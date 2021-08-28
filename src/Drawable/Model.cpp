@@ -89,10 +89,7 @@ namespace Draw {
 
 	void Model::BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr, MaterialType matType)
 	{
-		for (auto& obj : objects) {
-			if (obj.materials.count(matType) == 0) continue;
-			obj.materials[matType]->Compile(desc_layout_ptr);
-		}
+
 	}
 
 	void Model::Accept(ModelWindowBase* window)
@@ -112,13 +109,34 @@ namespace Draw {
 			case Draw::MaterialType::Outline:
 				material = new OutlineMaterial;
 				break;
+			case Draw::MaterialType::Skybox:
+				material = new SkyboxMaterial;
 			default:
 				break;
 			}
 
 			it.mesh.SetMaterial(material);
+			material->BindMeshData(it.mesh.vertex_buffer, it.mesh.index_buffer);
 			material->SetValue("Model", "modelTrans", it.mesh.GetTransform());
 			it.materials[type] = material;
+		}
+	}
+
+	void Model::Compile()
+	{
+		for (auto& obj : objects) {
+			for (auto& mat : obj.materials) {
+				mat.second->Compile();
+			}
+		}
+	}
+
+	void Model::BuildCommandBuffer(Draw::MaterialType matType, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr)
+	{
+		for (auto& obj : objects) {
+			if (obj.materials.count(matType)) {
+				obj.materials[matType]->BuildCommandBuffer(cmdBuf_ptr);
+			}
 		}
 	}
 

@@ -20,6 +20,7 @@
 #include "Drawable/ModelWindowBase.h"
 #include "Drawable/PhoneMaterial.h"
 #include "Drawable/OutlineMaterial.h"
+#include "Drawable/SkyboxMaterial.h"
 
 namespace Draw
 {
@@ -93,6 +94,10 @@ namespace Draw
 		void Accept(ModelWindowBase* window);
 
 		void AddMaterial(MaterialType type);
+
+		void Compile();
+
+		void BuildCommandBuffer(Draw::MaterialType matType, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr);
 
 		std::unique_ptr<Node> pRoot;
 		

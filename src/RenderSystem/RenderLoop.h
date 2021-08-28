@@ -3,8 +3,6 @@
 #include "Scene.h"
 #include <memory>
 #include "FrameTimer.h"
-#include "RenderSystem/PhonePSO.h"
-#include "RenderSystem/OutlinePSO.h"
 #include "VulkanCore/vulkan_core_headers.h"
 #include "Drawable/Texture.h"
 #include "imgui/ImguiManager.h"
@@ -35,9 +33,8 @@ namespace RenderSystem
 
 		std::shared_ptr<FrameTimer> frameT_ptr;
 
-		vector<PipelineStateObject*> pso_vecs;
-
 		vector<Draw::ModelWindow> modelWindows;
+		vector<Draw::Model*> models;
 	};
 }
 

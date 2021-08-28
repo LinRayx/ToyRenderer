@@ -16,4 +16,8 @@ namespace Bind
 	{
 		return elem_count;
 	}
+	VkBuffer IndexBuffer::Get()
+	{
+		return buffer_ptr->buffers[0];
+	}
 }
