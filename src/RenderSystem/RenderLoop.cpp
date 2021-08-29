@@ -32,7 +32,7 @@ namespace RenderSystem
 		Bind::LoadShaders();
 		
 		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
-		model1->AddMaterial(Draw::MaterialType::Phone);
+		model1->AddMaterial(Draw::MaterialType::PBR);
 		model1->AddMaterial(Draw::MaterialType::Outline);
 
 		Draw::Model* model2 = new Draw::Model(scene_ptr, "../assets/cube.obj", "../assets/cube.obj");
@@ -51,7 +51,7 @@ namespace RenderSystem
 		}
 
 		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::Phone, cmdBuf_ptr);
+			model->BuildCommandBuffer(Draw::MaterialType::PBR, cmdBuf_ptr);
 		}
 
 		//for (auto& model : models) {

@@ -79,6 +79,9 @@
     <Filter Include="源文件\Utils">
       <UniqueIdentifier>{17f2efb2-a814-4b45-8c48-ab437d22b9c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Shaders\PBR">
+      <UniqueIdentifier>{bcc66070-63c5-4eef-9bdc-eec42bde7541}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -225,6 +228,12 @@
     <ClInclude Include="..\src\Drawable\SkyboxMaterial.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\PBRMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\MaterialHeader.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -274,9 +283,6 @@
     </ClCompile>
     <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp">
       <Filter>源文件\imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Test\test.cpp">
-      <Filter>源文件\Test</Filter>
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\RenderPass.cpp">
       <Filter>源文件\VulkanCore</Filter>
@@ -374,6 +380,12 @@
     <ClCompile Include="..\src\Drawable\SkyboxMaterial.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Test\test.cpp">
+      <Filter>源文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\PBRMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -399,6 +411,12 @@
     </None>
     <None Include="..\src\shaders\Skybox.frag.glsl">
       <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Pbr_basic.frag.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Pbr_basic.vert.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
     </None>
   </ItemGroup>
 </Project>

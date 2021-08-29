@@ -111,8 +111,12 @@ namespace Draw {
 				break;
 			case Draw::MaterialType::Skybox:
 				material = new SkyboxMaterial;
-			default:
 				break;
+			case Draw::MaterialType::PBR:
+				material = new PBRMaterial;
+				break;
+			default:
+				throw std::runtime_error("can not find suitable material!");
 			}
 
 			it.mesh.SetMaterial(material);

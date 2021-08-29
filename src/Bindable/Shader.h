@@ -15,6 +15,7 @@ namespace Bind
 		Phone,
 		Outline,
 		Skybox,
+		PBR,
 	};
 
 	class Shader

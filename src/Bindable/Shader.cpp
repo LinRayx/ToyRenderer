@@ -163,8 +163,6 @@ namespace Bind
 		memset(shader, 0, sizeof(*shader));
 	}
 
-
-
 	std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;
 
 	void LoadShaders()
@@ -172,5 +170,6 @@ namespace Bind
 		shaderFactory[ShaderType::Skybox] = make_unique< ShaderData>("Skybox");
 		shaderFactory[ShaderType::Outline] = make_unique< ShaderData>("Outline");
 		shaderFactory[ShaderType::Phone] = make_unique< ShaderData>("Phone");
+		shaderFactory[ShaderType::PBR] = make_unique< ShaderData>("Pbr_basic");
 	}
 }

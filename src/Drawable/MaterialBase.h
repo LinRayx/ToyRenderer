@@ -21,6 +21,7 @@ namespace Draw
 		Phone = 0,
 		Outline,
 		Skybox,
+		PBR,
 		ERROR,
 	};
 	class MaterialBase
@@ -73,8 +74,6 @@ namespace Draw
 
 		VkPipeline pipeline;
 		shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr;
-		unique_ptr<Bind::VertexShader> vShader_ptr;
-		unique_ptr<Bind::PixelShader> pShader_ptr;
 		shared_ptr<Bind::VertexBuffer> vBuffer_ptr;
 		shared_ptr<Bind::IndexBuffer> iBuffer_ptr;
 	};

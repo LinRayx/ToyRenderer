@@ -18,9 +18,8 @@
 
 #include "Bindable/IndexBuffer.h"
 #include "Drawable/ModelWindowBase.h"
-#include "Drawable/PhoneMaterial.h"
-#include "Drawable/OutlineMaterial.h"
-#include "Drawable/SkyboxMaterial.h"
+
+#include "Drawable/MaterialHeader.h"
 
 namespace Draw
 {

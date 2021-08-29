@@ -20,6 +20,7 @@ namespace Draw
 		Dcb::RawLayout transBuf;
 		transBuf.Add<Dcb::Matrix>("modelTrans");
 		addLayout("Model", std::move(transBuf), Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
+		desc_layout_ptr = make_shared<Graphics::DescriptorSetLayout>();
 	}
 
 	void MaterialBase::Update(int cur)
@@ -70,7 +71,7 @@ namespace Draw
 			Draw::textureManager->CreateTexture(directory + str.C_Str(), key);
 			addTexture(Graphics::LayoutType::MODEL, Graphics::StageFlag::FRAGMENT, Draw::textureManager->nameToTex[key].textureImageView, Draw::textureManager->nameToTex[key].textureSampler);
 		}
-		SetValue("TextureFlags", "Has" + getTypeName(type) + "Tex", mat->GetTextureCount(type) > 0);
+		SetValue("PbrParam", "Has" + getTypeName(type) + "Tex", mat->GetTextureCount(type) > 0);
 		return mat->GetTextureCount(type);
 	}
 	string MaterialBase::getTypeName(aiTextureType type)

@@ -5,7 +5,7 @@ namespace Draw
 	PhoneMaterial::PhoneMaterial() : MaterialBase()
 	{
 		using namespace Graphics;
-		desc_layout_ptr = make_shared<DescriptorSetLayout>();
+
 
 		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::VERTEX);
 		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
