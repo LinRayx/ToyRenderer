@@ -17,8 +17,10 @@ namespace RenderSystem
 		RenderLoop();
 		~RenderLoop();
 		void Init();
-
+		void PreSolve();
 		void Loop();
+
+		void Run();
 	private:
 
 		void renderGUI(int imageIndex);

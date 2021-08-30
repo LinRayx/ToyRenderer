@@ -12,6 +12,7 @@ namespace Draw
 		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::VERTEX);
 		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
 		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
+		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
 		desc_layout_ptr->Compile();
 
 		Dcb::RawLayout pbrLayout;
@@ -20,6 +21,8 @@ namespace Draw
 		pbrLayout.Add<Dcb::Bool>("HasDiffuseTex");
 
 		addLayout("PbrParam", std::move(pbrLayout), LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
+		addTexture(LayoutType::MODEL, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["brdf_lut"].textureImageView, Draw::textureManager->nameToTex["brdf_lut"].textureSampler);
+
 		SetValue("PbrParam", "metallic", 1.f);
 		SetValue("PbrParam", "roughness", 1.0f);
 		matType = MaterialType::PBR;

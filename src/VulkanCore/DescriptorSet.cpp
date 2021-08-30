@@ -142,6 +142,15 @@ namespace Graphics
 		add(desc_type, stage, layout_bindings[index]);
 	}
 
+	void DescriptorSetLayout::Add(StageFlag stage, uint32_t size)
+	{
+		VkPushConstantRange pushConstantRange = {};
+		pushConstantRange.stageFlags = GetStageFlag(stage);
+		pushConstantRange.offset = 0;
+		pushConstantRange.size = size;
+		pushConstantRanges.emplace_back(std::move(pushConstantRange));
+	}
+
 	void DescriptorSetLayout::Compile()
 	{
 		for (size_t i = 0; i < descLayouts.size(); ++i) {
@@ -159,6 +168,11 @@ namespace Graphics
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descLayouts.size());
 		pipelineLayoutInfo.pSetLayouts = descLayouts.data();
+
+		if (pushConstantRanges.size() > 0) {
+			pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstantRanges.size());
+			pipelineLayoutInfo.pPushConstantRanges = pushConstantRanges.data();
+		}
 
 		if (vkCreatePipelineLayout(Vulkan::getInstance()->device.device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create pipeline layout!");

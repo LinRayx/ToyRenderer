@@ -11,6 +11,16 @@ namespace Draw
 
 	}
 
+	Texture::~Texture()
+	{
+		for (auto& tex : nameToTex) {
+			vkDestroyImage(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureImage, Graphics::Vulkan::getInstance()->GetDevice().allocator);
+			vkDestroyImageView(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureImageView, Graphics::Vulkan::getInstance()->GetDevice().allocator);
+			if (tex.second.textureSampler != VK_NULL_HANDLE)
+				vkDestroySampler(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureSampler, Graphics::Vulkan::getInstance()->GetDevice().allocator);
+		}
+	}
+
 	void Texture::CreateTexture(std::string path, std::string texName)
 	{
 		if (nameToTex.count(texName) > 0)
@@ -57,14 +67,53 @@ namespace Draw
 		vkDestroyBuffer(Graphics::Vulkan::getInstance()->GetDevice().device, data.stagingBuffer, nullptr);
 		vkFreeMemory(Graphics::Vulkan::getInstance()->GetDevice().device, data.stagingBufferMemory, nullptr);
 
+		data.format = VK_FORMAT_R8G8B8A8_SRGB;
+
 		createCubeTextureImageView(data);
 		createTextureSampler(data);
 
 		nameToTex[texName] = std::move(data);
 	}
 
+	void Texture::CreateResource(string name, VkFormat format, uint32_t dim, VkImageUsageFlags usage)
+	{
+		cout << "CreateResource: " << name << endl;
+		TextureData texData;
+		texData.texWidth = texData.texHeight = dim;
+		texData.format = format;
+		Graphics::Image::getInstance()->createImage(dim, dim, 1, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
+		createTextureImageView(texData, VK_IMAGE_ASPECT_COLOR_BIT, format);
+		createTextureSampler(texData, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
+		nameToTex[name] = std::move(texData);
+	}
+
+	void Texture::CreateCubeResource(string name, VkFormat format, uint32_t dim)
+	{
+		cout << "CreateCubeResource: " << name << endl;
+		TextureData texData;
+		texData.texWidth = texData.texHeight = dim;
+		texData.format = format;
+		Graphics::Image::getInstance()->createCubeImage(dim, dim, 1, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
+		createCubeTextureImageView(texData);
+		createTextureSampler(texData);
+		nameToTex[name] = std::move(texData);
+	}
+	
+	void Texture::CreateDepthResource(string name)
+	{
+		cout << "CreateDepthResource: " << name << endl;
+		TextureData texData;
+		texData.texWidth = Graphics::Vulkan::getInstance()->GetSwapchain().extent.width;
+		texData.texHeight = Graphics::Vulkan::getInstance()->GetSwapchain().extent.height;
+		texData.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
+		Graphics::Image::getInstance()->createImage(texData.texWidth, texData.texHeight, 1, VK_SAMPLE_COUNT_1_BIT, texData.format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
+		createTextureImageView(texData, VK_IMAGE_ASPECT_DEPTH_BIT, VK_FORMAT_D32_SFLOAT_S8_UINT);
+		nameToTex[name] = std::move(texData);
+	}
+
 	void Texture::createTextureImage(std::string path, TextureData& texData)
 	{
+		cout << "createTextureImage: " << path.c_str() << endl;
 		auto& texWidth = texData.texWidth;
 		auto& texHeight = texData.texHeight;
 		auto& texChannel = texData.texChannel;
@@ -99,17 +148,17 @@ namespace Draw
 		vkFreeMemory(Graphics::Vulkan::getInstance()->GetDevice().device, stagingBufferMemory, nullptr);
 	}
 
-	void Texture::createTextureImageView(TextureData& texData, uint32_t layoutCount)
+	void Texture::createTextureImageView(TextureData& texData, VkImageAspectFlagBits flag, VkFormat format, uint32_t layoutCount)
 	{
-		texData.textureImageView = Graphics::Image::getInstance()->createImageView(texData.textureImage, VK_IMAGE_VIEW_TYPE_2D, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1, layoutCount);
+		texData.textureImageView = Graphics::Image::getInstance()->createImageView(texData.textureImage, VK_IMAGE_VIEW_TYPE_2D, format, flag, 1, layoutCount);
 	}
 
 	void Texture::createCubeTextureImageView(TextureData& texData, uint32_t layoutCount)
 	{
-		texData.textureImageView = Graphics::Image::getInstance()->createImageView(texData.textureImage, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1, layoutCount);
+		texData.textureImageView = Graphics::Image::getInstance()->createImageView(texData.textureImage, VK_IMAGE_VIEW_TYPE_CUBE, texData.format, VK_IMAGE_ASPECT_COLOR_BIT, 1, layoutCount);
 	}
 
-	void Texture::createTextureSampler(TextureData& texData)
+	void Texture::createTextureSampler(TextureData& texData, VkSamplerAddressMode addressMode)
 	{
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(Graphics::Vulkan::getInstance()->GetDevice().physical_device, &properties);
@@ -118,9 +167,9 @@ namespace Draw
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         samplerInfo.magFilter = VK_FILTER_LINEAR;
         samplerInfo.minFilter = VK_FILTER_LINEAR;
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeU = addressMode;
+        samplerInfo.addressModeV = addressMode;
+        samplerInfo.addressModeW = addressMode;
         samplerInfo.anisotropyEnable = VK_TRUE;
         samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
         samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -141,6 +190,7 @@ namespace Draw
 
 	void InitTextureMgr(shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr)
 	{
+		// +X£¬-X£¬+Y£¬-Y£¬+Z£¬-Z
 		textureManager = new Texture(cmdBuf_ptr);
 		vector<string> paths;
 		paths.emplace_back("../assets/skybox/right1.jpg");

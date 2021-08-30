@@ -23,13 +23,13 @@ namespace RenderSystem
 				delete models[i];
 			}
 		}
+		Draw::DestroyTextureMgr();
+		Graphics::DestroyRenderPass();
 	}
 
 	void RenderLoop::Init()
 	{
-		Graphics::InitRenderPass();
-		Draw::InitTextureMgr(cmdBuf_ptr);
-		Bind::LoadShaders();
+
 		
 		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
 		model1->AddMaterial(Draw::MaterialType::PBR);
@@ -65,6 +65,32 @@ namespace RenderSystem
 		// gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], Graphics::Vulkan::getInstance()->GetDevice().queue);
 	}
 
+	void RenderLoop::PreSolve()
+	{
+		Draw::InitTextureMgr(cmdBuf_ptr);
+		Graphics::InitRenderPass();
+		Bind::LoadShaders();
+
+		Draw::BrdfMaterial* brdfLUT = new Draw::BrdfMaterial();
+		brdfLUT->Compile();
+		cmdBuf_ptr->OffScreenBegin();
+		brdfLUT->BuildCmd(cmdBuf_ptr);
+		cmdBuf_ptr->OffScreenEnd();
+		cmdQue_ptr->FlushCommandBuffer(cmdBuf_ptr->drawCmdBuffers[0]);
+		delete brdfLUT;
+
+		Draw::Model* model2 = new Draw::Model(scene_ptr, "../assets/cube.obj", "../assets/cube.obj");
+
+		Draw::IrradianceMaterial* irradiance = new Draw::IrradianceMaterial();
+		irradiance->BindMeshData(model2->objects[0].mesh.vertex_buffer, model2->objects[0].mesh.index_buffer);
+		irradiance->Compile();
+		cmdBuf_ptr->OffScreenBegin();
+		irradiance->BuildCmd(cmdBuf_ptr);
+		cmdBuf_ptr->OffScreenEnd();
+		cmdQue_ptr->FlushCommandBuffer(cmdBuf_ptr->drawCmdBuffers[0]);
+		delete irradiance;
+	}
+
 	void RenderLoop::Loop()
 	{
 		while (Graphics::Vulkan::getInstance()->WindowShouldClose())
@@ -87,6 +113,13 @@ namespace RenderSystem
 			// renderGUI(imageIndex);
 			cmdQue_ptr->Submit();
 		}
+	}
+
+	void RenderLoop::Run()
+	{
+		PreSolve();
+		Init();
+		Loop();
 	}
 
 	void RenderLoop::renderGUI(int imageIndex)

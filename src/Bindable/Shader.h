@@ -16,6 +16,8 @@ namespace Bind
 		Outline,
 		Skybox,
 		PBR,
+		BRDFLUT,
+		IRRADIANCE,
 	};
 
 	class Shader

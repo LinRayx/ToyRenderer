@@ -12,6 +12,7 @@
 #include "VulkanCore/DescriptorPool.h"
 #include "VulkanCore/DescriptorSet.h"
 #include "VulkanCore/VulkanInitalizers.hpp"
+#define M_PI       3.14159265358979323846   // pi
 
 namespace Graphics
 {

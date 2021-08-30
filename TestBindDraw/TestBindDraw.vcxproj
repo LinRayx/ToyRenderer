@@ -154,7 +154,10 @@
     <ClInclude Include="..\src\Bindable\DepthStencilState.h" />
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
+    <ClInclude Include="..\src\Drawable\BrdfMaterial.h" />
+    <ClInclude Include="..\src\Drawable\IrradianceMaterial.h" />
     <ClInclude Include="..\src\Drawable\MaterialBase.h" />
+    <ClInclude Include="..\src\Drawable\MaterialBaseParent.h" />
     <ClInclude Include="..\src\Drawable\MaterialHeader.h" />
     <ClInclude Include="..\src\Drawable\Model.h" />
     <ClInclude Include="..\src\Drawable\ModelWindow.h" />
@@ -207,13 +210,15 @@
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\src\Bindable\DepthStencilState.cpp" />
-    <ClCompile Include="..\src\Bindable\DescriptorSets.cpp" />
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp" />
     <ClCompile Include="..\src\Bindable\PipelineLayout.cpp" />
     <ClCompile Include="..\src\Bindable\PixelShader.cpp" />
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
+    <ClCompile Include="..\src\Drawable\BrdfMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\IrradianceMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\MaterialBase.cpp" />
+    <ClCompile Include="..\src\Drawable\MaterialBaseParent.cpp" />
     <ClCompile Include="..\src\Drawable\Model.cpp" />
     <ClCompile Include="..\src\Drawable\ModelWindow.cpp" />
     <ClCompile Include="..\src\Drawable\OutlineMaterial.cpp" />
@@ -252,8 +257,12 @@
     <ClCompile Include="..\src\VulkanCore\vulkan_core_headers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\src\shaders\Brdf_lut.frag.glsl" />
+    <None Include="..\src\shaders\Brdf_lut.vert.glsl" />
     <None Include="..\src\shaders\desc_test.frag.glsl" />
     <None Include="..\src\shaders\desc_test.vert.glsl" />
+    <None Include="..\src\shaders\Irradiance_map.frag.glsl" />
+    <None Include="..\src\shaders\Irradiance_map.vert.glsl" />
     <None Include="..\src\shaders\Outline.frag.glsl" />
     <None Include="..\src\shaders\Outline.vert.glsl" />
     <None Include="..\src\shaders\Pbr_basic.frag.glsl" />

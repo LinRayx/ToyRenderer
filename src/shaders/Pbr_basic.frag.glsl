@@ -18,7 +18,9 @@ layout(set = 1, binding = 1) uniform PbrParam
 	bool hasDiffuseTex;
 } pParam;
 
-layout(set = 1, binding = 2) uniform sampler2D diffuse_tex;
+layout(set = 1, binding = 2) uniform sampler2D brdf_lut;
+layout(set = 1, binding = 3) uniform sampler2D diffuse_tex;
+
 
 const float PI = 3.14159265359;
 vec3 albedo;

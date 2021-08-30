@@ -8,6 +8,7 @@
 
 #include <string>
 #include <map>
+#include "Drawable/Texture.h"
 using namespace std;
 
 namespace Graphics {
@@ -15,6 +16,8 @@ namespace Graphics {
 	enum class RenderPassType
 	{
 		Default = 0,
+		BRDFLUT = 1,
+		IRRADIANCE = 2,
 	};
 
 	class RenderPass : public Graphics
@@ -25,27 +28,10 @@ namespace Graphics {
 	public:
 		~RenderPass();
 		RenderPass() {}
-		void AddResource(std::string name, bool isDepth = false);
 		void CreateRenderPass();
+		void CreateOffScreenRenderPass(string resource_name, VkImageLayout finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	private:
-
-		struct ImageResource
-		{
-			ImageResource(std::string name, bool isDepth) : name(name), isDepth(isDepth) {}
-			std::string name;
-			bool isDepth;
-			VkImage image;
-			VkDeviceMemory imageMemory;
-			VkImageView imageView;
-			VkFormat format;
-		};
-
-		void createColorResources(ImageResource& resource);
-	private:
-		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
-		std::vector<ImageResource> resources;
-		
+		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;		
 	public:
 		VkRenderPass renderPass;
 		std::vector<VkFramebuffer> framebuffers;
@@ -56,5 +42,6 @@ namespace Graphics {
 	extern map<RenderPassType, RenderPass*> nameToRenderPass;
 
 	void InitRenderPass();
+	void DestroyRenderPass();
 }
 #endif // !RENDER_PASS_H

@@ -7,8 +7,6 @@
 
 namespace Bind
 {
-
-
 	class Bindable
 	{
 	public:

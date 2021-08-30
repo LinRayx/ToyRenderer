@@ -5,5 +5,7 @@
 #include "Drawable/OutlineMaterial.h"
 #include "Drawable/SkyboxMaterial.h"
 #include "Drawable/PBRMaterial.h"
+#include "Drawable/BrdfMaterial.h"
+#include "Drawable/IrradianceMaterial.h"
 
 #endif // !MATERIAL_HEADER_H

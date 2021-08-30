@@ -11,8 +11,7 @@ int HEIGHT = 600;
 int main()
 {
 	RenderSystem::RenderLoop loop;
-	loop.Init();
-	loop.Loop();
+	loop.Run();
 	cout << "hello" << endl;
 	return 0;
 }

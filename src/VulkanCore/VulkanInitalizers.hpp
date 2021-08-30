@@ -5,6 +5,10 @@
 
 namespace Graphics
 {
+	// Custom define for better code readability
+#define VK_FLAGS_NONE 0
+// Default fence timeout in nanoseconds
+#define DEFAULT_FENCE_TIMEOUT 100000000000
 	namespace initializers
 	{
 

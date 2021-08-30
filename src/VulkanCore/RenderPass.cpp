@@ -6,97 +6,14 @@ namespace Graphics {
 
 	RenderPass::~RenderPass()
 	{
-
-	}
-
-	void RenderPass::AddResource(std::string name, bool isDepth)
-	{
-		ImageResource res(name, isDepth);
-		createColorResources(res);
-		
-		resources.emplace_back(res);
+		for (auto& framebuffer : framebuffers) {
+			vkDestroyFramebuffer(Vulkan::getInstance()->GetDevice().device, framebuffer, Vulkan::getInstance()->GetDevice().allocator);
+		}
+		vkDestroyRenderPass(Vulkan::getInstance()->GetDevice().device, renderPass, Vulkan::getInstance()->GetDevice().allocator);
 	}
 
 	void RenderPass::CreateRenderPass()
 	{
-		/*
-		std::vector< VkAttachmentDescription > attachments;
-		std::vector< VkAttachmentReference > ColorAttachmentRefs;
-		VkAttachmentReference depthAttachmentRef{};
-
-		for (size_t i = 0; i < resources.size(); ++i) {
-			VkAttachmentDescription colorAttachment{};
-			VkAttachmentReference colorAttachmentRef{};
-			
-			colorAttachment.format = resources[i].format;
-			colorAttachment.samples = msaaSamples;
-			colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-			colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-			colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-			colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-			colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-			if (resources[i].isDepth)
-			{
-				colorAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-				depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-				depthAttachmentRef.attachment = i;
-			}
-			else {
-				colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-				colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				colorAttachmentRef.attachment = i;
-				ColorAttachmentRefs.emplace_back(std::move(colorAttachmentRef));
-			}
-			
-			attachments.emplace_back(std::move(colorAttachment));
-		}
-
-		VkAttachmentDescription colorAttachmentResolve{};
-		colorAttachmentResolve.format = Vulkan::getInstance()->swapchain.format;
-		colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		attachments.emplace_back(std::move(colorAttachmentResolve));
-		VkAttachmentReference colorAttachmentResolveRef{};
-		colorAttachmentResolveRef.attachment = resources.size();
-		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		ColorAttachmentRefs.emplace_back(std::move(colorAttachmentResolveRef));
-
-		clearValues.resize(attachments.size());
-		for (auto it : clearValues) {
-			it.color = { {1.f, 0.2f, 0.2f, 1.0f} };
-			it.depthStencil = { 1.0f, 0 };
-		}
-
-
-		VkSubpassDescription subpass{};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.colorAttachmentCount = static_cast<uint32_t>(ColorAttachmentRefs.size());
-		subpass.pColorAttachments = ColorAttachmentRefs.data();
-		subpass.pDepthStencilAttachment = &depthAttachmentRef;
-
-		VkSubpassDependency dependency{};
-		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependency.dstSubpass = 0;
-		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependency.srcAccessMask = 0;
-		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-		VkRenderPassCreateInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-		renderPassInfo.pAttachments = attachments.data();
-		renderPassInfo.subpassCount = 1;
-		renderPassInfo.pSubpasses = &subpass;
-		renderPassInfo.dependencyCount = 1;
-		renderPassInfo.pDependencies = &dependency;*/
-
 		VkAttachmentDescription colorAttachment{};
 		colorAttachment.format = Vulkan::getInstance()->swapchain.format;
 		colorAttachment.samples = msaaSamples;
@@ -166,7 +83,7 @@ namespace Graphics {
 			//	atts.emplace_back(resources[j].imageView);
 			//}
 			atts.emplace_back(Vulkan::getInstance()->swapchain.image_views[i]);
-			atts.emplace_back(resources[0].imageView);
+			atts.emplace_back(Draw::textureManager->nameToTex["depth"].textureImageView);
 
 			VkFramebufferCreateInfo framebufferInfo{};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -183,33 +100,99 @@ namespace Graphics {
 		}
 	}
 
-	void RenderPass::createColorResources(ImageResource& resource)
+	void RenderPass::CreateOffScreenRenderPass(string resource_name, VkImageLayout finalLayout)
 	{
-		resource.format = Vulkan::getInstance()->swapchain.format;
-		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		if (resource.isDepth)
-		{
-			resource.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
-			usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-		}
-		
-		Image::getInstance()->createImage(Vulkan::getInstance()->swapchain.extent.width, Vulkan::getInstance()->swapchain.extent.height, 1, msaaSamples, resource.format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, resource.image, resource.imageMemory);
-		if (resource.isDepth) {
-			resource.imageView = Image::getInstance()->createImageView(resource.image, VK_IMAGE_VIEW_TYPE_2D, resource.format, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
-		}
-		else {
-			resource.imageView = Image::getInstance()->createImageView(resource.image, VK_IMAGE_VIEW_TYPE_2D, resource.format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-		}
+		// FB, Att, RP, Pipe, etc.
+		VkAttachmentDescription attDesc = {};
+		// Color attachment
+		attDesc.format = Draw::textureManager->nameToTex[resource_name].format;
+		attDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+		attDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		attDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		attDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		attDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		attDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		attDesc.finalLayout = finalLayout;
+		VkAttachmentReference colorReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+
+		VkSubpassDescription subpassDescription = {};
+		subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpassDescription.colorAttachmentCount = 1;
+		subpassDescription.pColorAttachments = &colorReference;
+
+		// Use subpass dependencies for layout transitions
+		std::array<VkSubpassDependency, 2> dependencies;
+		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+		dependencies[1].srcSubpass = 0;
+		dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+		// Create the actual renderpass
+		VkRenderPassCreateInfo renderPassCI{};
+		renderPassCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassCI.attachmentCount = 1;
+		renderPassCI.pAttachments = &attDesc;
+		renderPassCI.subpassCount = 1;
+		renderPassCI.pSubpasses = &subpassDescription;
+		renderPassCI.dependencyCount = 2;
+		renderPassCI.pDependencies = dependencies.data();
+
+		vkCreateRenderPass(Vulkan::getInstance()->GetDevice().device, &renderPassCI, nullptr, &renderPass);
+
+		VkFramebufferCreateInfo framebufferCI{};
+		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferCI.renderPass = renderPass;
+		framebufferCI.attachmentCount = 1;
+		framebufferCI.pAttachments = &Draw::textureManager->nameToTex[resource_name].textureImageView;
+		framebufferCI.width = Draw::textureManager->nameToTex[resource_name].texWidth;
+		framebufferCI.height = Draw::textureManager->nameToTex[resource_name].texHeight;
+		framebufferCI.layers = 1;
+
+		VkFramebuffer framebuffer;
+		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device,  &framebufferCI, nullptr, &framebuffer);
+		framebuffers.emplace_back(std::move(framebuffer));
 	}
 
 	map<RenderPassType, RenderPass*> nameToRenderPass;
 
 	void InitRenderPass()
 	{
+		Draw::textureManager->CreateDepthResource("depth");
+		Draw::textureManager->CreateResource("brdf_lut", VK_FORMAT_R16G16_SFLOAT, 512, 
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+		Draw::textureManager->CreateResource("irradiance_attachment", VK_FORMAT_R32G32B32A32_SFLOAT, 64, 
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
+		Draw::textureManager->CreateCubeResource("irradiance_map", VK_FORMAT_R32G32B32A32_SFLOAT, 64);
+		// VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+
 		RenderPass* rp = new RenderPass();
-		rp->AddResource("Depth", true);
 		rp->CreateRenderPass();
 		nameToRenderPass[RenderPassType::Default] = rp;
+		
+		RenderPass* rp2 = new RenderPass();
+		rp2->CreateOffScreenRenderPass("brdf_lut");
+		nameToRenderPass[RenderPassType::BRDFLUT] = rp2;
+
+		RenderPass* rp3 = new RenderPass();
+		rp3->CreateOffScreenRenderPass("irradiance_attachment", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		nameToRenderPass[RenderPassType::IRRADIANCE] = rp3;
+	}
+
+	void DestroyRenderPass()
+	{
+		for (auto& rp : nameToRenderPass) {
+			delete rp.second;
+		}
 	}
 
 }

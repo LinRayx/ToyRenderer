@@ -46,8 +46,29 @@ namespace Graphics
 		void copyBufferToCubeImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layoutCount);
 		void Begin();
 		void End();
-	private:
 
+		void CopyFrameBufferToImage(uint32_t index, string irradiance_attachment, string image_name, uint32_t dstBaseArrayLayer, int32_t dim);
+
+		void OffScreenBegin();
+		void OffScreenEnd();
+		// Put an image memory barrier for setting an image layout on the sub resource into the given command buffer
+		void setImageLayout(
+			VkCommandBuffer cmdbuffer,
+			VkImage image,
+			VkImageLayout oldImageLayout,
+			VkImageLayout newImageLayout,
+			VkImageSubresourceRange subresourceRange,
+			VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+			VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+		// Uses a fixed sub resource layout with first mip level and layer
+		void setImageLayout(
+			VkCommandBuffer cmdbuffer,
+			VkImage image,
+			VkImageAspectFlags aspectMask,
+			VkImageLayout oldImageLayout,
+			VkImageLayout newImageLayout,
+			VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
+			VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 	public:
 		vector<VkCommandBuffer> drawCmdBuffers;
 	};

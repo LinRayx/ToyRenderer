@@ -32,6 +32,8 @@ namespace Graphics
 			cmdBufs.clear();
 		}
 
+		void FlushCommandBuffer(VkCommandBuffer commandBuffer);
+
 		int GetCurImageIndex();
 
 

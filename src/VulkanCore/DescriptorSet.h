@@ -78,10 +78,12 @@ namespace Graphics
 		}
 		void add(DescriptorType type, StageFlag stage, vector<VkDescriptorSetLayoutBinding>& bindings);
 		void Add(LayoutType layout_type, DescriptorType desc_type, StageFlag stage);
+		void Add(StageFlag stage, uint32_t size);
 		void Compile();
 	private:
 		vector<VkDescriptorSetLayout> descLayouts;
 		vector<vector<VkDescriptorSetLayoutBinding>> layout_bindings;
+		vector<VkPushConstantRange> pushConstantRanges;
 	public:
 		VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 	};

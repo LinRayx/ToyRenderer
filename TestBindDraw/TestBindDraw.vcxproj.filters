@@ -234,6 +234,15 @@
     <ClInclude Include="..\src\Drawable\MaterialHeader.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\BrdfMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\IrradianceMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\MaterialBaseParent.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -295,9 +304,6 @@
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\CommandBuffer.cpp">
       <Filter>源文件\VulkanCore</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Bindable\DescriptorSets.cpp">
-      <Filter>源文件\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="..\src\VulkanCore\DescriptorPool.cpp">
       <Filter>源文件\VulkanCore</Filter>
@@ -386,6 +392,15 @@
     <ClCompile Include="..\src\Drawable\PBRMaterial.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\BrdfMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\IrradianceMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\MaterialBaseParent.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -416,6 +431,18 @@
       <Filter>源文件\Shaders\PBR</Filter>
     </None>
     <None Include="..\src\shaders\Pbr_basic.vert.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Brdf_lut.vert.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Brdf_lut.frag.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Irradiance_map.vert.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Irradiance_map.frag.glsl">
       <Filter>源文件\Shaders\PBR</Filter>
     </None>
   </ItemGroup>

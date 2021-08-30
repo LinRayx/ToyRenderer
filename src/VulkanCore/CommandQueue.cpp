@@ -2,6 +2,22 @@
 
 namespace Graphics
 {
+	void CommandQueue::FlushCommandBuffer(VkCommandBuffer commandBuffer)
+	{
+		VkSubmitInfo submitInfo = initializers::submitInfo();
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffer;
+		// Create fence to ensure that the command buffer has finished executing
+		VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo(VK_FLAGS_NONE);
+		VkFence fence;
+		vkCreateFence(Vulkan::getInstance()->GetDevice().device, &fenceInfo, nullptr, &fence);
+		// Submit to the queue
+		vkQueueSubmit(Vulkan::getInstance()->GetDevice().queue, 1, &submitInfo, fence);
+		// Wait for the fence to signal that command buffer has finished executing
+		vkWaitForFences(Vulkan::getInstance()->GetDevice().device, 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT);
+		vkDestroyFence(Vulkan::getInstance()->GetDevice().device, fence, nullptr);
+		vkQueueWaitIdle(Vulkan::getInstance()->GetDevice().queue);
+	}
 	int CommandQueue::GetCurImageIndex()
 	{
 		imageIndex = 0;

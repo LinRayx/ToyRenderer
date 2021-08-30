@@ -13,12 +13,10 @@
 #include "VertexBuffer.h"
 #include "Scene.h"
 
-
 #include "Drawable/Texture.h"
 
 #include "Bindable/IndexBuffer.h"
 #include "Drawable/ModelWindowBase.h"
-
 #include "Drawable/MaterialHeader.h"
 
 namespace Draw

@@ -171,5 +171,7 @@ namespace Bind
 		shaderFactory[ShaderType::Outline] = make_unique< ShaderData>("Outline");
 		shaderFactory[ShaderType::Phone] = make_unique< ShaderData>("Phone");
 		shaderFactory[ShaderType::PBR] = make_unique< ShaderData>("Pbr_basic");
+		shaderFactory[ShaderType::BRDFLUT] = make_unique< ShaderData>("Brdf_lut");
+		shaderFactory[ShaderType::IRRADIANCE] = make_unique< ShaderData>("Irradiance_map");
 	}
 }
