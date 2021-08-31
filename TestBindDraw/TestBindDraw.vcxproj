@@ -165,6 +165,7 @@
     <ClInclude Include="..\src\Drawable\OutlineMaterial.h" />
     <ClInclude Include="..\src\Drawable\PBRMaterial.h" />
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
+    <ClInclude Include="..\src\Drawable\PrefilterMaterial.h" />
     <ClInclude Include="..\src\Drawable\SkyboxMaterial.h" />
     <ClInclude Include="..\src\Drawable\Texture.h" />
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
@@ -175,9 +176,6 @@
     <ClInclude Include="..\src\Exception\ModelException.h" />
     <ClInclude Include="..\src\imgui\ImguiManager.h" />
     <ClInclude Include="..\src\RenderSystem\FrameTimer.h" />
-    <ClInclude Include="..\src\RenderSystem\OutlinePSO.h" />
-    <ClInclude Include="..\src\RenderSystem\PhonePSO.h" />
-    <ClInclude Include="..\src\RenderSystem\PipelineStateObject.h" />
     <ClInclude Include="..\src\RenderSystem\RenderLoop.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
     <ClInclude Include="..\src\Scene\DirectionLight.h" />
@@ -224,6 +222,7 @@
     <ClCompile Include="..\src\Drawable\OutlineMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PBRMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\PrefilterMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\SkyboxMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\Texture.cpp" />
     <ClCompile Include="..\src\DynamicVariable\DynamicConstant.cpp" />
@@ -234,9 +233,6 @@
     <ClCompile Include="..\src\imgui\ImguiManager.cpp" />
     <ClCompile Include="..\src\imgui\imgui_vulkan.cpp" />
     <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp" />
-    <ClCompile Include="..\src\RenderSystem\OutlinePSO.cpp" />
-    <ClCompile Include="..\src\RenderSystem\PhonePSO.cpp" />
-    <ClCompile Include="..\src\RenderSystem\PipelineStateObject.cpp" />
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
     <ClCompile Include="..\src\Scene\DirectionLight.cpp" />
@@ -269,6 +265,8 @@
     <None Include="..\src\shaders\Pbr_basic.vert.glsl" />
     <None Include="..\src\shaders\Phone.frag.glsl" />
     <None Include="..\src\shaders\Phone.vert.glsl" />
+    <None Include="..\src\shaders\Prefilter_map.frag.glsl" />
+    <None Include="..\src\shaders\Prefilter_map.vert.glsl" />
     <None Include="..\src\shaders\Skybox.frag.glsl" />
     <None Include="..\src\shaders\Skybox.vert.glsl" />
   </ItemGroup>

@@ -26,6 +26,7 @@ namespace Dcb
 			Position3D,
 			Texture2D,
 			Normal,
+			Tangent,
 			Float3Color,
 			Float4Color,
 			BGRAColor,
@@ -55,6 +56,13 @@ namespace Dcb
 			using SysType = glm::vec3;
 			static constexpr VkFormat vkFormat = VK_FORMAT_R32G32B32_SFLOAT;
 			static constexpr const char* semantic = "Normal";
+		};
+		template<> struct Map<Tangent>
+		{
+			using SysType = glm::vec4;
+			
+			static constexpr VkFormat vkFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+			static constexpr const char* semantic = "Tangent";
 		};
 		template<> struct Map<Float3Color>
 		{
@@ -147,6 +155,9 @@ namespace Dcb
 				break;
 			case VertexLayout::Normal:
 				SetAttribute<VertexLayout::Normal>(pAttribute, std::forward<T>(val));
+				break;
+			case VertexLayout::Tangent:
+				SetAttribute<VertexLayout::Tangent>(pAttribute, std::forward<T>(val));
 				break;
 			case VertexLayout::Float3Color:
 				SetAttribute<VertexLayout::Float3Color>(pAttribute, std::forward<T>(val));

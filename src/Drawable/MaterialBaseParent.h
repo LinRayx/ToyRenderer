@@ -20,6 +20,8 @@ namespace Draw
 		}
 
 		virtual void Compile() {}
+		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd) {}
+		virtual void Execute(shared_ptr<Graphics::CommandBuffer> cmdbuf_ptr) {}
 		void Update(int cur);
 
 		std::map<std::string, shared_ptr<Graphics::Buffer>> buffer_ptrs;
@@ -33,7 +35,6 @@ namespace Draw
 		void addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler);
 
 		VkPipeline pipeline;
-		shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr;
 	};
 }
 

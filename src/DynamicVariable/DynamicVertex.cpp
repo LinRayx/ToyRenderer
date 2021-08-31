@@ -62,6 +62,9 @@ namespace Dcb
 		case Normal:
 			return Map<Normal>::vkFormat;
 			break;
+		case Tangent:
+			return Map<Tangent>::vkFormat;
+			break;
 		case Float3Color:
 			return Map<Float3Color>::vkFormat;
 			break;
@@ -92,6 +95,8 @@ namespace Dcb
 			return sizeof(Map<Texture2D>::SysType);
 		case Normal:
 			return sizeof(Map<Normal>::SysType);
+		case Tangent:
+			return sizeof(Map<Tangent>::SysType);
 		case Float3Color:
 			return sizeof(Map<Float3Color>::SysType);
 		case Float4Color:

@@ -6,15 +6,6 @@ namespace Draw
 	{
 		using namespace Graphics;
 
-
-		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::VERTEX);
-		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::VERTEX);
-		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
-		desc_layout_ptr->Compile();
-
 		Dcb::RawLayout textureFlags;
 		textureFlags.Add<Dcb::Bool>("HasDiffuseTex");
 		textureFlags.Add<Dcb::Bool>("HasSpecularTex");
@@ -28,7 +19,7 @@ namespace Draw
 	}
 	void PhoneMaterial::Compile()
 	{
-		desc_ptr->Compile(desc_layout_ptr);
+		desc_ptr->Compile();
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
@@ -122,7 +113,7 @@ namespace Draw
 		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::WriteStencil);
 		pipelineInfo.pDepthStencilState = &depthStencilState;
 
-		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
+		pipelineInfo.layout = desc_ptr->GetPipelineLayout();
 		pipelineInfo.renderPass = Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;

@@ -17,7 +17,7 @@ namespace Control
 	class Camera
 	{
     public:
-        Camera(int sc_width, int sc_height, float move_speed = 3, float move_sen = 1);
+        Camera(int sc_width, int sc_height, float move_speed = 50, float move_sen = 1);
         glm::mat4 GetViewMatrix();
         glm::mat4 GetProjectMatrix();
         glm::vec3 GetViewPos();

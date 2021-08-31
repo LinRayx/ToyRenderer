@@ -24,7 +24,7 @@ namespace Control
 	}
 	glm::mat4 Camera::GetProjectMatrix()
 	{
-		return glm::perspective(glm::radians(Zoom), (float)sc_width / (float)sc_height, 0.1f, 100.0f);
+		return glm::perspective(glm::radians(Zoom), (float)sc_width / (float)sc_height, 0.1f, 200.0f);
 	}
 	glm::vec3 Camera::GetViewPos()
 	{

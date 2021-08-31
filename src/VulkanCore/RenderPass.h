@@ -18,6 +18,7 @@ namespace Graphics {
 		Default = 0,
 		BRDFLUT = 1,
 		IRRADIANCE = 2,
+		PREFILTER = 3,
 	};
 
 	class RenderPass : public Graphics

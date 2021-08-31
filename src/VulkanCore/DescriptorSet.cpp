@@ -10,6 +10,7 @@ namespace Graphics
 		write_sets.clear();
 		descriptorSets.clear();
 		slots_index.resize(static_cast<size_t>(LayoutType::COUNT), 0);
+		desc_layout_ptr = make_unique<DescriptorSetLayout>();
 	}
 
 	DescriptorSetCore::~DescriptorSetCore()
@@ -36,11 +37,22 @@ namespace Graphics
 
 	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage)
 	{
-
+		desc_layout_ptr->Add(layout_type, type, stage);
 	}
 
-	void DescriptorSetCore::Compile(shared_ptr<DescriptorSetLayout> desc_layout_ptr)
+	void DescriptorSetCore::Add(StageFlag stage, uint32_t size)
 	{
+		desc_layout_ptr->Add(stage, size);
+	}
+
+	VkPipelineLayout DescriptorSetCore::GetPipelineLayout()
+	{
+		return desc_layout_ptr->pipelineLayout;
+	}
+
+	void DescriptorSetCore::Compile()
+	{
+		desc_layout_ptr->Compile();
 		descriptorSets.resize(Vulkan::getInstance()->swapchain.image_count);
 		for (size_t i = 0; i < descriptorSets.size(); ++i) {
 			descriptorSets[i].resize(static_cast<size_t>(LayoutType::COUNT));

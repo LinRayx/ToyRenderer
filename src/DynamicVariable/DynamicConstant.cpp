@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include "LayoutCodex.h"
-
+#include <iostream>
 
 namespace Dcb
 {
@@ -53,7 +53,7 @@ namespace Dcb
 		assert( "Keying into non-struct" && type == Struct );
 		for( auto& mem : static_cast<ExtraData::Struct&>(*pExtraData).layoutElements )
 		{
-			if( mem.first == key )
+			if( mem.first.compare(key) == 0 )
 			{
 				return mem.second;
 			}

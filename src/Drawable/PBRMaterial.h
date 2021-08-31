@@ -12,7 +12,8 @@ namespace Draw
 		PBRMaterial();
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName);
 		virtual void Compile();
-
+	private:
+		void AddCubeTexture(string cube_texture_name);
 	};
 }
 

@@ -21,7 +21,6 @@ namespace Draw
 		Dcb::RawLayout transBuf;
 		transBuf.Add<Dcb::Matrix>("modelTrans");
 		addLayout("Model", std::move(transBuf), Graphics::LayoutType::MODEL, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		desc_layout_ptr = make_shared<Graphics::DescriptorSetLayout>();
 	}
 
 
@@ -35,7 +34,7 @@ namespace Draw
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(drawCmdBuffers[i], 0, 1, vertexBuffers, offsets);
 			vkCmdBindIndexBuffer(drawCmdBuffers[i], indexBuffer, 0, VK_INDEX_TYPE_UINT16);
-			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_layout_ptr->pipelineLayout, 0,
+			vkCmdBindDescriptorSets(drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, desc_ptr->GetPipelineLayout(), 0,
 				static_cast<uint32_t>(desc_ptr->descriptorSets[i].size()), desc_ptr->descriptorSets[i].data(), 0, nullptr);
 			vkCmdDrawIndexed(drawCmdBuffers[i], static_cast<uint32_t>(iBuffer_ptr->GetCount()), 1, 0, 0, 0);
 		}
@@ -54,9 +53,9 @@ namespace Draw
 			mat->GetTexture(type, i, &str);
 			string key = meshName + "_" + getTypeName(type);
 			Draw::textureManager->CreateTexture(directory + str.C_Str(), key);
-			addTexture(Graphics::LayoutType::MODEL, Graphics::StageFlag::FRAGMENT, Draw::textureManager->nameToTex[key].textureImageView, Draw::textureManager->nameToTex[key].textureSampler);
+			//addTexture(Graphics::LayoutType::MODEL, Graphics::StageFlag::FRAGMENT, Draw::textureManager->nameToTex[key].textureImageView, Draw::textureManager->nameToTex[key].textureSampler);
 		}
-		SetValue("PbrParam", "Has" + getTypeName(type) + "Tex", mat->GetTextureCount(type) > 0);
+		//SetValue("PbrParam", "Has" + getTypeName(type) + "Tex", mat->GetTextureCount(type) > 0);
 		return mat->GetTextureCount(type);
 	}
 	string MaterialBase::getTypeName(aiTextureType type)

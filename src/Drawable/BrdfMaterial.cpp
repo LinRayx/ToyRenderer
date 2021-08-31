@@ -4,8 +4,8 @@ namespace Draw
 {
 	BrdfMaterial::BrdfMaterial()
 	{
-		desc_layout_ptr = std::make_shared<Graphics::DescriptorSetLayout>();
-		desc_layout_ptr->Compile();
+		desc_ptr = std::make_unique<Graphics::DescriptorSetCore>();
+		desc_ptr->Compile();
 	}
 	void BrdfMaterial::Compile()
 	{
@@ -55,7 +55,7 @@ namespace Draw
 		viewport_info.pViewports = &viewport;
 
 
-		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_layout_ptr->pipelineLayout, Graphics::nameToRenderPass[Graphics::RenderPassType::BRDFLUT]->renderPass, 0);
+		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), Graphics::nameToRenderPass[Graphics::RenderPassType::BRDFLUT]->renderPass, 0);
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;
 		pipelineCI.pRasterizationState = &rasterizationState;
 		pipelineCI.pColorBlendState = &colorBlendState;
@@ -70,9 +70,10 @@ namespace Draw
 			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
 		}
 	}
-	void BrdfMaterial::BuildCmd(shared_ptr<Graphics::CommandBuffer> cmd)
+	void BrdfMaterial::Execute(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
-		auto& cmdBuf = cmd->drawCmdBuffers[0];
+		cout << "BrdfMaterial::Execute" << endl;
+		auto cmdBuf = cmd->beginSingleTimeCommands();
 		const int32_t dim = 512;
 		// Render
 		VkClearValue clearValues[1];
@@ -90,5 +91,6 @@ namespace Draw
 		vkCmdDraw(cmdBuf, 3, 1, 0, 0);
 
 		vkCmdEndRenderPass(cmdBuf);
+		cmd->endSingleTimeCommands(cmdBuf);
 	}
 }

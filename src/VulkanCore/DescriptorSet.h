@@ -48,12 +48,16 @@ namespace Graphics
 		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr);
 		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage, VkImageView textureImageView, VkSampler textureSampler);
 		void Add(LayoutType layout_type, DescriptorType type, StageFlag stage);
-		void Compile(shared_ptr<DescriptorSetLayout> desc_layout_ptr);
+		void Add(StageFlag stage, uint32_t size);
+		VkPipelineLayout GetPipelineLayout();
+		void Compile();
 		bool Update();
 	private:
 		vector<descInfo> infos;
 		vector<VkWriteDescriptorSet> write_sets;
 		vector<uint16_t> slots_index;
+
+		unique_ptr<DescriptorSetLayout> desc_layout_ptr;
 
 	public:
 		// i : swapchain  j : set
@@ -84,7 +88,6 @@ namespace Graphics
 		vector<VkDescriptorSetLayout> descLayouts;
 		vector<vector<VkDescriptorSetLayoutBinding>> layout_bindings;
 		vector<VkPushConstantRange> pushConstantRanges;
-	public:
 		VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 	};
 }

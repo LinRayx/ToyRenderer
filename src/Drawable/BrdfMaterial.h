@@ -10,10 +10,10 @@ namespace Draw
 	public:
 		BrdfMaterial();
 		void Compile();
-		void BuildCmd(shared_ptr<Graphics::CommandBuffer> cmd);
+		void Execute(shared_ptr<Graphics::CommandBuffer> cmd);
 	private:
 		VkPipeline pipeline;
-		shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr;
+		unique_ptr<Graphics::DescriptorSetCore> desc_ptr;
 		const int32_t dim = 512;
 	};
 }

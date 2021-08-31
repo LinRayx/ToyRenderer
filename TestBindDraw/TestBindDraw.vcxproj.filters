@@ -186,12 +186,6 @@
     <ClInclude Include="..\src\DynamicVariable\DynamicVertex.h">
       <Filter>头文件\DynamicVariable</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\RenderSystem\PipelineStateObject.h">
-      <Filter>头文件\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\RenderSystem\PhonePSO.h">
-      <Filter>头文件\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Drawable\Texture.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
@@ -206,9 +200,6 @@
     </ClInclude>
     <ClInclude Include="..\src\Drawable\ModelWindowBase.h">
       <Filter>头文件\Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\RenderSystem\OutlinePSO.h">
-      <Filter>头文件\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\src\VulkanCore\VulkanInitalizers.hpp">
       <Filter>头文件\VulkanCore</Filter>
@@ -241,6 +232,9 @@
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Drawable\MaterialBaseParent.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\PrefilterMaterial.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
   </ItemGroup>
@@ -335,12 +329,6 @@
     <ClCompile Include="..\src\DynamicVariable\DynamicVertex.cpp">
       <Filter>源文件\DynamicVariable</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\RenderSystem\PipelineStateObject.cpp">
-      <Filter>源文件\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\RenderSystem\PhonePSO.cpp">
-      <Filter>源文件\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp">
       <Filter>源文件\RenderSystem</Filter>
     </ClCompile>
@@ -358,9 +346,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Drawable\ModelWindow.cpp">
       <Filter>源文件\Drawable</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\RenderSystem\OutlinePSO.cpp">
-      <Filter>源文件\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Drawable\MaterialBase.cpp">
       <Filter>源文件\Drawable</Filter>
@@ -399,6 +384,9 @@
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Drawable\MaterialBaseParent.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\PrefilterMaterial.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
   </ItemGroup>
@@ -443,6 +431,12 @@
       <Filter>源文件\Shaders\PBR</Filter>
     </None>
     <None Include="..\src\shaders\Irradiance_map.frag.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Prefilter_map.vert.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Prefilter_map.frag.glsl">
       <Filter>源文件\Shaders\PBR</Filter>
     </None>
   </ItemGroup>

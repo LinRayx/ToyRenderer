@@ -29,7 +29,7 @@ namespace Graphics
 			return VK_SHADER_STAGE_FRAGMENT_BIT;
 			break;
 		case StageFlag::ALL:
-			return VK_SHADER_STAGE_ALL;
+			return VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 			break;
 		default:
 			break;

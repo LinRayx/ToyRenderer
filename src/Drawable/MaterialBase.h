@@ -6,6 +6,7 @@
 #include <map>
 #include "DynamicVariable/DynamicConstant.h"
 #include <assimp/scene.h>
+#include <assimp/pbrmaterial.h>
 
 #include "Bindable/DepthStencilState.h";
 #include "Bindable/VertexBuffer.h"

@@ -28,10 +28,8 @@ namespace RenderSystem
 	}
 
 	void RenderLoop::Init()
-	{
-
-		
-		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/nanosuit/nanosuit.obj", "../assets/nanosuit/");
+	{	
+		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX", "../assets/Cerberus_by_Andrew_Maximov/");
 		model1->AddMaterial(Draw::MaterialType::PBR);
 		model1->AddMaterial(Draw::MaterialType::Outline);
 
@@ -54,9 +52,9 @@ namespace RenderSystem
 			model->BuildCommandBuffer(Draw::MaterialType::PBR, cmdBuf_ptr);
 		}
 
-		//for (auto& model : models) {
-		//	model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
-		//}
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
+		}
 
 		cmdBuf_ptr->End();
 
@@ -73,10 +71,7 @@ namespace RenderSystem
 
 		Draw::BrdfMaterial* brdfLUT = new Draw::BrdfMaterial();
 		brdfLUT->Compile();
-		cmdBuf_ptr->OffScreenBegin();
-		brdfLUT->BuildCmd(cmdBuf_ptr);
-		cmdBuf_ptr->OffScreenEnd();
-		cmdQue_ptr->FlushCommandBuffer(cmdBuf_ptr->drawCmdBuffers[0]);
+		brdfLUT->Execute(cmdBuf_ptr);
 		delete brdfLUT;
 
 		Draw::Model* model2 = new Draw::Model(scene_ptr, "../assets/cube.obj", "../assets/cube.obj");
@@ -84,11 +79,16 @@ namespace RenderSystem
 		Draw::IrradianceMaterial* irradiance = new Draw::IrradianceMaterial();
 		irradiance->BindMeshData(model2->objects[0].mesh.vertex_buffer, model2->objects[0].mesh.index_buffer);
 		irradiance->Compile();
-		cmdBuf_ptr->OffScreenBegin();
-		irradiance->BuildCmd(cmdBuf_ptr);
-		cmdBuf_ptr->OffScreenEnd();
-		cmdQue_ptr->FlushCommandBuffer(cmdBuf_ptr->drawCmdBuffers[0]);
+		irradiance->Execute(cmdBuf_ptr);
 		delete irradiance;
+
+		Draw::PrefilterMaterial* prefilter = new Draw::PrefilterMaterial();
+		prefilter->BindMeshData(model2->objects[0].mesh.vertex_buffer, model2->objects[0].mesh.index_buffer);
+		prefilter->Compile();
+		prefilter->Execute(cmdBuf_ptr);
+		delete prefilter;
+
+		delete model2;
 	}
 
 	void RenderLoop::Loop()

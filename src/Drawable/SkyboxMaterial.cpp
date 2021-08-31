@@ -5,17 +5,6 @@ namespace Draw
 	SkyboxMaterial::SkyboxMaterial() : MaterialBase()
 	{
 		using namespace Graphics;
-		desc_ptr->Add(LayoutType::SCENE, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
-
-		desc_layout_ptr = make_unique<DescriptorSetLayout>();
-
-		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::VERTEX);
-		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::VERTEX);
-
-		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
-		desc_layout_ptr->Compile();
-
 		AddCubeTexture("skybox_texture");
 		matType = MaterialType::Skybox;
 	}
@@ -27,12 +16,11 @@ namespace Draw
 	}
 	void SkyboxMaterial::Compile()
 	{
-		desc_ptr->Compile(desc_layout_ptr);
+		desc_ptr->Compile();
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = Graphics::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);
 		VkPipelineRasterizationStateCreateInfo rasterizationState = Graphics::initializers::pipelineRasterizationStateCreateInfo(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE, 0);
 		VkPipelineColorBlendAttachmentState blendAttachmentState = Graphics::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
 		VkPipelineColorBlendStateCreateInfo colorBlendState = Graphics::initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
-		VkPipelineDepthStencilStateCreateInfo depthStencilState = Graphics::initializers::pipelineDepthStencilStateCreateInfo(VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL);
 		VkPipelineViewportStateCreateInfo viewportState = Graphics::initializers::pipelineViewportStateCreateInfo(1, 1, 0);
 		VkPipelineMultisampleStateCreateInfo multisampleState = Graphics::initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT, 0);
 		
@@ -78,12 +66,13 @@ namespace Draw
 		viewport_info.pScissors = &scissor;
 		viewport_info.pViewports = &viewport;
 
-		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_layout_ptr->pipelineLayout, Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass, 0);
+		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass, 0);
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;
 		pipelineCI.pRasterizationState = &rasterizationState;
 		pipelineCI.pColorBlendState = &colorBlendState;
 		pipelineCI.pMultisampleState = &multisampleState;
 		pipelineCI.pViewportState = &viewportState;
+		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::Default);
 		pipelineCI.pDepthStencilState = &depthStencilState;
 		pipelineCI.stageCount = shaderStages.size();
 		pipelineCI.pStages = shaderStages.data();

@@ -11,6 +11,7 @@
 // master list of leaf types that generates enum elements and various switches etc.
 #define LEAF_ELEMENT_TYPES \
 	X( Float ) \
+	X (UINT)	\
 	X( Float2 ) \
 	X( Float3 ) \
 	X( Float4 ) \
@@ -42,6 +43,13 @@ namespace Dcb
 		using SysType = float; // type used in the CPU side
 		static constexpr size_t hlslSize = sizeof(SysType); // size of type on GPU side
 		static constexpr const char* code = "F1"; // code used for generating signature of layout
+		static constexpr bool valid = true; // metaprogramming flag to check validity of Map <param>
+	};
+	template<> struct Map<UINT>
+	{
+		using SysType = uint32_t; // type used in the CPU side
+		static constexpr size_t hlslSize = sizeof(SysType); // size of type on GPU side
+		static constexpr const char* code = "UINT"; // code used for generating signature of layout
 		static constexpr bool valid = true; // metaprogramming flag to check validity of Map <param>
 	};
 	template<> struct Map<Float2>

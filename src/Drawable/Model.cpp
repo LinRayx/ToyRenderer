@@ -217,6 +217,7 @@ namespace Draw {
 				.Append(VertexLayout::Position3D)
 				.Append(VertexLayout::Normal)
 				.Append(VertexLayout::Texture2D)
+				.Append(VertexLayout::Tangent)
 			)
 		);
 
@@ -225,7 +226,8 @@ namespace Draw {
 			vbuf.EmplaceBack(
 				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
 				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
-				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i])
+				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i]),
+				*reinterpret_cast<glm::vec4*>(&mesh.mTangents[i])
 			);
 		}
 

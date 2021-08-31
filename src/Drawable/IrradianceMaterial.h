@@ -17,7 +17,7 @@ namespace Draw
 	public:
 		IrradianceMaterial();
 		void Compile();
-		void BuildCmd(shared_ptr<Graphics::CommandBuffer> cmd);
+		void Execute(shared_ptr<Graphics::CommandBuffer> cmd);
 		void BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr,
 			shared_ptr<Bind::IndexBuffer> iBuffer_ptr);
 	private:

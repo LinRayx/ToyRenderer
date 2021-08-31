@@ -7,5 +7,6 @@
 #include "Drawable/PBRMaterial.h"
 #include "Drawable/BrdfMaterial.h"
 #include "Drawable/IrradianceMaterial.h"
+#include "Drawable/PrefilterMaterial.h"
 
 #endif // !MATERIAL_HEADER_H

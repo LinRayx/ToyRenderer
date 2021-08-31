@@ -174,6 +174,10 @@ namespace Graphics {
 			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
 		Draw::textureManager->CreateCubeResource("irradiance_map", VK_FORMAT_R32G32B32A32_SFLOAT, 64);
 		// VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+		uint32_t numMips = static_cast<uint32_t>(floor(log2(512))) + 1;
+		Draw::textureManager->CreateResource("prefilter_attachment", VK_FORMAT_R16G16B16A16_SFLOAT, 512,
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
+		Draw::textureManager->CreateCubeResource("prefilter_map", VK_FORMAT_R16G16B16A16_SFLOAT, 512, numMips);
 
 		RenderPass* rp = new RenderPass();
 		rp->CreateRenderPass();
@@ -186,6 +190,10 @@ namespace Graphics {
 		RenderPass* rp3 = new RenderPass();
 		rp3->CreateOffScreenRenderPass("irradiance_attachment", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		nameToRenderPass[RenderPassType::IRRADIANCE] = rp3;
+
+		RenderPass* rp4 = new RenderPass();
+		rp4->CreateOffScreenRenderPass("prefilter_attachment", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		nameToRenderPass[RenderPassType::PREFILTER] = rp4;
 	}
 
 	void DestroyRenderPass()

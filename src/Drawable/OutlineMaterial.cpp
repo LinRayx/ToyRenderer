@@ -5,18 +5,11 @@ namespace Draw
 	OutlineMaterial::OutlineMaterial() : MaterialBase()
 	{
 		using namespace Graphics;
-		desc_layout_ptr = make_shared<DescriptorSetLayout>();
-
-		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::VERTEX);
-		desc_layout_ptr->Add(LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
-		desc_layout_ptr->Add(LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::VERTEX);
-
-		desc_layout_ptr->Compile();
 		matType = MaterialType::Outline;
 	}
 	void OutlineMaterial::Compile()
 	{
-		desc_ptr->Compile(desc_layout_ptr);
+		desc_ptr->Compile();
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -111,7 +104,7 @@ namespace Draw
 		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::DrawOutline);
 		pipelineInfo.pDepthStencilState = &depthStencilState;
 
-		pipelineInfo.layout = desc_layout_ptr->pipelineLayout;
+		pipelineInfo.layout = desc_ptr->GetPipelineLayout();
 		pipelineInfo.renderPass = Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass;
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;

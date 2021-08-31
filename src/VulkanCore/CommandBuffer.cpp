@@ -47,7 +47,7 @@ namespace Graphics
         endSingleTimeCommands(commandBuffer);
     }
 
-    void CommandBuffer::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layoutCount) {
+    void CommandBuffer::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t layoutCount) {
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
         VkImageMemoryBarrier barrier{};
@@ -164,6 +164,42 @@ namespace Graphics
             vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         }
     }
+    void CommandBuffer::generateMipmap(VkCommandBuffer commandbuffer,VkImage image, VkImageBlit imageBlit, VkImageSubresourceRange mipSubRange)
+    {
+        insertImageMemoryBarrier(
+            commandbuffer,
+            image,
+            0,
+            VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            mipSubRange);
+
+        // Blit from previous level
+        vkCmdBlitImage(
+            commandbuffer,
+            image,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            image,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            1,
+            &imageBlit,
+            VK_FILTER_LINEAR);
+
+        // Prepare current mip level as image blit source for next level
+        insertImageMemoryBarrier(
+            commandbuffer,
+            image,
+            VK_ACCESS_TRANSFER_WRITE_BIT,
+            VK_ACCESS_TRANSFER_READ_BIT,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            VK_PIPELINE_STAGE_TRANSFER_BIT,
+            mipSubRange);
+    }
     void CommandBuffer::End()
     {
         for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
@@ -190,10 +226,13 @@ namespace Graphics
         }
     }
 
-    void CommandBuffer::CopyFrameBufferToImage(uint32_t index, string irradiance_attachment, string image_name, uint32_t dstBaseArrayLayer, int32_t dim)
+    void CommandBuffer::CopyFrameBufferToImage(VkCommandBuffer cmd, string irradiance_attachment, string image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel, int32_t viewport_width, int32_t viewport_height)
     {
+        if (viewport_width == -1 || viewport_height == -1) {
+            viewport_height = viewport_width = dim;
+        }
         setImageLayout(
-            drawCmdBuffers[index],
+            cmd,
             Draw::textureManager->nameToTex[irradiance_attachment].textureImage,
             VK_IMAGE_ASPECT_COLOR_BIT,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
@@ -210,15 +249,15 @@ namespace Graphics
 
         copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
         copyRegion.dstSubresource.baseArrayLayer = dstBaseArrayLayer;
-        copyRegion.dstSubresource.mipLevel = 0;
+        copyRegion.dstSubresource.mipLevel = mipLevel;
         copyRegion.dstSubresource.layerCount = 1;
         copyRegion.dstOffset = { 0, 0, 0 };
 
-        copyRegion.extent.width = static_cast<uint32_t>(dim);
-        copyRegion.extent.height = static_cast<uint32_t>(dim);
+        copyRegion.extent.width = static_cast<uint32_t>(viewport_width);
+        copyRegion.extent.height = static_cast<uint32_t>(viewport_height);
         copyRegion.extent.depth = 1;
         vkCmdCopyImage(
-            drawCmdBuffers[index],
+            cmd,
             Draw::textureManager->nameToTex[irradiance_attachment].textureImage,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
             Draw::textureManager->nameToTex[image_name].textureImage,
@@ -227,7 +266,7 @@ namespace Graphics
             &copyRegion);
 
         setImageLayout(
-            drawCmdBuffers[index],
+            cmd,
             Draw::textureManager->nameToTex[irradiance_attachment].textureImage,
             VK_IMAGE_ASPECT_COLOR_BIT,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -376,6 +415,26 @@ namespace Graphics
         subresourceRange.levelCount = 1;
         subresourceRange.layerCount = 1;
         setImageLayout(cmdbuffer, image, oldImageLayout, newImageLayout, subresourceRange, srcStageMask, dstStageMask);
+    }
+
+    void CommandBuffer::insertImageMemoryBarrier(VkCommandBuffer commandbuffer,VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkImageSubresourceRange subresourceRange)
+    {
+        VkImageMemoryBarrier imageMemoryBarrier = initializers::imageMemoryBarrier();
+        imageMemoryBarrier.srcAccessMask = srcAccessMask;
+        imageMemoryBarrier.dstAccessMask = dstAccessMask;
+        imageMemoryBarrier.oldLayout = oldImageLayout;
+        imageMemoryBarrier.newLayout = newImageLayout;
+        imageMemoryBarrier.image = image;
+        imageMemoryBarrier.subresourceRange = subresourceRange;
+
+        vkCmdPipelineBarrier(
+            commandbuffer,
+            srcStageMask,
+            dstStageMask,
+            0,
+            0, nullptr,
+            0, nullptr,
+            1, &imageMemoryBarrier);
     }
 
 }
