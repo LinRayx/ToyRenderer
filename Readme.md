@@ -4,17 +4,16 @@
 
 ## Doing
 
--- 点光源
--- 延迟渲染
--- SSAO
+- UI
+- 点光源
+- 延迟渲染
+- SSAO
 
 ## Plan
 
 - 场景信息保存
 - 资源系统
-- 模型UI (Scene Graph UI 初步完成, 存在问题)
-    - 相机UI
-    - 模型Transform UI
+
 - 多渲染队列
 
 ## 阶段性成果
@@ -22,3 +21,4 @@
 ![轮廓线和BlinnPhone](./output/outline.png)
 ![PBR](./output/PBR.png)
 ![PBR with Outline](./output/PBR_Outline.png)
+![UI](./output/UI.png)
