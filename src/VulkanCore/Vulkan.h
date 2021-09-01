@@ -213,6 +213,16 @@ public:
 			return device;
 		}
 
+		int GetWidth()
+		{
+			return width;
+		}
+
+		int GetHeight()
+		{
+			return height;
+		}
+
 		swapchain_t& GetSwapchain()
 		{
 			return swapchain;

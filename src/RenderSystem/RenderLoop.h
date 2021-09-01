@@ -22,8 +22,10 @@ namespace RenderSystem
 
 		void Run();
 	private:
-
-		void renderGUI(int imageIndex);
+		void UIInit();
+		void renderGUI();
+		void updateUI();
+		void buildCmd();
 
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
 		shared_ptr<Graphics::CommandBuffer> ui_cmdBuf_ptr;
@@ -37,6 +39,9 @@ namespace RenderSystem
 
 		vector<Draw::ModelWindow> modelWindows;
 		vector<Draw::Model*> models;
+
+		int width = 800;
+		int height = 600;
 	};
 }
 

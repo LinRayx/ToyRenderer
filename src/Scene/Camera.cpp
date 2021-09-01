@@ -2,6 +2,10 @@
 
 namespace Control
 {
+
+	MouseButtons mouseButtons;
+	glm::vec2 mousePos;
+
 	Camera::Camera(int sc_width, int sc_height, float move_speed, float move_sen) 
 		: sc_width(sc_width), sc_height(sc_height)
 	{
@@ -84,11 +88,19 @@ namespace Control
 	}
 	void Camera::Control_camera(GLFWwindow* window, float delta_time)
 	{
+		mouseButtons.right = false;
+		mouseButtons.left = false;
+		mouseButtons.middle = false;
 		int right_mouse_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2);
+		int left_mouse_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1);
 		double mouse_position_double[2];
 		glfwGetCursorPos(window, &mouse_position_double[0], &mouse_position_double[1]);
+		mousePos.x = mouse_position_double[0];
+		mousePos.y = mouse_position_double[1];
+
 		float mouse_position[2] = { (float)mouse_position_double[0], (float)mouse_position_double[1] };
 		if (right_mouse_state == GLFW_PRESS) {
+			mouseButtons.right = true;
 			if (firstMouse)
 			{
 				lastX = mouse_position[0];
@@ -103,8 +115,13 @@ namespace Control
 			lastY = mouse_position[1];
 			ProcessMouseMovement(xoffset, yoffset, true);
 		}
+
 		if (right_mouse_state == GLFW_RELEASE) {
 			firstMouse = true;
+		}
+
+		if (left_mouse_state == GLFW_PRESS) {
+			mouseButtons.left = true;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {

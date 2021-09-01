@@ -1,5 +1,9 @@
 #include "RenderSystem/RenderLoop.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
+
 namespace RenderSystem
 {
 
@@ -11,13 +15,17 @@ namespace RenderSystem
 		sync_ptr = make_shared<Graphics::Synchronization>();
 		cmdQue_ptr = make_shared<Graphics::CommandQueue>(sync_ptr);
 		scene_ptr = make_shared<Control::Scene>(Graphics::Vulkan::getInstance()->width, Graphics::Vulkan::getInstance()->height);
-		// gui_ptr = make_shared<GUI::ImguiManager>();
+		gui_ptr = make_shared<GUI::ImguiManager>();
 
 		frameT_ptr = std::make_shared<FrameTimer>();
+
+		modelWindows.resize(10);
+
 	}
 
 	RenderLoop::~RenderLoop()
 	{
+		gui_ptr->freeResources();
 		for (size_t i = 0; i < models.size(); ++i) {
 			if (models[i] != nullptr) {
 				delete models[i];
@@ -36,31 +44,17 @@ namespace RenderSystem
 		Draw::Model* model2 = new Draw::Model(scene_ptr, "../assets/cube.obj", "../assets/cube.obj");
 		model2->AddMaterial(Draw::MaterialType::Skybox);
 
-		models.emplace_back(model2);
-		models.emplace_back(model1);
+		
 
-		cmdBuf_ptr->Begin();
+		models.emplace_back(std::move(model2));
+		models.emplace_back(std::move(model1));
+		modelWindows[0].SetModel(models[1]);
+
 		for (auto& model : models) {
 			model->Compile();
 		}
 
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
-		}
-
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::PBR, cmdBuf_ptr);
-		}
-
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
-		}
-
-		cmdBuf_ptr->End();
-
-		modelWindows.resize(10);
-		// gui_ptr->Init();
-		// gui_ptr->UpLoadFont(cmdBuf_ptr->drawCmdBuffers[0], Graphics::Vulkan::getInstance()->GetDevice().queue);
+		buildCmd();
 	}
 
 	void RenderLoop::PreSolve()
@@ -68,6 +62,7 @@ namespace RenderSystem
 		Draw::InitTextureMgr(cmdBuf_ptr);
 		Graphics::InitRenderPass();
 		Bind::LoadShaders();
+		UIInit();
 
 		Draw::BrdfMaterial* brdfLUT = new Draw::BrdfMaterial();
 		brdfLUT->Compile();
@@ -110,8 +105,9 @@ namespace RenderSystem
 			}
 			
 			cmdQue_ptr->AddCommandBuffer(cmdBuf_ptr->drawCmdBuffers[imageIndex]);
-			// renderGUI(imageIndex);
 			cmdQue_ptr->Submit();
+
+			updateUI();
 		}
 	}
 
@@ -122,17 +118,61 @@ namespace RenderSystem
 		Loop();
 	}
 
-	void RenderLoop::renderGUI(int imageIndex)
+	void RenderLoop::UIInit()
 	{
-		gui_ptr->beginFrame();
-		int cnt = 0;
+		gui_ptr->loadShaders();
+		gui_ptr->prepareResources();
+		gui_ptr->preparePipeline(VK_NULL_HANDLE, Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass);
+	}
 
-		ui_cmdBuf_ptr->Begin();
-		gui_ptr->BuildCommandBuffer(ui_cmdBuf_ptr);
-		ui_cmdBuf_ptr->End();
-		gui_ptr->endFrame();
+	void RenderLoop::renderGUI()
+	{
+		gui_ptr->draw(cmdBuf_ptr);
+	}
 
-		cmdQue_ptr->AddCommandBuffer(ui_cmdBuf_ptr->drawCmdBuffers[imageIndex]);
+	void RenderLoop::updateUI()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		io.DisplaySize = ImVec2((float)width, (float)height);
+		io.DeltaTime = frameT_ptr->Get();
+		io.MousePos = ImVec2(Control::mousePos.x, Control::mousePos.y);
+		io.MouseDown[0] = Control::mouseButtons.left;
+		io.MouseDown[1] = Control::mouseButtons.right;
+
+		ImGui::NewFrame();
+		for (auto& window : modelWindows) {
+			gui_ptr->updated = window.DrawUI();
+		}
+		ImGui::Render();
+
+		if (gui_ptr->update() || gui_ptr->updated)
+		{
+			buildCmd();
+			gui_ptr->updated = false;
+		}
+	}
+
+	void RenderLoop::buildCmd()
+	{
+		cmdBuf_ptr->Begin();
+
+
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
+		}
+
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::PBR, cmdBuf_ptr);
+		}
+
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
+		}
+
+		renderGUI();
+
+		cmdBuf_ptr->End();
 	}
 
 }

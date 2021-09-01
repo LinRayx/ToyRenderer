@@ -21,7 +21,7 @@ namespace Draw
 			VkDeviceMemory textureImageMemory;
 			VkBuffer stagingBuffer;
 			VkDeviceMemory stagingBufferMemory;
-			VkSampler textureSampler;
+			VkSampler textureSampler = VK_NULL_HANDLE;
 		};
 
 	public:

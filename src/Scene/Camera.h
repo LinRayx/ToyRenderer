@@ -14,6 +14,15 @@ namespace Control
 		RIGHT
 	};
 
+    struct MouseButtons {
+        bool left = false;
+        bool right = false;
+        bool middle = false;
+    } ;
+
+    extern MouseButtons mouseButtons;
+    extern glm::vec2 mousePos;
+
 	class Camera
 	{
     public:

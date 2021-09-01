@@ -16,7 +16,10 @@ namespace Draw
 		bool PushNode(Node& node);
 		void PopNode(Node& node);
 		void SetModel(Model* model);
+		bool DrawUI();
 	private:
+		Model* model = nullptr;
+
 		Node* pSelectedNode = nullptr;
 
 		struct TransformParameters
@@ -27,6 +30,10 @@ namespace Draw
 			float x = 0.0f;
 			float y = 0.0f;
 			float z = 0.0f;
+			float xScale = 1.f;
+			float yScale = 1.f;
+			float zScale = 1.f;
+			float scale = 1.f;
 		};
 		std::map<int, TransformParameters> transformParams;
 
@@ -53,6 +60,10 @@ namespace Draw
 			tp.x = translation.x;
 			tp.y = translation.y;
 			tp.z = translation.z;
+			tp.xScale = 1.f;
+			tp.yScale = 1.f;
+			tp.zScale = 1.f;
+			tp.scale = 1.f;
 			return transformParams.insert({ id,{ tp } }).first->second;
 		}
 	};

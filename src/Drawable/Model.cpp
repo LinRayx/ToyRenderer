@@ -31,6 +31,9 @@ namespace Draw {
 			aiProcess_GenNormals |
 			aiProcess_CalcTangentSpace
 		);
+		size_t offset = file_path.find_last_of('/');
+		size_t len = file_path.length();
+		name = file_path.substr(offset+1, len - offset);
 
 		if (pScene == nullptr)
 		{
@@ -60,15 +63,14 @@ namespace Draw {
 		// nowTrans *= *tmp;
 		std::vector<Mesh*> curMeshPtrs;
 		curMeshPtrs.reserve(node.mNumMeshes);
-		std::vector<MaterialBase*> curMatPtrs;
-		curMatPtrs.reserve(node.mNumMeshes);
+
 		for (size_t i = 0; i < node.mNumMeshes; i++)
 		{
 			const auto meshIdx = node.mMeshes[i];
 			objects[meshIdx].mesh.SetTransform(nowTrans);
 			curMeshPtrs.push_back(&objects[meshIdx].mesh);
 		}
-		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), std::move(curMatPtrs), *tmp, node.mName.C_Str(), nextId);
+		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), *tmp, node.mName.C_Str(), nextId);
 		for (size_t i = 0; i < node.mNumChildren; i++)
 		{
 			pNode->AddChild(ParseNode(*node.mChildren[i], nowTrans, ++nextId));
@@ -144,9 +146,9 @@ namespace Draw {
 		}
 	}
 
-	Node::Node(std::vector<Mesh*> meshPtrs, std::vector<MaterialBase*> matPtrs,
+	Node::Node(std::vector<Mesh*> meshPtrs,
 		const glm::mat4& transform, const char* name, int id)
-		: curMeshes(std::move(meshPtrs)), curMats(std::move(matPtrs)), id(id)
+		: curMeshes(std::move(meshPtrs)),id(id)
 	{
 		this->transform = transform;
 		this->name = name;
@@ -190,13 +192,12 @@ namespace Draw {
 	void Node::SetTransform(glm::mat4 transform)
 	{
 		this->transform *= transform;
-		for (auto& mat : curMats) {
-			mat->SetValue("Model", "modelTrans", transform);
+		for (auto& mesh : curMeshes) {
+			mesh->SetTransform(transform);
 		}
 		for (auto& child : childPtrs) {
 			child->SetTransform(transform);
 		}
-		// material.SetValue("Model", "modelTrans", nowTrans);
 	}
 
 	void Node::Traverse(vector<Mesh*> meshes)
@@ -250,11 +251,16 @@ namespace Draw {
 	void Mesh::SetMaterial(MaterialBase* mat)
 	{
 		mat->LoadModelTexture(material, dire, name);
+		mat_ptrs.push_back(mat);
 	}
 	void Mesh::SetTransform(glm::mat4 trans)
 	{
 		this->transform = trans;
+		for (auto& ptr : mat_ptrs) {
+			ptr->SetValue("Model", "modelTrans", transform);
+		}
 	}
+
 	glm::mat4 Mesh::GetTransform()
 	{
 		return transform;

@@ -2,53 +2,64 @@
 #define IMGUI_MANAGER_H
 
 #include "VulkanCore/vulkan_core_headers.h"
-
+#include "Bindable/Shader.h"
 
 #include <memory>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
+#include <glm/glm.hpp>
 
 namespace GUI
 {
 	class ImguiManager
 	{
-	private:
-		struct RenderPass {
-			VkRenderPass renderPass;
-		} wd;
+
 	public:
+		struct PushConstBlock {
+			glm::vec2 scale;
+			glm::vec2 translate;
+		} pushConstBlock;
+
 		ImguiManager( );
 		~ImguiManager();
-		void Init();
-		void UpLoadFont(VkCommandBuffer command_buffer, VkQueue g_Queue);
-		void beginFrame();
-		void endFrame();
 
-		bool GetData();
+		
+		void prepareResources();
+		void preparePipeline(const VkPipelineCache pipelineCache, const VkRenderPass renderPass);
 
-		void BuildCommandBuffer(std::shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr);
+		bool update();
+		void draw(shared_ptr<Graphics::CommandBuffer> cmd_ptr);
+		void resize(uint32_t width, uint32_t height);
+		void freeResources();
+
+		void loadShaders();
+		bool visible = true;
+		bool updated = false;
+		float scale = 1.0f;
 	private:
 
-		static void check_vk_result(VkResult err)
-		{
-			if (err == 0)
-				return;
-			fprintf(stderr, "[vulkan] Error: VkResult = %d\n", err);
-			if (err < 0)
-				abort();
-		}
+		Graphics::BufferV2 vertexBuffer;
+		Graphics::BufferV2 indexBuffer;
+		int32_t vertexCount = 0;
+		int32_t indexCount = 0;
 
-		void createRenderPass();
- 
+		VkSampleCountFlagBits rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		uint32_t subpass = 0;
+		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
+		VkDeviceMemory fontMemory = VK_NULL_HANDLE;
+		VkImage fontImage = VK_NULL_HANDLE;
+		VkImageView fontView = VK_NULL_HANDLE;
+		VkSampler sampler;
 
-		bool update = true;
+		VkDescriptorSetLayout descriptorSetLayout;
+		VkDescriptorSet descriptorSet;
+		VkPipelineLayout pipelineLayout;
+		VkPipeline pipeline;
 
-		VkRenderPass renderPass;
-		std::vector<VkFramebuffer> framebuffers;
-		ImVec4 clear_color;
-		VkClearValue clearValue;
-		ImDrawData* draw_data;
+		std::vector<VkPipelineShaderStageCreateInfo> shaders;
+
+
 	};
 }
 

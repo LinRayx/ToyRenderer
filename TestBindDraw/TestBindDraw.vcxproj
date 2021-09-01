@@ -231,7 +231,6 @@
     <ClCompile Include="..\src\Exception\ChiliException.cpp" />
     <ClCompile Include="..\src\Exception\ModelException.cpp" />
     <ClCompile Include="..\src\imgui\ImguiManager.cpp" />
-    <ClCompile Include="..\src\imgui\imgui_vulkan.cpp" />
     <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp" />
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
@@ -269,6 +268,8 @@
     <None Include="..\src\shaders\Prefilter_map.vert.glsl" />
     <None Include="..\src\shaders\Skybox.frag.glsl" />
     <None Include="..\src\shaders\Skybox.vert.glsl" />
+    <None Include="..\src\shaders\UIoverlay.frag.glsl" />
+    <None Include="..\src\shaders\UIoverlay.vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -174,5 +174,6 @@ namespace Bind
 		shaderFactory[ShaderType::BRDFLUT] = make_unique< ShaderData>("Brdf_lut");
 		shaderFactory[ShaderType::IRRADIANCE] = make_unique< ShaderData>("Irradiance_map");
 		shaderFactory[ShaderType::PREFILTER] = make_unique< ShaderData>("Prefilter_map");
+		shaderFactory[ShaderType::UI] = make_unique< ShaderData>("UIoverlay");
 	}
 }

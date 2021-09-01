@@ -16,6 +16,7 @@ namespace Draw
 		template<typename T>
 		void SetValue(std::string key1, std::string key2, T value)
 		{
+			if (bufs.count(key1) == 0) return;
 			(*bufs[key1])[key2] = value;
 		}
 

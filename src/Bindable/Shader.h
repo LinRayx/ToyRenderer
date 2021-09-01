@@ -19,6 +19,7 @@ namespace Bind
 		BRDFLUT,
 		IRRADIANCE,
 		PREFILTER,
+		UI,
 	};
 
 	class Shader

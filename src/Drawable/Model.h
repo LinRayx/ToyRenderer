@@ -43,9 +43,11 @@ namespace Draw
 		shared_ptr<Bind::IndexBuffer> index_buffer;
 		void SetMaterial(MaterialBase* mat);
 		void SetTransform(glm::mat4 trans);
+		MaterialBase* GetMaterial();
 		glm::mat4 GetTransform();
 	private:
 		const aiMaterial* material;
+		vector<MaterialBase*> mat_ptrs;
 		string dire;
 		string name;
 		glm::mat4 transform;
@@ -54,7 +56,7 @@ namespace Draw
 	class Node
 	{
 	public:
-		Node(std::vector<Mesh*> meshPtrs, std::vector<MaterialBase*> matPtrs, const glm::mat4& transform, const char* name, int id) ;
+		Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform, const char* name, int id) ;
 		void AddChild(std::unique_ptr<Node> pChild);
 		void Accept(ModelWindowBase* window);
 		int GetId();
@@ -67,7 +69,6 @@ namespace Draw
 	private:
 		vector<std::unique_ptr<Node>> childPtrs;
 		vector< Mesh* > curMeshes;
-		vector< MaterialBase* > curMats;
 		string name;
 		int id;
 		glm::mat4 transform;
@@ -109,6 +110,8 @@ namespace Draw
 			std::map<MaterialType, MaterialBase*> materials;
 		};
 		vector<Object> objects;
+
+		string name;
 	private:
 		Assimp::Importer imp;
 		std::string directory;

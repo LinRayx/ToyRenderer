@@ -269,9 +269,6 @@
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp">
       <Filter>源文件\Bindable</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\imgui\imgui_vulkan.cpp">
-      <Filter>源文件\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="..\include\imgui\imgui.cpp">
       <Filter>源文件\imgui</Filter>
     </ClCompile>
@@ -438,6 +435,12 @@
     </None>
     <None Include="..\src\shaders\Prefilter_map.frag.glsl">
       <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\UIoverlay.vert.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\UIoverlay.frag.glsl">
+      <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
