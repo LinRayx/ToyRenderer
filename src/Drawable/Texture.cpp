@@ -33,6 +33,34 @@ namespace Draw
 		nameToTex[texName] = std::move(texData);
 	}
 
+	void Texture::CreateTextureFromData(string texName, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight, VkFilter filter, VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout)
+	{
+		TextureData texData;
+		texData.format = format;
+		texData.texWidth = texWidth;
+		texData.texHeight = texHeight;
+
+		Graphics::Buffer::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			texData.stagingBuffer, texData.stagingBufferMemory);
+
+		void* data;
+
+		vkMapMemory(Graphics::Vulkan::getInstance()->GetDevice().device, texData.stagingBufferMemory, 0, bufferSize, 0, &data);
+		memcpy(data, buffer, static_cast<size_t>(bufferSize));
+		vkUnmapMemory(Graphics::Vulkan::getInstance()->GetDevice().device, texData.stagingBufferMemory);
+
+		Graphics::Image::getInstance()->createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, texData.format, VK_IMAGE_TILING_OPTIMAL, imageUsageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
+		cmdBuf_ptr->transitionImageLayout(texData.textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		cmdBuf_ptr->copyBufferToImage(texData.stagingBuffer, texData.textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+		cmdBuf_ptr->transitionImageLayout(texData.textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, imageLayout);
+		vkDestroyBuffer(Graphics::Vulkan::getInstance()->GetDevice().device, texData.stagingBuffer, nullptr);
+		vkFreeMemory(Graphics::Vulkan::getInstance()->GetDevice().device, texData.stagingBufferMemory, nullptr);
+
+		createTextureSampler(texData, 1, filter);
+		createTextureImageView(texData);
+		nameToTex[texName] = std::move(texData);
+	}
+
 	void Texture::CreateCubeTexture(vector<string> paths, std::string texName)
 	{
 		vector<stbi_uc*> textures(paths.size());
@@ -72,8 +100,6 @@ namespace Draw
 		cmdBuf_ptr->transitionImageLayout(data.textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 6);
 		vkDestroyBuffer(Graphics::Vulkan::getInstance()->GetDevice().device, data.stagingBuffer, nullptr);
 		vkFreeMemory(Graphics::Vulkan::getInstance()->GetDevice().device, data.stagingBufferMemory, nullptr);
-
-	
 
 		createCubeTextureImageView(data);
 		createTextureSampler(data);
@@ -153,7 +179,7 @@ namespace Draw
 		data.format = VK_FORMAT_R8G8B8A8_SRGB;
 
 		createCubeTextureImageView(data, 6, mipLevel);
-		createTextureSampler(data, mipLevel, VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT);
+		createTextureSampler(data, mipLevel);
 
 		nameToTex[texName] = std::move(data);
 	}
@@ -161,13 +187,7 @@ namespace Draw
 	void Texture::CreateResource(string name, VkFormat format, uint32_t dim, VkImageUsageFlags usage)
 	{
 		cout << "CreateResource: " << name << endl;
-		TextureData texData;
-		texData.texWidth = texData.texHeight = dim;
-		texData.format = format;
-		Graphics::Image::getInstance()->createImage(dim, dim, 1, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
-		createTextureImageView(texData, VK_IMAGE_ASPECT_COLOR_BIT, format);
-		createTextureSampler(texData, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
-		nameToTex[name] = std::move(texData);
+		CreateResource(name, format, dim, dim, usage);
 	}
 
 	void Texture::CreateCubeResource(string name, VkFormat format, uint32_t dim, uint32_t mipLevels)
@@ -190,7 +210,21 @@ namespace Draw
 		texData.texHeight = Graphics::Vulkan::getInstance()->GetSwapchain().extent.height;
 		texData.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
 		Graphics::Image::getInstance()->createImage(texData.texWidth, texData.texHeight, 1, VK_SAMPLE_COUNT_1_BIT, texData.format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
-		createTextureImageView(texData, VK_IMAGE_ASPECT_DEPTH_BIT, VK_FORMAT_D32_SFLOAT_S8_UINT);
+		createTextureImageView(texData, VK_IMAGE_ASPECT_DEPTH_BIT);
+		nameToTex[name] = std::move(texData);
+	}
+
+
+	void Texture::CreateResource(string name, VkFormat format, uint32_t width, uint32_t height, VkImageUsageFlags usage)
+	{
+		cout << "CreateResource: " << name << endl;
+		TextureData texData;
+		texData.texWidth = width;
+		texData.texHeight = height;
+		texData.format = format;
+		Graphics::Image::getInstance()->createImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
+		createTextureImageView(texData);
+		createTextureSampler(texData);
 		nameToTex[name] = std::move(texData);
 	}
 
@@ -231,7 +265,7 @@ namespace Draw
 		vkFreeMemory(Graphics::Vulkan::getInstance()->GetDevice().device, stagingBufferMemory, nullptr);
 	}
 
-	void Texture::createTextureImageView(TextureData& texData, VkImageAspectFlagBits flag, VkFormat format, uint32_t layoutCount)
+	void Texture::createTextureImageView(TextureData& texData, VkImageAspectFlagBits flag, uint32_t layoutCount)
 	{
 		texData.textureImageView = Graphics::Image::getInstance()->createImageView(texData.textureImage, VK_IMAGE_VIEW_TYPE_2D, texData.format, flag, 1, layoutCount);
 	}
@@ -241,15 +275,15 @@ namespace Draw
 		texData.textureImageView = Graphics::Image::getInstance()->createImageView(texData.textureImage, VK_IMAGE_VIEW_TYPE_CUBE, texData.format, VK_IMAGE_ASPECT_COLOR_BIT, mipLevel, layoutCount);
 	}
 
-	void Texture::createTextureSampler(TextureData& texData, uint32_t mipLevel, VkSamplerAddressMode addressMode)
+	void Texture::createTextureSampler(TextureData& texData, uint32_t mipLevel, VkFilter filter,  VkSamplerAddressMode addressMode)
 	{
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(Graphics::Vulkan::getInstance()->GetDevice().physical_device, &properties);
 
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = VK_FILTER_LINEAR;
-        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.magFilter = filter;
+        samplerInfo.minFilter = filter;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
         samplerInfo.addressModeU = addressMode;
         samplerInfo.addressModeV = addressMode;

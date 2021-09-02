@@ -175,5 +175,8 @@ namespace Bind
 		shaderFactory[ShaderType::IRRADIANCE] = make_unique< ShaderData>("Irradiance_map");
 		shaderFactory[ShaderType::PREFILTER] = make_unique< ShaderData>("Prefilter_map");
 		shaderFactory[ShaderType::UI] = make_unique< ShaderData>("UIoverlay");
+		shaderFactory[ShaderType::GBUFFER] = make_unique< ShaderData>("Deferred_gbuffer");
+		shaderFactory[ShaderType::FULLSCREEN_VERT] = make_unique< ShaderData>("FullScreen", true);
+		shaderFactory[ShaderType::SSAO] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Ssao_generate");
 	}
 }

@@ -39,12 +39,11 @@ namespace RenderSystem
 	{	
 		Draw::Model* model1 = new Draw::Model(scene_ptr, "../assets/Cerberus_by_Andrew_Maximov/Cerberus_LP.FBX", "../assets/Cerberus_by_Andrew_Maximov/");
 		model1->AddMaterial(Draw::MaterialType::PBR);
+		model1->AddMaterial(Draw::MaterialType::GBuffer);
 		model1->AddMaterial(Draw::MaterialType::Outline);
 
 		Draw::Model* model2 = new Draw::Model(scene_ptr, "../assets/cube.obj", "../assets/cube.obj");
 		model2->AddMaterial(Draw::MaterialType::Skybox);
-
-		
 
 		models.emplace_back(std::move(model2));
 		models.emplace_back(std::move(model1));
@@ -157,7 +156,13 @@ namespace RenderSystem
 	{
 		cmdBuf_ptr->Begin();
 
+		cmdBuf_ptr->DeferredBegin();
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::GBuffer, cmdBuf_ptr);
+		}
+		cmdBuf_ptr->DeferredEnd();
 
+		cmdBuf_ptr->DefaultBegin();
 		for (auto& model : models) {
 			model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
 		}
@@ -169,8 +174,8 @@ namespace RenderSystem
 		for (auto& model : models) {
 			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
 		}
-
 		renderGUI();
+		cmdBuf_ptr->DefaultEnd();
 
 		cmdBuf_ptr->End();
 	}

@@ -101,6 +101,7 @@ namespace Draw {
 
 	void Model::AddMaterial(MaterialType type)
 	{
+		// ÄÚ´æÐ¹Â©
 		for (auto& it : objects) {
 			MaterialBase* material = nullptr;
 			switch (type)
@@ -116,6 +117,9 @@ namespace Draw {
 				break;
 			case Draw::MaterialType::PBR:
 				material = new PBRMaterial;
+				break;
+			case Draw::MaterialType::GBuffer:
+				material = new DeferredMaterial;;
 				break;
 			default:
 				throw std::runtime_error("can not find suitable material!");
@@ -224,6 +228,7 @@ namespace Draw {
 
 
 		for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
+			
 			vbuf.EmplaceBack(
 				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
 				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),

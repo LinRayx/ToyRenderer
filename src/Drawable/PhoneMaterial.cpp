@@ -2,7 +2,7 @@
 
 namespace Draw
 {
-	PhoneMaterial::PhoneMaterial() : MaterialBase()
+	PhoneMaterial::PhoneMaterial() : MaterialBase(true)
 	{
 		using namespace Graphics;
 
@@ -20,52 +20,14 @@ namespace Draw
 	void PhoneMaterial::Compile()
 	{
 		desc_ptr->Compile();
-		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vBuffer_ptr->attributeDescriptions.size());
-		vertexInputInfo.pVertexBindingDescriptions = &vBuffer_ptr->bindingDescription;;
-		vertexInputInfo.pVertexAttributeDescriptions = vBuffer_ptr->attributeDescriptions.data();
+		loadVertexInfo();
 
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-		vector<VkPipelineShaderStageCreateInfo> stages;
-
-		VkPipelineShaderStageCreateInfo vertex_shader_stage = {};
-		vertex_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		vertex_shader_stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertex_shader_stage.module = Bind::shaderFactory[Bind::ShaderType::Phone]->vert_shader->GetShaderModule();
-		vertex_shader_stage.pName = "main";
-
-		VkPipelineShaderStageCreateInfo frag_shader_stage = {};
-		frag_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		frag_shader_stage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		frag_shader_stage.module = Bind::shaderFactory[Bind::ShaderType::Phone]->frag_shader->GetShaderModule();
-		frag_shader_stage.pName = "main";
-
-		stages.emplace_back(std::move(vertex_shader_stage));
-		stages.emplace_back(std::move(frag_shader_stage));
-
-		VkViewport viewport = {};
-		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = (float)Graphics::Vulkan::getInstance()->GetSwapchain().extent.width;
-		viewport.height = (float)Graphics::Vulkan::getInstance()->GetSwapchain().extent.height;
-		viewport.minDepth = 0.0f;
-		viewport.maxDepth = 1.0f;
-
-
-		VkRect2D scissor = { .extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent };
-
-		VkPipelineViewportStateCreateInfo viewport_info = {};
-		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewport_info.viewportCount = 1;
-		viewport_info.scissorCount = 1;
-		viewport_info.pScissors = &scissor;
-		viewport_info.pViewports = &viewport;
+		loadShader(Bind::ShaderType::Phone);
 
 		VkPipelineRasterizationStateCreateInfo rasterizer{};
 		rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -103,7 +65,7 @@ namespace Draw
 		VkGraphicsPipelineCreateInfo pipelineInfo{};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineInfo.stageCount = 2;
-		pipelineInfo.pStages = stages.data();
+		pipelineInfo.pStages = shaderStages.data();
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &inputAssembly;
 		pipelineInfo.pViewportState = &viewport_info;

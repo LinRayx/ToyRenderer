@@ -151,7 +151,12 @@ namespace Graphics
             if (vkBeginCommandBuffer(drawCmdBuffers[i], &beginInfo) != VK_SUCCESS) {
                 throw std::runtime_error("failed to begin recording command buffer!");
             }
+        }
+    }
 
+    void CommandBuffer::DefaultBegin()
+    {
+        for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
             auto& rp = nameToRenderPass[RenderPassType::Default];
             VkRenderPassBeginInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -164,6 +169,37 @@ namespace Graphics
             vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
         }
     }
+
+    void CommandBuffer::DefaultEnd()
+    {
+        for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
+            vkCmdEndRenderPass(drawCmdBuffers[i]);
+        }
+    }
+
+    void CommandBuffer::DeferredBegin()
+    {
+        for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
+            auto& rp = nameToRenderPass[RenderPassType::DEFERRED];
+            VkRenderPassBeginInfo renderPassInfo{};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = rp->renderPass;
+            renderPassInfo.framebuffer = rp->framebuffers[i];
+            renderPassInfo.renderArea.offset = { 0, 0 };
+            renderPassInfo.renderArea.extent = Vulkan::getInstance()->GetSwapchain().extent;
+            renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
+            renderPassInfo.pClearValues = rp->clearValues.data();
+            vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+        }
+    }
+
+    void CommandBuffer::DeferredEnd()
+    {
+        for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
+            vkCmdEndRenderPass(drawCmdBuffers[i]);
+        }
+    }
+
     void CommandBuffer::generateMipmap(VkCommandBuffer commandbuffer,VkImage image, VkImageBlit imageBlit, VkImageSubresourceRange mipSubRange)
     {
         insertImageMemoryBarrier(
@@ -203,7 +239,6 @@ namespace Graphics
     void CommandBuffer::End()
     {
         for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
-            vkCmdEndRenderPass(drawCmdBuffers[i]);
             if (vkEndCommandBuffer(drawCmdBuffers[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to record command buffer!");
             }

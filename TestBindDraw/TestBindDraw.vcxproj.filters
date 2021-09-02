@@ -82,6 +82,12 @@
     <Filter Include="源文件\Shaders\PBR">
       <UniqueIdentifier>{bcc66070-63c5-4eef-9bdc-eec42bde7541}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Shaders\Deferred">
+      <UniqueIdentifier>{f65d2eb4-645e-46bd-9c3d-a8f9a65da5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shaders\SSAO">
+      <UniqueIdentifier>{699d732f-619f-4c3f-acd2-b06c53e748bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -237,6 +243,12 @@
     <ClInclude Include="..\src\Drawable\PrefilterMaterial.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\DeferredMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\SSAOgenerateMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -386,6 +398,12 @@
     <ClCompile Include="..\src\Drawable\PrefilterMaterial.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\DeferredMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\SSAOgenerateMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -441,6 +459,18 @@
     </None>
     <None Include="..\src\shaders\UIoverlay.frag.glsl">
       <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Deferred_gbuffer.vert.glsl">
+      <Filter>源文件\Shaders\Deferred</Filter>
+    </None>
+    <None Include="..\src\shaders\Deferred_gbuffer.frag.glsl">
+      <Filter>源文件\Shaders\Deferred</Filter>
+    </None>
+    <None Include="..\src\shaders\FullScreen.vert.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Ssao_generate.frag.glsl">
+      <Filter>源文件\Shaders\SSAO</Filter>
     </None>
   </ItemGroup>
 </Project>

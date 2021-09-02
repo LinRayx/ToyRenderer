@@ -155,6 +155,7 @@
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\BrdfMaterial.h" />
+    <ClInclude Include="..\src\Drawable\DeferredMaterial.h" />
     <ClInclude Include="..\src\Drawable\IrradianceMaterial.h" />
     <ClInclude Include="..\src\Drawable\MaterialBase.h" />
     <ClInclude Include="..\src\Drawable\MaterialBaseParent.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
     <ClInclude Include="..\src\Drawable\PrefilterMaterial.h" />
     <ClInclude Include="..\src\Drawable\SkyboxMaterial.h" />
+    <ClInclude Include="..\src\Drawable\SSAOgenerateMaterial.h" />
     <ClInclude Include="..\src\Drawable\Texture.h" />
     <ClInclude Include="..\src\DynamicVariable\ConditionalNoexcept.h" />
     <ClInclude Include="..\src\DynamicVariable\DynamicConstant.h" />
@@ -214,6 +216,7 @@
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
     <ClCompile Include="..\src\Drawable\BrdfMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\DeferredMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\IrradianceMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\MaterialBase.cpp" />
     <ClCompile Include="..\src\Drawable\MaterialBaseParent.cpp" />
@@ -224,6 +227,7 @@
     <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PrefilterMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\SkyboxMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\SSAOgenerateMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\Texture.cpp" />
     <ClCompile Include="..\src\DynamicVariable\DynamicConstant.cpp" />
     <ClCompile Include="..\src\DynamicVariable\LayoutCodex.cpp" />
@@ -254,8 +258,11 @@
   <ItemGroup>
     <None Include="..\src\shaders\Brdf_lut.frag.glsl" />
     <None Include="..\src\shaders\Brdf_lut.vert.glsl" />
+    <None Include="..\src\shaders\Deferred_gbuffer.frag.glsl" />
+    <None Include="..\src\shaders\Deferred_gbuffer.vert.glsl" />
     <None Include="..\src\shaders\desc_test.frag.glsl" />
     <None Include="..\src\shaders\desc_test.vert.glsl" />
+    <None Include="..\src\shaders\FullScreen.vert.glsl" />
     <None Include="..\src\shaders\Irradiance_map.frag.glsl" />
     <None Include="..\src\shaders\Irradiance_map.vert.glsl" />
     <None Include="..\src\shaders\Outline.frag.glsl" />
@@ -268,6 +275,7 @@
     <None Include="..\src\shaders\Prefilter_map.vert.glsl" />
     <None Include="..\src\shaders\Skybox.frag.glsl" />
     <None Include="..\src\shaders\Skybox.vert.glsl" />
+    <None Include="..\src\shaders\Ssao_generate.frag.glsl" />
     <None Include="..\src\shaders\UIoverlay.frag.glsl" />
     <None Include="..\src\shaders\UIoverlay.vert.glsl" />
   </ItemGroup>

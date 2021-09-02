@@ -9,8 +9,7 @@
 #include <assimp/pbrmaterial.h>
 
 #include "Bindable/DepthStencilState.h";
-#include "Bindable/VertexBuffer.h"
-#include "Bindable/IndexBuffer.h"
+
 #include "Drawable/MaterialBaseParent.h"
 
 namespace Draw
@@ -21,6 +20,7 @@ namespace Draw
 		Outline,
 		Skybox,
 		PBR,
+		GBuffer,
 		ERROR,
 	};
 	class MaterialBase : public MaterialBaseParent
@@ -28,7 +28,7 @@ namespace Draw
 	public:
 		MaterialBase();
 
-
+		MaterialBase(bool flag);
 		void SetState(Bind::DepthStencilStateType type)
 		{
 			depthStencilType = type;
@@ -55,8 +55,7 @@ namespace Draw
 
 		MaterialType matType = MaterialType::ERROR;
 
-		shared_ptr<Bind::VertexBuffer> vBuffer_ptr;
-		shared_ptr<Bind::IndexBuffer> iBuffer_ptr;
+
 	};
 }
 

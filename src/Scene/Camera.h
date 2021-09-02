@@ -30,6 +30,8 @@ namespace Control
         glm::mat4 GetViewMatrix();
         glm::mat4 GetProjectMatrix();
         glm::vec3 GetViewPos();
+        float GetNearPlane();
+        float GetFarPlane();
         void ProcessKeyboard(Camera_Movement direction, float deltaTime);
         void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
         void ProcessMouseScroll(float yoffset);
@@ -51,6 +53,9 @@ namespace Control
         float MovementSpeed;
         float MouseSensitivity;
         float Zoom;
+
+        float nearPlane;
+        float farPlane;
 
         bool firstMouse;
         float lastX;;

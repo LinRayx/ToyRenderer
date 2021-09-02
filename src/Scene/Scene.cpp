@@ -21,6 +21,12 @@ namespace Control
 		else {
 			material->SetValue("ViewAndProj", "viewMat", camera_ptr->GetViewMatrix());
 		}
+
+		if (material->GetMaterailType() == Draw::MaterialType::GBuffer) {
+			material->SetValue("ViewAndProj", "nearPlane", camera_ptr->GetNearPlane());
+			material->SetValue("ViewAndProj", "nearPlane", camera_ptr->GetFarPlane());
+		}
+
 		material->SetValue("ViewAndProj", "projMat", camera_ptr->GetProjectMatrix());
 		material->SetValue("Light", "viewPos", camera_ptr->GetViewPos());
 		material->SetValue("Light", "direLightDir", directionLight.direciton);

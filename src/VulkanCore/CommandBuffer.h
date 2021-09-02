@@ -45,10 +45,16 @@ namespace Graphics
 		void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layoutCount = 1);
 		void copyBufferToCubeImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layoutCount);
 		void generateMipmap(VkCommandBuffer commandbuffer, VkImage image, VkImageBlit imageBlit, VkImageSubresourceRange mipSubRange);
+		void CopyFrameBufferToImage(VkCommandBuffer cmd, string irradiance_attachment, string image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel = 0, int32_t viewport_width = -1, int32_t viewport_height = -1);
+
 		void Begin();
 		void End();
 
-		void CopyFrameBufferToImage(VkCommandBuffer cmd, string irradiance_attachment, string image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel = 0, int32_t viewport_width = -1, int32_t viewport_height = -1);
+		void DefaultBegin();
+		void DefaultEnd();
+
+		void DeferredBegin();
+		void DeferredEnd();
 
 		void OffScreenBegin();
 		void OffScreenEnd();

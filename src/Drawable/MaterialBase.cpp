@@ -5,6 +5,12 @@ namespace Draw
 	MaterialBase::MaterialBase()
 		: MaterialBaseParent()
 	{
+
+	}
+
+	MaterialBase::MaterialBase(bool flag)
+		: MaterialBaseParent()
+	{
 		desc_ptr = std::make_shared<Graphics::DescriptorSetCore>();
 		Dcb::RawLayout layout;
 		layout.Add<Dcb::Matrix>("viewMat");

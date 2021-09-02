@@ -20,6 +20,10 @@ namespace Bind
 		IRRADIANCE,
 		PREFILTER,
 		UI,
+		GBUFFER,
+		FULLSCREEN_VERT,
+		SSAO,
+		EMPTY,
 	};
 
 	class Shader
@@ -79,24 +83,31 @@ namespace Bind
 	struct ShaderData
 	{
 		ShaderData()  {}
+		ShaderData(Shader* vert_shader, string frag_name)
+		{
+			this->vert_shader = vert_shader;
+			frag_shader = new Shader("../src/shaders/" + frag_name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
+		}
 		void operator=(const ShaderData& sd)
 		{
 			vert_shader = sd.vert_shader;
 			frag_shader = sd.frag_shader;
 		}
 
-		ShaderData(string name)
+		ShaderData(string name, bool only_vert = false)
 		{
 			vert_shader = new Shader("../src/shaders/" + name + ".vert.glsl", "../src/shaders", "main", VK_SHADER_STAGE_VERTEX_BIT);
-			frag_shader = new Shader("../src/shaders/" + name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
+			if(!only_vert) frag_shader = new Shader("../src/shaders/" + name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 		~ShaderData()
 		{
-			delete vert_shader;
-			delete frag_shader;
+			if (vert_shader != nullptr)
+				delete vert_shader;
+			if (frag_shader != nullptr)
+				delete frag_shader;
 		}
-		Shader* vert_shader;
-		Shader* frag_shader;
+		Shader* vert_shader = nullptr;
+		Shader* frag_shader = nullptr;
 	};
 
 	extern std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;

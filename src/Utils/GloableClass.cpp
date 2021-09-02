@@ -31,4 +31,41 @@ namespace Gloable
 		matrix[3][2] *= scale;
 		return matrix;
 	}
+
+	float lerp(float a, float b, float f)
+	{
+		return a + f * (b - a);
+	}
+
+
+	namespace SSAO
+	{
+		// SSAO
+		std::default_random_engine rndEngine((unsigned)time(nullptr));
+		std::uniform_real_distribution<float> rndDist(0.0f, 1.0f);
+
+		std::vector<glm::vec4> ssaoKernel(SSAO_KERNEL_SIZE);
+		std::vector<glm::vec4> ssaoNoise(SSAO_NOISE_DIM* SSAO_NOISE_DIM);
+		void InitSSAOKernel()
+		{
+			for (uint32_t i = 0; i < SSAO_KERNEL_SIZE; ++i)
+			{
+				glm::vec3 sample(rndDist(rndEngine) * 2.0 - 1.0, rndDist(rndEngine) * 2.0 - 1.0, rndDist(rndEngine));
+				sample = glm::normalize(sample);
+				sample *= rndDist(rndEngine);
+				float scale = float(i) / float(SSAO_KERNEL_SIZE);
+				scale = lerp(0.1f, 1.0f, scale * scale);
+				ssaoKernel[i] = glm::vec4(sample * scale, 0.0f);
+			}
+
+			// Random noise
+
+			for (uint32_t i = 0; i < static_cast<uint32_t>(ssaoNoise.size()); i++)
+			{
+				ssaoNoise[i] = glm::vec4(rndDist(rndEngine) * 2.0f - 1.0f, rndDist(rndEngine) * 2.0f - 1.0f, 0.0f, 0.0f);
+			}
+		}
+	}
 }
+
+

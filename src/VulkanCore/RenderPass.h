@@ -9,6 +9,8 @@
 #include <string>
 #include <map>
 #include "Drawable/Texture.h"
+#include "Utils/GloableClass.h"
+
 using namespace std;
 
 namespace Graphics {
@@ -19,6 +21,8 @@ namespace Graphics {
 		BRDFLUT = 1,
 		IRRADIANCE = 2,
 		PREFILTER = 3,
+		DEFERRED = 4,
+		FULLSCREEN = 5,
 	};
 
 	class RenderPass : public Graphics
@@ -31,10 +35,13 @@ namespace Graphics {
 		RenderPass() {}
 		void CreateRenderPass();
 		void CreateOffScreenRenderPass(string resource_name, VkImageLayout finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		void CreateDeferredRenderPass();
+		void CreateFullScreenRenderPass();
 	private:
 		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;		
 	public:
-		VkRenderPass renderPass;
+		VkRenderPass renderPass = VK_NULL_HANDLE;
+		VkFramebuffer framebuffer = VK_NULL_HANDLE;
 		std::vector<VkFramebuffer> framebuffers;
 		std::vector<VkClearValue> clearValues;
 	};

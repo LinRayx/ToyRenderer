@@ -125,7 +125,7 @@ vec3 calculateNormal()
 void main()
 {
 
-	vec3 N = normalize(inNormal);
+	vec3 N = calculateNormal();
 	vec3 V = normalize(sParam.viewPos - worldPos);
 	vec3 R = reflect(-V, N);
 

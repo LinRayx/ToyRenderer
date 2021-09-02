@@ -23,40 +23,10 @@ namespace Draw
 	void PrefilterMaterial::Compile()
 	{
 		desc_ptr->Compile();
-		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = Graphics::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);
-		VkPipelineRasterizationStateCreateInfo rasterizationState = Graphics::initializers::pipelineRasterizationStateCreateInfo(VK_POLYGON_MODE_FILL, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE);
-		VkPipelineColorBlendAttachmentState blendAttachmentState = Graphics::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
-		VkPipelineColorBlendStateCreateInfo colorBlendState = Graphics::initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
-		VkPipelineDepthStencilStateCreateInfo depthStencilState = Graphics::initializers::pipelineDepthStencilStateCreateInfo(VK_FALSE, VK_FALSE, VK_COMPARE_OP_LESS_OR_EQUAL);
-		VkPipelineMultisampleStateCreateInfo multisampleState = Graphics::initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
-		std::vector<VkDynamicState> dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-		VkPipelineDynamicStateCreateInfo dynamicState = Graphics::initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
-		VkPipelineViewportStateCreateInfo viewportState = Graphics::initializers::pipelineViewportStateCreateInfo(1, 1);
 
+		loadVertexInfo();
 
-		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vBuffer_ptr->attributeDescriptions.size());
-		vertexInputInfo.pVertexBindingDescriptions = &vBuffer_ptr->bindingDescription;;
-		vertexInputInfo.pVertexAttributeDescriptions = vBuffer_ptr->attributeDescriptions.data();
-
-		std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
-
-		VkPipelineShaderStageCreateInfo vertex_shader_stage = {};
-		vertex_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		vertex_shader_stage.stage = VK_SHADER_STAGE_VERTEX_BIT;
-		vertex_shader_stage.module = Bind::shaderFactory[Bind::ShaderType::PREFILTER]->vert_shader->GetShaderModule();
-		vertex_shader_stage.pName = "main";
-
-		VkPipelineShaderStageCreateInfo frag_shader_stage = {};
-		frag_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		frag_shader_stage.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-		frag_shader_stage.module = Bind::shaderFactory[Bind::ShaderType::PREFILTER]->frag_shader->GetShaderModule();
-		frag_shader_stage.pName = "main";
-
-		shaderStages.emplace_back(std::move(vertex_shader_stage));
-		shaderStages.emplace_back(std::move(frag_shader_stage));
+		loadShader(Bind::ShaderType::PREFILTER);
 
 		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), Graphics::nameToRenderPass[Graphics::RenderPassType::PREFILTER]->renderPass, 0);
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;

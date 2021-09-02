@@ -20,6 +20,8 @@ namespace Control
 		lastY = sc_height / 2;
 		MouseSensitivity = move_sen;
 		MovementSpeed = move_speed;
+		nearPlane = 0.1f;
+		farPlane = 200.0f;
 		updateCameraVectors();
 	}
 	glm::mat4 Camera::GetViewMatrix()
@@ -28,11 +30,19 @@ namespace Control
 	}
 	glm::mat4 Camera::GetProjectMatrix()
 	{
-		return glm::perspective(glm::radians(Zoom), (float)sc_width / (float)sc_height, 0.1f, 200.0f);
+		return glm::perspective(glm::radians(Zoom), (float)sc_width / (float)sc_height, nearPlane, farPlane);
 	}
 	glm::vec3 Camera::GetViewPos()
 	{
 		return Position;
+	}
+	float Camera::GetNearPlane()
+	{
+		return nearPlane;
+	}
+	float Camera::GetFarPlane()
+	{
+		return farPlane;
 	}
 	void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{
