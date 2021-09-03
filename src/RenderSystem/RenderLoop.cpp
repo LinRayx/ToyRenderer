@@ -40,24 +40,24 @@ namespace RenderSystem
 
 	void RenderLoop::Init()
 	{	
-		// Draw::Model* model1 = new Draw::Model("../assets/luxplane.obj", "../assets/");
-		Draw::Model* model4 = new Draw::Model("../assets/grid.obj", "../assets/");
+		Draw::Model* model1 = new Draw::Model("../assets/luxplane.obj", "../assets/");
+		//Draw::Model* model4 = new Draw::Model("../assets/grid.obj", "../assets/");
 		Draw::Model* model3 = new Draw::Model("../assets/mitsuba-sphere.obj", "../assets/");
 
-		//model1->AddMaterial(Draw::MaterialType::DEFAULT);
-		//model1->AddMaterial(Draw::MaterialType::GBuffer);
+		model1->AddMaterial(Draw::MaterialType::DEFAULT);
+		model1->AddMaterial(Draw::MaterialType::GBuffer);
 //		model1->AddMaterial(Draw::MaterialType::Outline);
 		model3->AddMaterial(Draw::MaterialType::GBuffer);
 		model3->AddMaterial(Draw::MaterialType::PBR);
-		model4->AddMaterial(Draw::MaterialType::DEFAULT, glm::vec4(0,0,0,1));
+		//model4->AddMaterial(Draw::MaterialType::DEFAULT, glm::vec4(0,0,0,1));
 
 		Draw::Model* model2 = new Draw::Model( "../assets/cube.obj", "../assets/cube.obj");
 		model2->AddMaterial(Draw::MaterialType::Skybox);
 
 		models.emplace_back(std::move(model2));
-		//models.emplace_back(std::move(model1));
+		models.emplace_back(std::move(model1));
 		models.emplace_back(std::move(model3));
-		models.emplace_back(std::move(model4));
+		// models.emplace_back(std::move(model4));
 
 		modelWindows[0].SetModel(models[1]);
 		modelWindows[1].SetModel(models[2]);
@@ -184,7 +184,7 @@ namespace RenderSystem
 		cmdBuf_ptr->DeferredEnd();
 
 		// full screen pass, output ssaoMap
-		// mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
+		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
 
 		cmdBuf_ptr->DefaultBegin();
 		for (auto& model : models) {

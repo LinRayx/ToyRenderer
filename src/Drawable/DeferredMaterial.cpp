@@ -68,7 +68,7 @@ namespace Draw
 	void DeferredMaterial::UpdateSceneData()
 	{
 		SetValue("ViewAndProj", "nearPlane", Control::Scene::getInstance()->camera_ptr->GetNearPlane());
-		SetValue("ViewAndProj", "nearPlane", Control::Scene::getInstance()->camera_ptr->GetFarPlane());
+		SetValue("ViewAndProj", "farPlane", Control::Scene::getInstance()->camera_ptr->GetFarPlane());
 		SetValue("ViewAndProj", "viewMat", Control::Scene::getInstance()->camera_ptr->GetViewMatrix());
 		SetValue("ViewAndProj", "projMat", Control::Scene::getInstance()->camera_ptr->GetProjectMatrix());
 	}
