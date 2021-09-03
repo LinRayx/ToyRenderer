@@ -3,14 +3,12 @@
 
 #include "VulkanCore/vulkan_core_headers.h"
 
-#include <map>
 #include "DynamicVariable/DynamicConstant.h"
 #include <assimp/scene.h>
 #include <assimp/pbrmaterial.h>
 
-#include "Bindable/DepthStencilState.h";
-
 #include "Drawable/MaterialBaseParent.h"
+#include "Bindable/DepthStencilState.h"
 
 namespace Draw
 {
@@ -21,6 +19,8 @@ namespace Draw
 		Skybox,
 		PBR,
 		GBuffer,
+		FS_SSAO,
+		DEFAULT,
 		ERROR,
 	};
 	class MaterialBase : public MaterialBaseParent
@@ -29,30 +29,21 @@ namespace Draw
 		MaterialBase();
 
 		MaterialBase(bool flag);
-		void SetState(Bind::DepthStencilStateType type)
-		{
-			depthStencilType = type;
-		}
 
 		virtual MaterialType GetMaterailType()
 		{
 			return matType;
 		}
 
-		void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
-		
+		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName) {}
-
 		void BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr,
 			shared_ptr<Bind::IndexBuffer> iBuffer_ptr);
 
-		Bind::DepthStencilStateType depthStencilType = Bind::DepthStencilStateType::Default;
+		virtual void UpdateSceneData();
 	protected:
-	
 		int loadTextures(const aiMaterial* mat, aiTextureType type, string directory, string meshName);
-
 		string getTypeName(aiTextureType type);
-
 		MaterialType matType = MaterialType::ERROR;
 
 

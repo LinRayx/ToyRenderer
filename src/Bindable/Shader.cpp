@@ -158,9 +158,11 @@ namespace Bind
 
 	void Shader::destroy_shader(shader_t* shader) {
 		auto device = Graphics::Vulkan::getInstance()->GetDevice();
-		if (shader->module) vkDestroyShaderModule(device.device, shader->module, device.allocator);
-		free(shader->spirv_code);
-		memset(shader, 0, sizeof(*shader));
+		if (shader->module != nullptr) vkDestroyShaderModule(device.device, shader->module, device.allocator);
+		if(shader->spirv_code != nullptr) free(shader->spirv_code);
+		shader->module = nullptr;
+		shader->spirv_code = nullptr;
+		// memset(shader, 0, sizeof(*shader));
 	}
 
 	std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;
@@ -178,5 +180,7 @@ namespace Bind
 		shaderFactory[ShaderType::GBUFFER] = make_unique< ShaderData>("Deferred_gbuffer");
 		shaderFactory[ShaderType::FULLSCREEN_VERT] = make_unique< ShaderData>("FullScreen", true);
 		shaderFactory[ShaderType::SSAO] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Ssao_generate");
+		shaderFactory[ShaderType::DEFAULT] = make_unique< ShaderData>("Default");
+
 	}
 }

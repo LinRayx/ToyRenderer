@@ -4,7 +4,10 @@
 #include <glm/glm.hpp>
 #include <vector>
 #define IS_DEBUG false
+
+#ifndef noxnd
 #define noxnd noexcept(!IS_DEBUG)
+#endif
 
 struct BGRAColor
 {

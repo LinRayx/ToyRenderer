@@ -35,6 +35,7 @@ namespace Draw
 
 	void Texture::CreateTextureFromData(string texName, void* buffer, VkDeviceSize bufferSize, VkFormat format, uint32_t texWidth, uint32_t texHeight, VkFilter filter, VkImageUsageFlags imageUsageFlags, VkImageLayout imageLayout)
 	{
+		cout << "Texture::CreateTextureFromData: " << texName << endl;
 		TextureData texData;
 		texData.format = format;
 		texData.texWidth = texWidth;
@@ -49,7 +50,7 @@ namespace Draw
 		memcpy(data, buffer, static_cast<size_t>(bufferSize));
 		vkUnmapMemory(Graphics::Vulkan::getInstance()->GetDevice().device, texData.stagingBufferMemory);
 
-		Graphics::Image::getInstance()->createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, texData.format, VK_IMAGE_TILING_OPTIMAL, imageUsageFlags, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
+		Graphics::Image::getInstance()->createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, texData.format, VK_IMAGE_TILING_OPTIMAL, imageUsageFlags | VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, texData.textureImage, texData.textureImageMemory);
 		cmdBuf_ptr->transitionImageLayout(texData.textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		cmdBuf_ptr->copyBufferToImage(texData.stagingBuffer, texData.textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 		cmdBuf_ptr->transitionImageLayout(texData.textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, imageLayout);
@@ -322,11 +323,11 @@ namespace Draw
 		paths.emplace_back("../assets/skybox/skybox2/nz.png");
 
 		textureManager->CreateCubeTexture(std::move(paths), "skybox_texture");
-		textureManager->CreateTexture("../assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_A.tga", "albedoMap");
-		textureManager->CreateTexture("../assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_M.tga", "metallicMap");
-		textureManager->CreateTexture("../assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_N.tga", "normalMap");
-		textureManager->CreateTexture("../assets/Cerberus_by_Andrew_Maximov/Textures/Cerberus_R.tga", "roughnessMap");
-		textureManager->CreateTexture("../assets/Cerberus_by_Andrew_Maximov/Textures/Raw/Cerberus_AO.tga", "aoMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_basecolor.jpg", "albedoMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_metallic.jpg", "metallicMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_normal.jpg", "normalMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_roughness.jpg", "roughnessMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_ambientOcclusion.jpg", "aoMap");
 	}
 
 	void DestroyTextureMgr()

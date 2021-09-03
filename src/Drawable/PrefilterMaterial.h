@@ -23,8 +23,6 @@ namespace Draw
 	private:
 		const int32_t dim = 512;
 		const int32_t numMips = static_cast<uint32_t>(floor(log2(dim))) + 1;
-		shared_ptr<Bind::VertexBuffer> vBuffer_ptr;
-		shared_ptr<Bind::IndexBuffer> iBuffer_ptr;
 		Dcb::Buffer* pushBlock;
 		string framebuffer_attachment = "prefilter_attachment";
 		string resources = "prefilter_map";

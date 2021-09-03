@@ -21,8 +21,6 @@ namespace Gloable
 		const size_t SSAO_KERNEL_SIZE = 32;
 		const float SSAO_RADIUS = 0.3f;
 
-
-
 		// Sample kernel
 		extern std::vector<glm::vec4> ssaoKernel;
 		extern std::vector<glm::vec4> ssaoNoise;

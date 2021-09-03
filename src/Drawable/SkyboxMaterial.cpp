@@ -16,8 +16,10 @@ namespace Draw
 	}
 	void SkyboxMaterial::Compile()
 	{
+		cout << "SkyboxMaterial::Compile()" << endl;
 		desc_ptr->Compile();
 		
+		loadVertexInfo();
 		loadShader(Bind::ShaderType::Skybox);
 		// Skybox pipeline (background cube)
 		rasterizationState.cullMode = VK_CULL_MODE_FRONT_BIT;
@@ -27,7 +29,6 @@ namespace Draw
 		pipelineCI.pRasterizationState = &rasterizationState;
 		pipelineCI.pColorBlendState = &colorBlendState;
 		pipelineCI.pMultisampleState = &multisampleState;
-		pipelineCI.pViewportState = &viewportState;
 		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::Default);
 		pipelineCI.pDepthStencilState = &depthStencilState;
 		pipelineCI.stageCount = shaderStages.size();
@@ -35,7 +36,11 @@ namespace Draw
 		pipelineCI.pVertexInputState = &vertexInputInfo;
 		pipelineCI.pViewportState = &viewport_info;
 
-
 		vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCI, nullptr, &pipeline);
+	}
+	void SkyboxMaterial::UpdateSceneData()
+	{
+		MaterialBase::UpdateSceneData();
+		SetValue("ViewAndProj", "viewMat", glm::mat4(glm::mat3(Control::Scene::getInstance()->camera_ptr->GetViewMatrix())));
 	}
 }

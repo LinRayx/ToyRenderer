@@ -9,7 +9,6 @@ namespace Control
 		friend class Scene;
 	public:
 		DirectionLight();
-	private:
 		glm::vec3 direciton;
 		glm::vec3 color;
 	};

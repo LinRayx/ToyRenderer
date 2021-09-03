@@ -12,7 +12,7 @@ namespace Control
 		Position = glm::vec3(0, -10, 5);
 		WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		Front = glm::vec3(0.0f, 0.0f, -1.0f);
-		Zoom = 45.0f;
+		Zoom = 60.0f;
 		Yaw = -90.0f;
 		Pitch = 0.0f;
 		firstMouse = true;
@@ -21,7 +21,7 @@ namespace Control
 		MouseSensitivity = move_sen;
 		MovementSpeed = move_speed;
 		nearPlane = 0.1f;
-		farPlane = 200.0f;
+		farPlane = 256.f;
 		updateCameraVectors();
 	}
 	glm::mat4 Camera::GetViewMatrix()

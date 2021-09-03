@@ -15,14 +15,7 @@ namespace Draw
 		Dcb::RawLayout layout;
 		layout.Add<Dcb::Matrix>("viewMat");
 		layout.Add<Dcb::Matrix>("projMat");
-
-		Dcb::RawLayout layout2;
-		layout2.Add<Dcb::Float3>("viewPos");
-		layout2.Add<Dcb::Float3>("direLightDir");
-		layout2.Add<Dcb::Float3>("direLightColor");
-
 		addLayout("ViewAndProj", std::move(layout), Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::VERTEX);
-		addLayout("Light", std::move(layout2), Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
 
 		Dcb::RawLayout transBuf;
 		transBuf.Add<Dcb::Matrix>("modelTrans");
@@ -49,6 +42,12 @@ namespace Draw
 	{
 		this->vBuffer_ptr = vBuffer_ptr;
 		this->iBuffer_ptr = iBuffer_ptr;
+	}
+
+	void MaterialBase::UpdateSceneData()
+	{
+		SetValue("ViewAndProj", "viewMat", Control::Scene::getInstance()->camera_ptr->GetViewMatrix());
+		SetValue("ViewAndProj", "projMat", Control::Scene::getInstance()->camera_ptr->GetProjectMatrix());
 	}
 
 	int MaterialBase::loadTextures(const aiMaterial* mat, aiTextureType type, string directory, string meshName)

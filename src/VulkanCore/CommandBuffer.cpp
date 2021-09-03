@@ -184,7 +184,7 @@ namespace Graphics
             VkRenderPassBeginInfo renderPassInfo{};
             renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
             renderPassInfo.renderPass = rp->renderPass;
-            renderPassInfo.framebuffer = rp->framebuffers[i];
+            renderPassInfo.framebuffer = rp->framebuffer;
             renderPassInfo.renderArea.offset = { 0, 0 };
             renderPassInfo.renderArea.extent = Vulkan::getInstance()->GetSwapchain().extent;
             renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());

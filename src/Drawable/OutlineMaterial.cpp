@@ -9,6 +9,7 @@ namespace Draw
 	}
 	void OutlineMaterial::Compile()
 	{
+		cout << "OutlineMaterial::Compile()" << endl;
 		desc_ptr->Compile();
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};

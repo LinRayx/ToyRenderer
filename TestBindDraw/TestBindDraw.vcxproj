@@ -155,6 +155,7 @@
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
     <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\BrdfMaterial.h" />
+    <ClInclude Include="..\src\Drawable\DefaultMaterial.h" />
     <ClInclude Include="..\src\Drawable\DeferredMaterial.h" />
     <ClInclude Include="..\src\Drawable\IrradianceMaterial.h" />
     <ClInclude Include="..\src\Drawable\MaterialBase.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
     <ClCompile Include="..\src\Drawable\BrdfMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\DefaultMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\DeferredMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\IrradianceMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\MaterialBase.cpp" />
@@ -258,6 +260,8 @@
   <ItemGroup>
     <None Include="..\src\shaders\Brdf_lut.frag.glsl" />
     <None Include="..\src\shaders\Brdf_lut.vert.glsl" />
+    <None Include="..\src\shaders\Default.frag.glsl" />
+    <None Include="..\src\shaders\Default.vert.glsl" />
     <None Include="..\src\shaders\Deferred_gbuffer.frag.glsl" />
     <None Include="..\src\shaders\Deferred_gbuffer.vert.glsl" />
     <None Include="..\src\shaders\desc_test.frag.glsl" />

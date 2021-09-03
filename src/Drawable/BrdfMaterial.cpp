@@ -85,7 +85,7 @@ namespace Draw
 		renderPassBeginInfo.renderArea.extent.height = dim;
 		renderPassBeginInfo.clearValueCount = 1;
 		renderPassBeginInfo.pClearValues = clearValues;
-		renderPassBeginInfo.framebuffer = Graphics::nameToRenderPass[Graphics::RenderPassType::BRDFLUT]->framebuffers[0];
+		renderPassBeginInfo.framebuffer = Graphics::nameToRenderPass[Graphics::RenderPassType::BRDFLUT]->framebuffer;
 		vkCmdBeginRenderPass(cmdBuf, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(cmdBuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 		vkCmdDraw(cmdBuf, 3, 1, 0, 0);

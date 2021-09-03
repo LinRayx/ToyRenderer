@@ -33,7 +33,6 @@ namespace Draw
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
-
 		VkRect2D scissor = {};
 		scissor.extent.height = dim;
 		scissor.extent.width = dim;
@@ -88,7 +87,7 @@ namespace Draw
 		VkRenderPassBeginInfo renderPassBeginInfo = Graphics::initializers::renderPassBeginInfo();
 		// Reuse render pass from example pass
 		renderPassBeginInfo.renderPass = Graphics::nameToRenderPass[Graphics::RenderPassType::IRRADIANCE]->renderPass;
-		renderPassBeginInfo.framebuffer = Graphics::nameToRenderPass[Graphics::RenderPassType::IRRADIANCE]->framebuffers[0];
+		renderPassBeginInfo.framebuffer = Graphics::nameToRenderPass[Graphics::RenderPassType::IRRADIANCE]->framebuffer;
 		renderPassBeginInfo.renderArea.extent.width = dim;
 		renderPassBeginInfo.renderArea.extent.height = dim;
 		renderPassBeginInfo.clearValueCount = 1;
@@ -105,8 +104,6 @@ namespace Draw
 			VK_IMAGE_LAYOUT_UNDEFINED,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			subresourceRange);
-
-
 
 		for (uint32_t f = 0; f < 6; f++) {
 			// Render scene from cube face's point of view

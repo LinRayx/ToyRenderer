@@ -9,6 +9,7 @@
 #include "Drawable/Texture.h"
 #include "Bindable/VertexBuffer.h"
 #include "Bindable/IndexBuffer.h"
+#include "Scene/Scene.h"
 
 namespace Draw
 {
@@ -29,7 +30,7 @@ namespace Draw
 			if (bufs.count(key1) == 0) return;
 			(*bufs[key1])[key2][index] = value;
 		}
-
+		virtual void UpdateSceneData() {}
 		virtual void Compile() {}
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
 		virtual void Execute(shared_ptr<Graphics::CommandBuffer> cmdbuf_ptr) {}
@@ -59,6 +60,9 @@ namespace Draw
 		VkPipelineMultisampleStateCreateInfo multisampleState = Graphics::initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT, 0);
 		std::vector<VkDynamicState> dynamicStateEnables = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 		VkPipelineDynamicStateCreateInfo dynamicState = Graphics::initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
+		VkViewport viewport;;
+		VkRect2D scissor;
+
 		VkPipelineViewportStateCreateInfo viewport_info;
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo;
 

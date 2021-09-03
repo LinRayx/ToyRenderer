@@ -249,6 +249,9 @@
     <ClInclude Include="..\src\Drawable\SSAOgenerateMaterial.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\DefaultMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -404,6 +407,9 @@
     <ClCompile Include="..\src\Drawable\SSAOgenerateMaterial.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\DefaultMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -471,6 +477,12 @@
     </None>
     <None Include="..\src\shaders\Ssao_generate.frag.glsl">
       <Filter>源文件\Shaders\SSAO</Filter>
+    </None>
+    <None Include="..\src\shaders\Default.frag.glsl">
+      <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Default.vert.glsl">
+      <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

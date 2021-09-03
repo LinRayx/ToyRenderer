@@ -11,6 +11,8 @@ namespace Draw
 	public:
 		SSAOgenerateMaterial();
 		virtual void Compile();
+		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
+		virtual void UpdateSceneData();
 	};
 }
 

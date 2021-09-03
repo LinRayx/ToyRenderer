@@ -22,8 +22,6 @@ namespace Draw
 			shared_ptr<Bind::IndexBuffer> iBuffer_ptr);
 	private:
 		const int32_t dim = 64;
-		shared_ptr<Bind::VertexBuffer> vBuffer_ptr;
-		shared_ptr<Bind::IndexBuffer> iBuffer_ptr;
 		Dcb::Buffer* pushBlock;
 		string irradiance_map_name = "irradiance_map";
 	};

@@ -85,7 +85,7 @@ namespace Draw
 		VkRenderPassBeginInfo renderPassBeginInfo = Graphics::initializers::renderPassBeginInfo();
 		// Reuse render pass from example pass
 		renderPassBeginInfo.renderPass = Graphics::nameToRenderPass[Graphics::RenderPassType::PREFILTER]->renderPass;
-		renderPassBeginInfo.framebuffer = Graphics::nameToRenderPass[Graphics::RenderPassType::PREFILTER]->framebuffers[0];
+		renderPassBeginInfo.framebuffer = Graphics::nameToRenderPass[Graphics::RenderPassType::PREFILTER]->framebuffer;
 		renderPassBeginInfo.renderArea.extent.width = dim;
 		renderPassBeginInfo.renderArea.extent.height = dim;
 		renderPassBeginInfo.clearValueCount = 1;
@@ -140,6 +140,7 @@ namespace Draw
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			subresourceRange);
 		cmdBuf->endSingleTimeCommands(cmd);
+		cout << "PrefilterMaterial::Execute End" << endl;
 	}
 	void PrefilterMaterial::BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr, shared_ptr<Bind::IndexBuffer> iBuffer_ptr)
 	{

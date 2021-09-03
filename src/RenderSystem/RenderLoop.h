@@ -7,7 +7,7 @@
 #include "Drawable/Texture.h"
 #include "imgui/ImguiManager.h"
 #include "Drawable/ModelWindow.h"
-
+#include "Drawable/MaterialHeader.h"
 namespace RenderSystem
 {
 	class RenderLoop
@@ -33,12 +33,11 @@ namespace RenderSystem
 		shared_ptr<Graphics::Synchronization> sync_ptr;
 		shared_ptr<GUI::ImguiManager> gui_ptr;
 		
-		shared_ptr<Control::Scene> scene_ptr;
-
 		std::shared_ptr<FrameTimer> frameT_ptr;
 
 		vector<Draw::ModelWindow> modelWindows;
 		vector<Draw::Model*> models;
+		map<Draw::MaterialType, Draw::MaterialBaseParent*> mat_fullscreen_ptrs;
 
 		int width = 800;
 		int height = 600;

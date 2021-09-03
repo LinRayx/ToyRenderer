@@ -23,6 +23,7 @@ namespace Bind
 		GBUFFER,
 		FULLSCREEN_VERT,
 		SSAO,
+		DEFAULT,
 		EMPTY,
 	};
 
@@ -83,10 +84,10 @@ namespace Bind
 	struct ShaderData
 	{
 		ShaderData()  {}
-		ShaderData(Shader* vert_shader, string frag_name)
+		ShaderData(shared_ptr<Shader> vert_shader, string frag_name)
 		{
 			this->vert_shader = vert_shader;
-			frag_shader = new Shader("../src/shaders/" + frag_name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
+			frag_shader = make_shared<Shader>("../src/shaders/" + frag_name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 		void operator=(const ShaderData& sd)
 		{
@@ -96,18 +97,15 @@ namespace Bind
 
 		ShaderData(string name, bool only_vert = false)
 		{
-			vert_shader = new Shader("../src/shaders/" + name + ".vert.glsl", "../src/shaders", "main", VK_SHADER_STAGE_VERTEX_BIT);
-			if(!only_vert) frag_shader = new Shader("../src/shaders/" + name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
+			vert_shader = make_shared<Shader>("../src/shaders/" + name + ".vert.glsl", "../src/shaders", "main", VK_SHADER_STAGE_VERTEX_BIT);
+			if(!only_vert) frag_shader = make_shared<Shader>("../src/shaders/" + name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
 		}
 		~ShaderData()
 		{
-			if (vert_shader != nullptr)
-				delete vert_shader;
-			if (frag_shader != nullptr)
-				delete frag_shader;
 		}
-		Shader* vert_shader = nullptr;
-		Shader* frag_shader = nullptr;
+
+		shared_ptr<Shader> vert_shader = nullptr;
+		shared_ptr<Shader>  frag_shader = nullptr;
 	};
 
 	extern std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;

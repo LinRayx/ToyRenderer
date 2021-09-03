@@ -14,6 +14,12 @@ namespace Graphics {
 			vkDestroyFramebuffer(Vulkan::getInstance()->GetDevice().device, framebuffer, Vulkan::getInstance()->GetDevice().allocator);
 	}
 
+	RenderPass::RenderPass()
+	{
+		width = Vulkan::getInstance()->GetWidth();
+		height = Vulkan::getInstance()->GetHeight();
+	}
+
 	void RenderPass::CreateRenderPass()
 	{
 		VkAttachmentDescription colorAttachment{};
@@ -157,9 +163,7 @@ namespace Graphics {
 		framebufferCI.height = Draw::textureManager->nameToTex[resource_name].texHeight;
 		framebufferCI.layers = 1;
 
-		VkFramebuffer framebuffer;
 		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device,  &framebufferCI, nullptr, &framebuffer);
-		framebuffers.emplace_back(std::move(framebuffer));
 	}
 
 	void RenderPass::CreateDeferredRenderPass()
@@ -250,25 +254,27 @@ namespace Graphics {
 		fbufCreateInfo.width = Vulkan::getInstance()->GetWidth();
 		fbufCreateInfo.height = Vulkan::getInstance()->GetHeight();
 		fbufCreateInfo.layers = 1;
-		framebuffers.resize(2);
-		for (int i = 0; i < 2; ++i) {
-			vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &fbufCreateInfo, nullptr, &framebuffers[i]);
-		}
+
+		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &fbufCreateInfo, nullptr, &framebuffer);
+
 	}
 
-	void RenderPass::CreateFullScreenRenderPass()
+	void RenderPass::CreateFullScreenRenderPass(string resource_name)
 	{
+		clearValues.resize(2);
+		clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+		clearValues[1].depthStencil = { 1.0f, 0 };
 		// FB, Att, RP, Pipe, etc.
 		VkAttachmentDescription attDesc = {};
 		// Color attachment
-		attDesc.format = Vulkan::getInstance()->swapchain.format;
+		attDesc.format = Draw::textureManager->nameToTex[resource_name].format;
 		attDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 		attDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		attDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 		attDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		attDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		attDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		attDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		attDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		VkAttachmentReference colorReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
 
 		VkSubpassDescription subpassDescription = {};
@@ -305,20 +311,17 @@ namespace Graphics {
 
 		vkCreateRenderPass(Vulkan::getInstance()->GetDevice().device, &renderPassCI, nullptr, &renderPass);
 
-		for (int i = 0; i < 2; ++i) {
-			VkFramebufferCreateInfo framebufferCI{};
-			framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			framebufferCI.renderPass = renderPass;
-			framebufferCI.attachmentCount = 1;
-			framebufferCI.pAttachments = &Vulkan::getInstance()->swapchain.image_views[i];
-			framebufferCI.width = Vulkan::getInstance()->swapchain.extent.width;
-			framebufferCI.height = Vulkan::getInstance()->swapchain.extent.height;
-			framebufferCI.layers = 1;
 
-			framebuffers.resize(Vulkan::getInstance()->swapchain.image_count);
+		VkFramebufferCreateInfo framebufferCI{};
+		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferCI.renderPass = renderPass;
+		framebufferCI.attachmentCount = 1;
+		framebufferCI.pAttachments = &Draw::textureManager->nameToTex[resource_name].textureImageView;
+		framebufferCI.width = Draw::textureManager->nameToTex[resource_name].texWidth;
+		framebufferCI.height = Draw::textureManager->nameToTex[resource_name].texHeight;
+		framebufferCI.layers = 1;
 
-			vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &framebufferCI, nullptr, &framebuffers[i]);
-		}
+		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &framebufferCI, nullptr, &framebuffer);
 	}
 
 	map<RenderPassType, RenderPass*> nameToRenderPass;
@@ -370,6 +373,11 @@ namespace Graphics {
 			Gloable::SSAO::SSAO_NOISE_DIM, 
 			VK_FILTER_NEAREST);
 
+		Draw::textureManager->CreateResource("ssaoMap", 
+			VK_FORMAT_R8_UNORM, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
+
 		RenderPass* rp = new RenderPass();
 		rp->CreateRenderPass();
 		nameToRenderPass[RenderPassType::Default] = rp;
@@ -391,8 +399,8 @@ namespace Graphics {
 		nameToRenderPass[RenderPassType::DEFERRED] = rp5;
 
 		RenderPass* rp6 = new RenderPass();
-		rp5->CreateFullScreenRenderPass();
-		nameToRenderPass[RenderPassType::FULLSCREEN] = rp6;
+		rp6->CreateFullScreenRenderPass("ssaoMap");
+		nameToRenderPass[RenderPassType::FULLSCREEN_SSAO] = rp6;
 	}
 
 	void DestroyRenderPass()

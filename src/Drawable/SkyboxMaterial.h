@@ -4,7 +4,6 @@
 #include "VulkanCore/vulkan_core_headers.h"
 #include "Drawable/MaterialBase.h"
 
-
 namespace Draw
 {
 	class SkyboxMaterial : public MaterialBase
@@ -14,6 +13,7 @@ namespace Draw
 		void AddCubeTexture(string skybox_texture_name);
 
 		virtual void Compile();
+		virtual void UpdateSceneData();
 
 	private:	
 	};

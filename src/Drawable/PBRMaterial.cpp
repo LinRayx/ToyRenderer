@@ -5,6 +5,14 @@ namespace Draw
 	PBRMaterial::PBRMaterial()
 		:MaterialBase(true)
 	{
+
+		Dcb::RawLayout layout2;
+		layout2.Add<Dcb::Float3>("viewPos");
+		layout2.Add<Dcb::Float3>("direLightDir");
+		layout2.Add<Dcb::Float3>("direLightColor");
+
+		addLayout("Light", std::move(layout2), Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
+
 		using namespace Graphics;
 
 		Dcb::RawLayout pbrLayout;
@@ -56,6 +64,14 @@ namespace Draw
 		if (vkCreateGraphicsPipelines(Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCI, NULL, &pipeline)) {
 			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
 		}
+	}
+
+	void PBRMaterial::UpdateSceneData()
+	{
+		MaterialBase::UpdateSceneData();
+		SetValue("Light", "viewPos", Control::Scene::getInstance()->camera_ptr->GetViewPos());
+		SetValue("Light", "direLightDir", Control::Scene::getInstance()->directionLight.direciton);
+		SetValue("Light", "direLightColor", Control::Scene::getInstance()->directionLight.color);
 	}
 
 	void PBRMaterial::AddCubeTexture(string cube_texture_name)

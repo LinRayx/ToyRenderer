@@ -4,20 +4,19 @@ layout(location = 0) in vec2 inUV;
 layout(constant_id = 0) const int SSAO_KERNEL_SIZE = 64;
 layout(constant_id = 1) const float SSAO_RADIUS = 0.5;
 
-layout(set = 1, binding = 0) uniform SceneParam
+layout(set = 0, binding = 0) uniform SceneParam
 {
-	mat4 view;
 	mat4 proj;
 } sParam;
 
-layout(set = 1, binding = 1) uniform SSAOKernel
+layout(set = 0, binding = 1) uniform SSAOKernel
 {
-	vec4 samples[SSAO_KERNEL_SIZE]
+	vec4 samples[SSAO_KERNEL_SIZE];
 } ssaoKernel;
 
-layout(set = 1, binding = 2) uniform sampler2D samplerPositionDepth;
-layout(set = 1, binding = 3) uniform sampler2D samplerNormal;
-layout(set = 1, binding = 4) uniform sampler2D ssaoNoise;
+layout(set = 0, binding = 2) uniform sampler2D samplerPositionDepth;
+layout(set = 0, binding = 3) uniform sampler2D samplerNormal;
+layout(set = 0, binding = 4) uniform sampler2D ssaoNoise;
 
 layout(location = 0) out float outColor;
 

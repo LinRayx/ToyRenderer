@@ -11,7 +11,7 @@ namespace Draw
 	public:
 		DeferredMaterial();
 		virtual void Compile();
-
+		virtual void UpdateSceneData();
 	private:
 
 	};

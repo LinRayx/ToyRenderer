@@ -33,7 +33,7 @@ namespace Draw
 		desc_ptr->Compile();
 		using namespace Graphics;
 		VkGraphicsPipelineCreateInfo pipelineCI = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::DEFERRED]->renderPass);
-
+		auto& rp = nameToRenderPass[RenderPassType::DEFERRED];
 		// Blend attachment states required for all color attachments
 		// This is important, as color write mask will otherwise be 0x0 and you
 		// won't see anything rendered to the attachment
@@ -56,15 +56,20 @@ namespace Draw
 		pipelineCI.pMultisampleState = &multisampleState;
 		pipelineCI.pViewportState = &viewport_info;
 		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::WriteStencil);
-
 		pipelineCI.pDepthStencilState = &depthStencilState;
 		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCI.pStages = shaderStages.data();
-
 		pipelineCI.pVertexInputState = &vertexInputInfo;
 
 		if (vkCreateGraphicsPipelines(Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCI, NULL, &pipeline)) {
 			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
 		}
+	}
+	void DeferredMaterial::UpdateSceneData()
+	{
+		SetValue("ViewAndProj", "nearPlane", Control::Scene::getInstance()->camera_ptr->GetNearPlane());
+		SetValue("ViewAndProj", "nearPlane", Control::Scene::getInstance()->camera_ptr->GetFarPlane());
+		SetValue("ViewAndProj", "viewMat", Control::Scene::getInstance()->camera_ptr->GetViewMatrix());
+		SetValue("ViewAndProj", "projMat", Control::Scene::getInstance()->camera_ptr->GetProjectMatrix());
 	}
 }

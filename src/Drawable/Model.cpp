@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Draw {
-
+	
 	glm::mat4 ModelBase::getModelMatrix()
 	{
 		glm::mat4 mat = glm::mat4(1.0);
@@ -18,11 +18,10 @@ namespace Draw {
 		return mat;
 	}
 
-	Model::Model(shared_ptr<Control::Scene> scene_ptr,
+	Model::Model(
 		std::string file_path, std::string directory)
 	{
 		this->directory = directory;
-		this->scene_ptr = scene_ptr;
 		
 		const auto pScene = imp.ReadFile(file_path.c_str(),
 			aiProcess_Triangulate |
@@ -83,15 +82,10 @@ namespace Draw {
 	{
 		for (auto& obj : objects) {
 			for (auto& mat : obj.materials) {
-				scene_ptr->Update(mat.second);
+				mat.second->UpdateSceneData();
 				mat.second->Update(cur);
 			}
 		}
-	}
-
-	void Model::BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr, MaterialType matType)
-	{
-
 	}
 
 	void Model::Accept(ModelWindowBase* window)
@@ -99,7 +93,7 @@ namespace Draw {
 		pRoot->Accept(window);
 	}
 
-	void Model::AddMaterial(MaterialType type)
+	void Model::AddMaterial(MaterialType type, glm::vec4 color)
 	{
 		// ÄÚ´æÐ¹Â©
 		for (auto& it : objects) {
@@ -119,7 +113,10 @@ namespace Draw {
 				material = new PBRMaterial;
 				break;
 			case Draw::MaterialType::GBuffer:
-				material = new DeferredMaterial;;
+				material = new DeferredMaterial;
+				break;
+			case Draw::MaterialType::DEFAULT:
+				material = new DefaultMaterial(color);
 				break;
 			default:
 				throw std::runtime_error("can not find suitable material!");

@@ -1,14 +1,10 @@
 #ifndef SCENE_H
 #define SCENE_H
-#include "DynamicConstant.h"
 #include "VulkanCore/vulkan_core_headers.h"
-
 #include "Camera.h"
 #include "DirectionLight.h"
 #include <memory>
 #include <iostream>
-
-#include "Drawable/MaterialBase.h"
 
 using namespace std;
 
@@ -17,19 +13,30 @@ namespace Control
 	class Scene
 	{
 	public:
-		Scene(int width, int height);
+
 		~Scene();
-
-		void Update(Draw::MaterialBase* material);
-
 		shared_ptr<Camera> camera_ptr;
-
-	private:
-
+		static Scene* getInstance() {
+			if (instance == NULL) {
+				instance = new Scene(Graphics::Vulkan::getInstance()->GetWidth(), Graphics::Vulkan::getInstance()->GetHeight());
+			}
+			return instance;
+		}
 		DirectionLight directionLight;
+	private:
+		Scene(int width, int height);
+		class Deletor {
+		public:
+			~Deletor() {
+				if (Scene::instance != NULL)
+					delete Scene::instance;
+			}
+		};
+		static Deletor deletor;
 
 		int width;
 		int height;
+		static Scene* instance;
 	};
 }
 

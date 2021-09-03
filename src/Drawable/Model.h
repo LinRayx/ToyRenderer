@@ -4,18 +4,13 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include "Camera.h"
 #include <map>
 #include <string>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include "VertexBuffer.h"
-#include "Scene.h"
 
 #include "Drawable/Texture.h"
-
-#include "Bindable/IndexBuffer.h"
 #include "Drawable/ModelWindowBase.h"
 #include "Drawable/MaterialHeader.h"
 
@@ -78,7 +73,7 @@ namespace Draw
 	{
 	public:
 
-		Model(shared_ptr<Control::Scene> scene_ptr,
+		Model(
 			std::string file_path, std::string directory);
 
 		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
@@ -87,11 +82,9 @@ namespace Draw
 
 		void Update(int cur);
 
-		void BuildDesc(shared_ptr<Graphics::DescriptorSetLayout> desc_layout_ptr, MaterialType matType);
-
 		void Accept(ModelWindowBase* window);
 
-		void AddMaterial(MaterialType type);
+		void AddMaterial(MaterialType type, glm::vec4 color = glm::vec4(1, 1, 1, 1));
 
 		void Compile();
 
@@ -100,8 +93,6 @@ namespace Draw
 		std::unique_ptr<Node> pRoot;
 		
 		vector<Mesh> meshes;
-
-		shared_ptr<Control::Scene> scene_ptr;
 
 		struct Object
 		{

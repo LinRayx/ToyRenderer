@@ -5,7 +5,8 @@ namespace Draw
 	MaterialBaseParent::MaterialBaseParent()
 	{
 		vertexInputInfo = {};
-		VkViewport viewport = {};
+
+		viewport = {};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
 		viewport.width = (float)Graphics::Vulkan::getInstance()->GetSwapchain().extent.width;
@@ -13,8 +14,8 @@ namespace Draw
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
-
-		VkRect2D scissor = { .extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent };
+		scissor = {};
+		scissor.extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent;
 
 		viewport_info = {};
 		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -73,6 +74,9 @@ namespace Draw
 		frag_shader_stage.module = Bind::shaderFactory[frag]->frag_shader->GetShaderModule();
 		frag_shader_stage.pName = "main";
 		frag_shader_stage.pSpecializationInfo = &specializationInfo;
+
+		shaderStages.emplace_back(vertex_shader_stage);
+		shaderStages.emplace_back(frag_shader_stage);
 	}
 	void MaterialBaseParent::loadVertexInfo()
 	{
