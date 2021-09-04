@@ -11,6 +11,10 @@
 #include "Bindable/IndexBuffer.h"
 #include "Scene/Scene.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_vulkan.h"
+
 namespace Draw
 {
 	class MaterialBaseParent
@@ -34,6 +38,7 @@ namespace Draw
 		virtual void Compile() {}
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
 		virtual void Execute(shared_ptr<Graphics::CommandBuffer> cmdbuf_ptr) {}
+		virtual bool SetUI() { return false;  }
 		void Update(int cur);
 
 		std::map<std::string, shared_ptr<Graphics::Buffer>> buffer_ptrs;
@@ -43,11 +48,14 @@ namespace Draw
 	protected:
 		void addLayout(std::string key, Dcb::RawLayout&& layout,
 			Graphics::LayoutType layoutType, Graphics::DescriptorType descType, Graphics::StageFlag stage);
-
 		void addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler);
+
+		void addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler, uint32_t binding);
 
 		void loadShader(Bind::ShaderType vert, Bind::ShaderType frag = Bind::ShaderType::EMPTY, VkSpecializationInfo specializationInfo = {});
 		void loadVertexInfo();
+
+		void addCubeTexture(string cube_texture_name);
 
 		VkPipeline pipeline = VK_NULL_HANDLE;
 

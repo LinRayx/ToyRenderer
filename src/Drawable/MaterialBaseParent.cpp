@@ -57,6 +57,11 @@ namespace Draw
 	{
 		desc_ptr->Add(layout_type, Graphics::DescriptorType::TEXTURE2D, stage, textureImageView, textureSampler);
 	}
+
+	void MaterialBaseParent::addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler, uint32_t binding)
+	{
+		desc_ptr->Add(layout_type, Graphics::DescriptorType::TEXTURE2D, stage, textureImageView, textureSampler, binding);
+	}
 	void MaterialBaseParent::loadShader(Bind::ShaderType vert, Bind::ShaderType frag, VkSpecializationInfo specializationInfo)
 	{
 		if (frag == Bind::ShaderType::EMPTY)
@@ -85,5 +90,12 @@ namespace Draw
 		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vBuffer_ptr->attributeDescriptions.size());
 		vertexInputInfo.pVertexBindingDescriptions = &vBuffer_ptr->bindingDescription;;
 		vertexInputInfo.pVertexAttributeDescriptions = vBuffer_ptr->attributeDescriptions.data();
+	}
+
+	void MaterialBaseParent::addCubeTexture(string cube_texture_name)
+	{
+		using namespace Graphics;
+		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex[cube_texture_name].textureImageView,
+			textureManager->nameToTex[cube_texture_name].textureSampler);
 	}
 }

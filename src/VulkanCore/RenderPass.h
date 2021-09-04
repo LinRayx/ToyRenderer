@@ -2,19 +2,17 @@
 #define RENDER_PASS_H
 
 #include "Vulkan.h"
-#include "Image.h"
 #include <memory>
 #include <vector>
 
 #include <string>
 #include <map>
-#include "Drawable/Texture.h"
+#include "VulkanCore/VulkanInitalizers.hpp"
 #include "Utils/GloableClass.h"
 
 using namespace std;
 
 namespace Graphics {
-
 	enum class RenderPassType
 	{
 		Default = 0,
@@ -31,12 +29,17 @@ namespace Graphics {
 		friend class CommandBuffer;
 
 	public:
+		struct RpData
+		{
+			VkFormat format;
+			VkImageView& view;
+		};
 		~RenderPass();
 		RenderPass();
-		void CreateRenderPass();
-		void CreateOffScreenRenderPass(string resource_name, VkImageLayout finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		void CreateDeferredRenderPass();
-		void CreateFullScreenRenderPass(string resource_name);
+		void CreateRenderPass(VkImageView& depthView);
+		void CreateOffScreenRenderPass(VkFormat format, VkImageView& view, int width, int height, VkImageLayout finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		void CreateDeferredRenderPass(vector<RpData>& data);
+		void CreateFullScreenRenderPass(VkFormat format, VkImageView& view, int width, int height);
 	private:
 		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;		
 	public:
@@ -51,7 +54,6 @@ namespace Graphics {
 
 	extern map<RenderPassType, RenderPass*> nameToRenderPass;
 
-	void InitRenderPass();
 	void DestroyRenderPass();
 }
 #endif // !RENDER_PASS_H

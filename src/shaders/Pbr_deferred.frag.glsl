@@ -1,38 +1,23 @@
 #version 450
-layout(location = 0) in vec3 inNormal;
-layout(location = 1) in vec3 worldPos;
-layout(location = 2) in vec2 inUV;
-layout(location = 3) in vec4 inTangent;
 
+layout(location = 0) in vec2 inUV;
 layout(location = 0) out vec4 outColor;
 
-layout (set = 0, binding = 1) uniform SceneParam
+layout(set = 0, binding = 1) uniform SceneParam
 {
 	vec3 viewPos;
 	vec3 directLightDir;
 	vec3 directLightColor;
 }sParam;
+
 layout(set = 0, binding = 2) uniform sampler2D brdfLUT;
 layout(set = 0, binding = 3) uniform samplerCube irradianceMap;
 layout(set = 0, binding = 4) uniform samplerCube prefilteredMap;
-
-layout(set = 2, binding = 0) uniform PbrParam
-{
-	bool HasAlbedoTex;
-	bool HasMetallicTex;
-	bool HasNormalTex;
-	bool HasRoughnessTex;
-	vec3 albedo;
-	float metallic;
-	float roughness;
-	bool hasDiffuseTex;
-} pParam;
-
-
-layout(set = 2, binding = 1) uniform sampler2D albedoMap;
-layout(set = 2, binding = 2) uniform sampler2D metallicMap;
-layout(set = 2, binding = 3) uniform sampler2D normalMap;
-layout(set = 2, binding = 4) uniform sampler2D roughnessMap;
+layout(set = 0, binding = 5) uniform sampler2D gbuffer_positionDepthMap;
+layout(set = 0, binding = 6) uniform sampler2D gbuffer_normalMap;
+layout(set = 0, binding = 7) uniform sampler2D gbuffer_albedoMap;
+layout(set = 0, binding = 8) uniform sampler2D gbuffer_metallicRoughnessMap;
+layout(set = 0, binding = 9) uniform sampler2D ssaoMap;
 
 
 const float PI = 3.14159265359;
@@ -114,42 +99,19 @@ vec3 specularContribution(vec3 L, vec3 V, vec3 N, vec3 F0, float metallic, float
 	return color;
 }
 
-vec3 calculateNormal()
-{
-	vec3 tangentNormal;
-	if (!pParam.HasNormalTex)
-		tangentNormal = inNormal;
-	else
-		tangentNormal = texture(normalMap, inUV).xyz * 2.0 - 1.0;
-
-	vec3 N = normalize(inNormal);
-	vec3 T = normalize(inTangent.xyz);
-	vec3 B = normalize(cross(N, T));
-	mat3 TBN = mat3(T, B, N);
-	return normalize(TBN * tangentNormal);
-}
 
 void main()
 {
-	vec3 N = calculateNormal();
-	vec3 V = normalize(sParam.viewPos - worldPos);
+	vec3 fragPos = texture(gbuffer_positionDepthMap, inUV).rgb;
+	albedo = texture(gbuffer_albedoMap, inUV).rgb;
+	vec3 N = texture(gbuffer_normalMap, inUV).rgb * 2.0 - 1.0f;
+	vec3 V = normalize(sParam.viewPos - fragPos);
 	vec3 R = reflect(-V, N);
 
-	if (!pParam.HasAlbedoTex)
-		albedo = pParam.albedo;
-	else
-		albedo = texture(albedoMap, inUV).rgb;
-	float metallic;
-	if (!pParam.HasMetallicTex)
-		metallic = pParam.metallic;
-	else
-		metallic = texture(metallicMap, inUV).r;
-	float roughness;
-	if (!pParam.HasRoughnessTex)
-		roughness = pParam.roughness;
-	else
-		roughness = texture(roughnessMap, inUV).r * pParam.roughness;
-
+	// albedo = pow(texture(albedoMap, inUV).rgb, vec3(2.2));
+	float metallic = texture(gbuffer_metallicRoughnessMap, inUV).r;
+	float roughness = texture(gbuffer_metallicRoughnessMap, inUV).g;
+	float ssao = texture(ssaoMap, inUV).r;
 
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, albedo, metallic);
@@ -165,16 +127,16 @@ void main()
 
 	vec3 diffuse = irradiance * albedo;
 
-	vec3 F = F_SchlickR(max(dot(N, -V), 0.0), F0, roughness);
+	vec3 F = F_SchlickR(max(dot(N, V), 0.0), F0, roughness);
 
 	vec3 specular = reflection * (F * brdf.x + brdf.y);
 
 	vec3 kD = 1.0 - F;
 	kD *= 1.0 - metallic;
-	vec3 ambient = (kD * diffuse + specular);
+	vec3 ambient = (kD * diffuse + specular) * ssao.rrr;
 
 	vec3 color = ambient + Lo;
-	
+
 	float exposure = 4.5;
 	float gamma = 2.2;
 

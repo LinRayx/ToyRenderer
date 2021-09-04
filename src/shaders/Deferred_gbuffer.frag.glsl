@@ -20,11 +20,23 @@ layout(set = 0, binding = 0) uniform SceneParam
 	float farPlane;
 }sParam;
 
-layout(set = 1, binding = 1) uniform sampler2D albedoMap;
-layout(set = 1, binding = 2) uniform sampler2D metallicMap;
-layout(set = 1, binding = 3) uniform sampler2D normalMap;
-layout(set = 1, binding = 4) uniform sampler2D roughnessMap;
-layout(set = 1, binding = 5) uniform sampler2D aoMap;
+layout(set = 2, binding = 0) uniform PbrParam
+{
+	bool HasAlbedoTex;
+	bool HasMetallicTex;
+	bool HasNormalTex;
+	bool HasRoughnessTex;
+	vec3 albedo;
+	float metallic;
+	float roughness;
+	bool hasDiffuseTex;
+} pParam;
+
+
+layout(set = 2, binding = 1) uniform sampler2D albedoMap;
+layout(set = 2, binding = 2) uniform sampler2D metallicMap;
+layout(set = 2, binding = 3) uniform sampler2D normalMap;
+layout(set = 2, binding = 4) uniform sampler2D roughnessMap;
 
 
 float linearDepth(float depth)
@@ -50,5 +62,5 @@ void main()
 	outNormal = vec4(calculateNormal() * 0.5 + 0.5, 1.0);
 	outAlbedo = texture(albedoMap, inUV);
 	outMetallicRoughness.r = texture(roughnessMap, inUV).r;
-	outMetallicRoughness.b = texture(metallicMap, inUV).r;
+	outMetallicRoughness.g = texture(metallicMap, inUV).r;
 }

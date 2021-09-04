@@ -48,7 +48,7 @@ namespace Draw
 	{
 		cout << "PrefilterMaterial::Execute" << endl;
 		auto layoutCmd = cmdBuf->beginSingleTimeCommands();
-		cmdBuf->setImageLayout(
+		Graphics::Image::getInstance()->setImageLayout(
 			layoutCmd,
 			Draw::textureManager->nameToTex[framebuffer_attachment].textureImage,
 			VK_IMAGE_ASPECT_COLOR_BIT,
@@ -64,7 +64,7 @@ namespace Draw
 		subresourceRange.levelCount = numMips;
 		subresourceRange.layerCount = 6;
 
-		cmdBuf->setImageLayout(
+		Graphics::Image::getInstance()->setImageLayout(
 			cmd,
 			Draw::textureManager->nameToTex[resources].textureImage,
 			VK_IMAGE_LAYOUT_UNDEFINED,
@@ -128,12 +128,12 @@ namespace Draw
 					static_cast<uint32_t>(desc_ptr->descriptorSets[0].size()), desc_ptr->descriptorSets[0].data(), 0, nullptr);
 				vkCmdDrawIndexed(cmd, static_cast<uint32_t>(iBuffer_ptr->GetCount()), 1, 0, 0, 0);
 				vkCmdEndRenderPass(cmd);
-
-				cmdBuf->CopyFrameBufferToImage(cmd, framebuffer_attachment, resources, f, dim, m, viewport.width, viewport.height);
+				
+				Graphics::Image::getInstance()->CopyFrameBufferToImage(cmd, Draw::textureManager->nameToTex[framebuffer_attachment].textureImage, Draw::textureManager->nameToTex[resources].textureImage, f, dim, m, viewport.width, viewport.height);
 			}
 		}
 
-		cmdBuf->setImageLayout(
+		Graphics::Image::getInstance()->setImageLayout(
 			cmd,
 			Draw::textureManager->nameToTex[resources].textureImage,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,

@@ -68,6 +68,7 @@ namespace Draw
 			dcheck(ImGui::SliderFloat("Y-scale", &tf.yScale, 0, 10.f));
 			dcheck(ImGui::SliderFloat("Z-scale", &tf.zScale, 0, 10.0f));
 			dcheck(ImGui::SliderFloat("scale", &tf.scale, 0, 10.0f));
+
 			if (dirty)
 			{
 				glm::mat4 imat = glm::mat4(1.0f);
@@ -80,6 +81,12 @@ namespace Draw
 
 				pSelectedNode->SetTransform(imat);
 			}
+			
+			if (!pSelectedNode->HasChild())
+			{
+				dirty = pSelectedNode->AddMaterialUI();
+			}
+
 		}
 		ImGui::End();
 

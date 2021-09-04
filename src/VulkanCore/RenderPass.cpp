@@ -20,7 +20,7 @@ namespace Graphics {
 		height = Vulkan::getInstance()->GetHeight();
 	}
 
-	void RenderPass::CreateRenderPass()
+	void RenderPass::CreateRenderPass(VkImageView& depthView)
 	{
 		VkAttachmentDescription colorAttachment{};
 		colorAttachment.format = Vulkan::getInstance()->swapchain.format;
@@ -88,7 +88,7 @@ namespace Graphics {
 			std::vector<VkImageView> atts;
 
 			atts.emplace_back(Vulkan::getInstance()->swapchain.image_views[i]);
-			atts.emplace_back(Draw::textureManager->nameToTex["depth"].textureImageView);
+			atts.emplace_back(depthView);
 
 			VkFramebufferCreateInfo framebufferInfo{};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -105,12 +105,12 @@ namespace Graphics {
 		}
 	}
 
-	void RenderPass::CreateOffScreenRenderPass(string resource_name, VkImageLayout finalLayout)
+	void RenderPass::CreateOffScreenRenderPass(VkFormat format,VkImageView& view, int width, int height, VkImageLayout finalLayout)
 	{
 		// FB, Att, RP, Pipe, etc.
 		VkAttachmentDescription attDesc = {};
 		// Color attachment
-		attDesc.format = Draw::textureManager->nameToTex[resource_name].format;
+		attDesc.format = format;
 		attDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 		attDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		attDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -158,15 +158,15 @@ namespace Graphics {
 		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferCI.renderPass = renderPass;
 		framebufferCI.attachmentCount = 1;
-		framebufferCI.pAttachments = &Draw::textureManager->nameToTex[resource_name].textureImageView;
-		framebufferCI.width = Draw::textureManager->nameToTex[resource_name].texWidth;
-		framebufferCI.height = Draw::textureManager->nameToTex[resource_name].texHeight;
+		framebufferCI.pAttachments = &view;
+		framebufferCI.width = width;
+		framebufferCI.height = height;
 		framebufferCI.layers = 1;
 
 		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device,  &framebufferCI, nullptr, &framebuffer);
 	}
 
-	void RenderPass::CreateDeferredRenderPass()
+	void RenderPass::CreateDeferredRenderPass(vector<RpData>& data)
 	{
 		clearValues.resize(5);
 		clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
@@ -189,11 +189,14 @@ namespace Graphics {
 		}
 		
 		// Formats
-		attachmentDescs[0].format = Draw::textureManager->nameToTex["GBuffer_position"].format;
-		attachmentDescs[1].format = Draw::textureManager->nameToTex["GBuffer_normals"].format;
-		attachmentDescs[2].format = Draw::textureManager->nameToTex["GBuffer_albedo"].format;
-		attachmentDescs[3].format = Draw::textureManager->nameToTex["GBuffer_metallic_roughness"].format;
-		attachmentDescs[4].format = Draw::textureManager->nameToTex["GBuffer_depth"].format;
+		for (int i = 0; i < data.size(); ++i) {
+			attachmentDescs[i].format = data[i].format;
+		}
+		//attachmentDescs[0].format = Draw::textureManager->nameToTex["GBuffer_position"].format;
+		//attachmentDescs[1].format = Draw::textureManager->nameToTex["GBuffer_normals"].format;
+		//attachmentDescs[2].format = Draw::textureManager->nameToTex["GBuffer_albedo"].format;
+		//attachmentDescs[3].format = Draw::textureManager->nameToTex["GBuffer_metallic_roughness"].format;
+		//attachmentDescs[4].format = Draw::textureManager->nameToTex["GBuffer_depth"].format;
 
 		std::vector<VkAttachmentReference> colorReferences;
 		colorReferences.push_back({ 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });
@@ -241,11 +244,14 @@ namespace Graphics {
 		vkCreateRenderPass(Vulkan::getInstance()->GetDevice().device, &renderPassInfo, nullptr, &renderPass);
 
 		std::array<VkImageView, 5> attachments;
-		attachments[0] = Draw::textureManager->nameToTex["GBuffer_position"].textureImageView;
-		attachments[1] = Draw::textureManager->nameToTex["GBuffer_normals"].textureImageView;
-		attachments[2] = Draw::textureManager->nameToTex["GBuffer_albedo"].textureImageView;
-		attachments[3] = Draw::textureManager->nameToTex["GBuffer_metallic_roughness"].textureImageView;
-		attachments[4] = Draw::textureManager->nameToTex["GBuffer_depth"].textureImageView;
+		for (int i = 0; i < data.size(); ++i) {
+			attachments[i] = data[i].view;
+		}
+		//attachments[0] = Draw::textureManager->nameToTex["GBuffer_position"].textureImageView;
+		//attachments[1] = Draw::textureManager->nameToTex["GBuffer_normals"].textureImageView;
+		//attachments[2] = Draw::textureManager->nameToTex["GBuffer_albedo"].textureImageView;
+		//attachments[3] = Draw::textureManager->nameToTex["GBuffer_metallic_roughness"].textureImageView;
+		//attachments[4] = Draw::textureManager->nameToTex["GBuffer_depth"].textureImageView;
 
 		VkFramebufferCreateInfo fbufCreateInfo = initializers::framebufferCreateInfo();
 		fbufCreateInfo.renderPass = renderPass;
@@ -259,7 +265,7 @@ namespace Graphics {
 
 	}
 
-	void RenderPass::CreateFullScreenRenderPass(string resource_name)
+	void RenderPass::CreateFullScreenRenderPass(VkFormat format, VkImageView& view, int width, int height)
 	{
 		clearValues.resize(2);
 		clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
@@ -267,7 +273,7 @@ namespace Graphics {
 		// FB, Att, RP, Pipe, etc.
 		VkAttachmentDescription attDesc = {};
 		// Color attachment
-		attDesc.format = Draw::textureManager->nameToTex[resource_name].format;
+		attDesc.format = format;
 		attDesc.samples = VK_SAMPLE_COUNT_1_BIT;
 		attDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		attDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -316,92 +322,15 @@ namespace Graphics {
 		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferCI.renderPass = renderPass;
 		framebufferCI.attachmentCount = 1;
-		framebufferCI.pAttachments = &Draw::textureManager->nameToTex[resource_name].textureImageView;
-		framebufferCI.width = Draw::textureManager->nameToTex[resource_name].texWidth;
-		framebufferCI.height = Draw::textureManager->nameToTex[resource_name].texHeight;
+		framebufferCI.pAttachments = &view;
+		framebufferCI.width = width;
+		framebufferCI.height = height;
 		framebufferCI.layers = 1;
 
 		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &framebufferCI, nullptr, &framebuffer);
 	}
 
 	map<RenderPassType, RenderPass*> nameToRenderPass;
-
-	void InitRenderPass()
-	{
-		Draw::textureManager->CreateDepthResource("depth");
-		Draw::textureManager->CreateResource("brdf_lut", VK_FORMAT_R16G16_SFLOAT, 512, 
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-		Draw::textureManager->CreateResource("irradiance_attachment", VK_FORMAT_R32G32B32A32_SFLOAT, 64, 
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
-		Draw::textureManager->CreateCubeResource("irradiance_map", VK_FORMAT_R32G32B32A32_SFLOAT, 64);
-		// VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
-		uint32_t numMips = static_cast<uint32_t>(floor(log2(512))) + 1;
-		Draw::textureManager->CreateResource("prefilter_attachment", VK_FORMAT_R16G16B16A16_SFLOAT, 512,
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
-		Draw::textureManager->CreateCubeResource("prefilter_map", VK_FORMAT_R16G16B16A16_SFLOAT, 512, numMips);
-
-		// deferred resouces
-		Draw::textureManager->CreateResource("GBuffer_position", VK_FORMAT_R32G32B32A32_SFLOAT,
-			Vulkan::getInstance()->GetWidth(),
-			Vulkan::getInstance()->GetHeight(),
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-
-		Draw::textureManager->CreateResource("GBuffer_normals", VK_FORMAT_R8G8B8A8_UNORM,
-			Vulkan::getInstance()->GetWidth(),
-			Vulkan::getInstance()->GetHeight(),
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-
-		Draw::textureManager->CreateResource("GBuffer_albedo", VK_FORMAT_R8G8B8A8_UNORM,
-			Vulkan::getInstance()->GetWidth(),
-			Vulkan::getInstance()->GetHeight(),
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-
-		Draw::textureManager->CreateResource("GBuffer_metallic_roughness", VK_FORMAT_R16G16B16A16_SFLOAT,
-			Vulkan::getInstance()->GetWidth(),
-			Vulkan::getInstance()->GetHeight(),
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-
-		Draw::textureManager->CreateDepthResource("GBuffer_depth");
-
-		// SSAO
-		Draw::textureManager->CreateTextureFromData(
-			"ssaoNoiseMap",
-			Gloable::SSAO::ssaoNoise.data(), 
-			Gloable::SSAO::ssaoNoise.size() * sizeof(glm::vec4), 
-			VK_FORMAT_R32G32B32A32_SFLOAT, 
-			Gloable::SSAO::SSAO_NOISE_DIM, 
-			Gloable::SSAO::SSAO_NOISE_DIM, 
-			VK_FILTER_NEAREST);
-
-		Draw::textureManager->CreateResource("ssaoMap", 
-			VK_FORMAT_R8_UNORM, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
-			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-
-
-		RenderPass* rp = new RenderPass();
-		rp->CreateRenderPass();
-		nameToRenderPass[RenderPassType::Default] = rp;
-		
-		RenderPass* rp2 = new RenderPass();
-		rp2->CreateOffScreenRenderPass("brdf_lut");
-		nameToRenderPass[RenderPassType::BRDFLUT] = rp2;
-
-		RenderPass* rp3 = new RenderPass();
-		rp3->CreateOffScreenRenderPass("irradiance_attachment", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-		nameToRenderPass[RenderPassType::IRRADIANCE] = rp3;
-
-		RenderPass* rp4 = new RenderPass();
-		rp4->CreateOffScreenRenderPass("prefilter_attachment", VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-		nameToRenderPass[RenderPassType::PREFILTER] = rp4;
-
-		RenderPass* rp5 = new RenderPass();
-		rp5->CreateDeferredRenderPass();
-		nameToRenderPass[RenderPassType::DEFERRED] = rp5;
-
-		RenderPass* rp6 = new RenderPass();
-		rp6->CreateFullScreenRenderPass("ssaoMap");
-		nameToRenderPass[RenderPassType::FULLSCREEN_SSAO] = rp6;
-	}
 
 	void DestroyRenderPass()
 	{

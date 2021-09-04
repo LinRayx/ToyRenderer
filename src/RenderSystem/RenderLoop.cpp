@@ -40,14 +40,14 @@ namespace RenderSystem
 
 	void RenderLoop::Init()
 	{	
-		Draw::Model* model1 = new Draw::Model("../assets/luxplane.obj", "../assets/");
+		Draw::Model* model1 = new Draw::Model("../assets/plane.gltf", "../assets/");
 		//Draw::Model* model4 = new Draw::Model("../assets/grid.obj", "../assets/");
 		Draw::Model* model3 = new Draw::Model("../assets/mitsuba-sphere.obj", "../assets/");
 
-		model1->AddMaterial(Draw::MaterialType::DEFAULT);
-		model1->AddMaterial(Draw::MaterialType::GBuffer);
+		model1->AddMaterial(Draw::MaterialType::PBR);
+//		model1->AddMaterial(Draw::MaterialType::GBuffer);
 //		model1->AddMaterial(Draw::MaterialType::Outline);
-		model3->AddMaterial(Draw::MaterialType::GBuffer);
+//		model3->AddMaterial(Draw::MaterialType::GBuffer);
 		model3->AddMaterial(Draw::MaterialType::PBR);
 		//model4->AddMaterial(Draw::MaterialType::DEFAULT, glm::vec4(0,0,0,1));
 
@@ -65,9 +65,9 @@ namespace RenderSystem
 		for (auto& model : models) {
 			model->Compile();
 		}
-		Draw::SSAOgenerateMaterial* ssao_ptr = new Draw::SSAOgenerateMaterial;
-		ssao_ptr->Compile();
-		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO] = ssao_ptr;
+//		Draw::SSAOgenerateMaterial* ssao_ptr = new Draw::SSAOgenerateMaterial;
+//		ssao_ptr->Compile();
+//		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO] = ssao_ptr;
 		buildCmd();
 	}
 
@@ -75,7 +75,7 @@ namespace RenderSystem
 	{
 		Gloable::SSAO::InitSSAOKernel();
 		Draw::InitTextureMgr(cmdBuf_ptr);
-		Graphics::InitRenderPass();
+		Draw::CreateRenderPass();
 		Bind::LoadShaders();
 		UIInit();
 
@@ -161,6 +161,9 @@ namespace RenderSystem
 		io.MouseDown[1] = Control::mouseButtons.right;
 
 		ImGui::NewFrame();
+		ImGui::Begin("Hello, world!");
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
 		for (auto& window : modelWindows) {
 			gui_ptr->updated = window.DrawUI();
 		}
@@ -177,14 +180,14 @@ namespace RenderSystem
 	{
 		cmdBuf_ptr->Begin();
 
-		cmdBuf_ptr->DeferredBegin();
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::GBuffer, cmdBuf_ptr);
-		}
-		cmdBuf_ptr->DeferredEnd();
+		//cmdBuf_ptr->DeferredBegin();
+		//for (auto& model : models) {
+		//	model->BuildCommandBuffer(Draw::MaterialType::GBuffer, cmdBuf_ptr);
+		//}
+		//cmdBuf_ptr->DeferredEnd();
 
 		// full screen pass, output ssaoMap
-		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
+		//mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
 
 		cmdBuf_ptr->DefaultBegin();
 		for (auto& model : models) {

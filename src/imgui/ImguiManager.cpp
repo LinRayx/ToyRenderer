@@ -95,7 +95,7 @@ namespace GUI
         // Copy buffer data to font image
         auto copyCmd = cmdBuf_ptr->beginSingleTimeCommands();
         // Prepare for transfer
-        cmdBuf_ptr->setImageLayout(
+        Graphics::Image::getInstance()->setImageLayout(
             copyCmd,
             fontImage,
             VK_IMAGE_ASPECT_COLOR_BIT,
@@ -122,7 +122,7 @@ namespace GUI
         );
 
         // Prepare for shader read
-        cmdBuf_ptr->setImageLayout(
+        Graphics::Image::getInstance()->setImageLayout(
             copyCmd,
             fontImage,
             VK_IMAGE_ASPECT_COLOR_BIT,

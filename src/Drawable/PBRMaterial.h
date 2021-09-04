@@ -13,8 +13,16 @@ namespace Draw
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName);
 		virtual void Compile();
 		virtual void UpdateSceneData();
+		virtual bool SetUI();
+		float& GetMetallic();
+		glm::vec3& GetAlbedo();
+		float& GetRoughness();
 	private:
-		void AddCubeTexture(string cube_texture_name);
+		void addPBRTexture(string name);
+		float metallic = 0.1f;
+		glm::vec3 albedo = glm::vec3(1, 0, 0);
+		uint32_t pbrbinding = 1;
+		float roughness = 1.0f;
 	};
 }
 

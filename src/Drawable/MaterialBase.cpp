@@ -44,6 +44,11 @@ namespace Draw
 		this->iBuffer_ptr = iBuffer_ptr;
 	}
 
+	void MaterialBase::SetModelName(string name)
+	{
+		modelName = name;
+	}
+
 	void MaterialBase::UpdateSceneData()
 	{
 		SetValue("ViewAndProj", "viewMat", Control::Scene::getInstance()->camera_ptr->GetViewMatrix());

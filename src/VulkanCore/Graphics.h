@@ -8,6 +8,8 @@
 
 namespace Graphics
 {
+
+
 	enum class DescriptorType
 	{
 		UNIFORM,
@@ -33,6 +35,7 @@ namespace Graphics
 	{
 		SCENE = 0,
 		MODEL,
+		PBRTEXTURE,
 		COUNT,
 	};
 
@@ -45,6 +48,7 @@ namespace Graphics
 
 		static VkShaderStageFlags GetStageFlag(StageFlag flag);
 	};
+
 }
 
 #endif // !GRAPHICS_H

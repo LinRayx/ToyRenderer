@@ -20,6 +20,7 @@ namespace Draw
 		PBR,
 		GBuffer,
 		FS_SSAO,
+		PBR_Deferred,
 		DEFAULT,
 		ERROR,
 	};
@@ -39,13 +40,13 @@ namespace Draw
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName) {}
 		void BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr,
 			shared_ptr<Bind::IndexBuffer> iBuffer_ptr);
-
+		void SetModelName(string name);
 		virtual void UpdateSceneData();
 	protected:
 		int loadTextures(const aiMaterial* mat, aiTextureType type, string directory, string meshName);
 		string getTypeName(aiTextureType type);
 		MaterialType matType = MaterialType::ERROR;
-
+		string modelName;
 
 	};
 }

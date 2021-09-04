@@ -57,6 +57,7 @@ namespace Draw
 		int GetId();
 		string GetName();
 		bool HasChild();
+		bool AddMaterialUI();
 		glm::mat4& GetTransform();
 		void SetTransform(glm::mat4 transform);
 		void Traverse(vector<Mesh*> meshes);

@@ -54,6 +54,8 @@ void main()
 
 		float sampleDepth = -texture(samplerPositionDepth, offset.xy).w;
 		float rangeCheck = smoothstep(0.0f, 1.0f, SSAO_RADIUS / abs(fragPos.z - sampleDepth));
+		
+
 		occlusion += (sampleDepth >= samplePos.z + bias ? 1.0f : 0.0f) * rangeCheck;
 	}
 

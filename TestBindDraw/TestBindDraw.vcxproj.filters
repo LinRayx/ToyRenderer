@@ -252,6 +252,12 @@
     <ClInclude Include="..\src\Drawable\DefaultMaterial.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\PbrDeferredMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\RenderPassFactory.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -410,6 +416,12 @@
     <ClCompile Include="..\src\Drawable\DefaultMaterial.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\PbrDeferredMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\RenderPassFactory.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -483,6 +495,9 @@
     </None>
     <None Include="..\src\shaders\Default.vert.glsl">
       <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\Pbr_deferred.frag.glsl">
+      <Filter>源文件\Shaders\PBR</Filter>
     </None>
   </ItemGroup>
 </Project>

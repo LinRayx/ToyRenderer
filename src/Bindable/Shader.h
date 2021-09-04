@@ -24,6 +24,7 @@ namespace Bind
 		FULLSCREEN_VERT,
 		SSAO,
 		DEFAULT,
+		PBR_Deferred,
 		EMPTY,
 	};
 

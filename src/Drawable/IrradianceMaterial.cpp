@@ -98,7 +98,7 @@ namespace Draw
 		subresourceRange.baseMipLevel = 0;
 		subresourceRange.levelCount = 1;
 		subresourceRange.layerCount = 6;
-		cmd->setImageLayout(
+		Graphics::Image::getInstance()->setImageLayout(
 			cmdbuf,
 			textureManager->nameToTex[irradiance_map_name].textureImage,
 			VK_IMAGE_LAYOUT_UNDEFINED,
@@ -123,10 +123,12 @@ namespace Draw
 			vkCmdDrawIndexed(cmdbuf, static_cast<uint32_t>(iBuffer_ptr->GetCount()), 1, 0, 0, 0);
 			vkCmdEndRenderPass(cmdbuf);
 
-			cmd->CopyFrameBufferToImage(cmdbuf, "irradiance_attachment", irradiance_map_name, f, dim);
+
+			Graphics::Image::getInstance()->CopyFrameBufferToImage(cmdbuf, textureManager->nameToTex["irradiance_attachment"].textureImage, 
+				textureManager->nameToTex[irradiance_map_name].textureImage, f, dim);
 		}
 		// Change image layout for all cubemap faces to transfer destination
-		cmd->setImageLayout(
+		Graphics::Image::getInstance()->setImageLayout(
 			cmdbuf,
 			textureManager->nameToTex[irradiance_map_name].textureImage,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,

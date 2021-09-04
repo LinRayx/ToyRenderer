@@ -121,7 +121,7 @@ namespace Draw {
 			default:
 				throw std::runtime_error("can not find suitable material!");
 			}
-
+			material->SetModelName(this->name);
 			it.mesh.SetMaterial(material);
 			material->BindMeshData(it.mesh.vertex_buffer, it.mesh.index_buffer);
 			material->SetValue("Model", "modelTrans", it.mesh.GetTransform());
@@ -183,6 +183,16 @@ namespace Draw {
 	bool Node::HasChild()
 	{
 		return childPtrs.size() > 0;
+	}
+
+	bool Node::AddMaterialUI()
+	{
+		bool dirty = false;
+		for (auto& mesh : curMeshes) {
+			auto mat = mesh->GetMaterial();
+			dirty |= mat->SetUI();
+		}
+		return dirty;
 	}
 
 	glm::mat4& Node::GetTransform()
@@ -261,6 +271,11 @@ namespace Draw {
 		for (auto& ptr : mat_ptrs) {
 			ptr->SetValue("Model", "modelTrans", transform);
 		}
+	}
+
+	MaterialBase* Mesh::GetMaterial()
+	{
+		return mat_ptrs[0];
 	}
 
 	glm::mat4 Mesh::GetTransform()

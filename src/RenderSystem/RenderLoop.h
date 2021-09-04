@@ -8,6 +8,8 @@
 #include "imgui/ImguiManager.h"
 #include "Drawable/ModelWindow.h"
 #include "Drawable/MaterialHeader.h"
+#include "Drawable/RenderPassFactory.h"
+
 namespace RenderSystem
 {
 	class RenderLoop

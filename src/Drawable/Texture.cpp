@@ -144,7 +144,7 @@ namespace Draw
 		subresourceRange.layerCount = 1;
 
 		auto cmd = cmdBuf_ptr->beginSingleTimeCommands();
-		cmdBuf_ptr->insertImageMemoryBarrier(
+		Graphics::Image::getInstance()->insertImageMemoryBarrier(
 			cmd,
 			data.textureImage,
 			0,
@@ -157,7 +157,7 @@ namespace Draw
 
 		cmdBuf_ptr->copyBufferToCubeImage(data.stagingBuffer, data.textureImage, static_cast<uint32_t>(data.texWidth), static_cast<uint32_t>(data.texHeight), 6);
 
-		cmdBuf_ptr->insertImageMemoryBarrier(
+		Graphics::Image::getInstance()->insertImageMemoryBarrier(
 			cmd,
 			data.textureImage,
 			VK_ACCESS_TRANSFER_WRITE_BIT,
@@ -323,11 +323,68 @@ namespace Draw
 		paths.emplace_back("../assets/skybox/skybox2/nz.png");
 
 		textureManager->CreateCubeTexture(std::move(paths), "skybox_texture");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_basecolor.jpg", "albedoMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_metallic.jpg", "metallicMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_normal.jpg", "normalMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_roughness.jpg", "roughnessMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_ambientOcclusion.jpg", "aoMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_basecolor.jpg", "mitsuba-sphere.obj_AlbedoMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_metallic.jpg", "mitsuba-sphere.obj_MetallicMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_normal.jpg", "mitsuba-sphere.obj_NormalMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_roughness.jpg", "mitsuba-sphere.obj_RoughnessMap");
+		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_ambientOcclusion.jpg", "mitsuba-sphere.obj_AoMap");
+
+		textureManager->CreateTexture("../assets/Wood/Wood070_1K_Color.jpg", "plane.gltf_AlbedoMap");
+		textureManager->CreateTexture("../assets/Wood/Wood070_1K_NormalGL.jpg", "plane.gltf_NormalMap");
+		textureManager->CreateTexture("../assets/Wood/Wood070_1K_Roughness.jpg", "plane.gltf_RoughnessMap");
+
+		using namespace Graphics;
+
+		textureManager->CreateDepthResource("depth");
+		textureManager->CreateResource("brdf_lut", VK_FORMAT_R16G16_SFLOAT, 512,
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+		textureManager->CreateResource("irradiance_attachment", VK_FORMAT_R32G32B32A32_SFLOAT, 64,
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
+		textureManager->CreateCubeResource("irradiance_map", VK_FORMAT_R32G32B32A32_SFLOAT, 64);
+		// VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT
+		uint32_t numMips = static_cast<uint32_t>(floor(log2(512))) + 1;
+		textureManager->CreateResource("prefilter_attachment", VK_FORMAT_R16G16B16A16_SFLOAT, 512,
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT);
+		textureManager->CreateCubeResource("prefilter_map", VK_FORMAT_R16G16B16A16_SFLOAT, 512, numMips);
+
+		// deferred resouces
+		textureManager->CreateResource("GBuffer_position", VK_FORMAT_R32G32B32A32_SFLOAT,
+			Vulkan::getInstance()->GetWidth(),
+			Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
+		textureManager->CreateResource("GBuffer_normals", VK_FORMAT_R8G8B8A8_UNORM,
+			Vulkan::getInstance()->GetWidth(),
+			Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
+		textureManager->CreateResource("GBuffer_albedo", VK_FORMAT_R8G8B8A8_UNORM,
+			Vulkan::getInstance()->GetWidth(),
+			Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
+		textureManager->CreateResource("GBuffer_metallic_roughness", VK_FORMAT_R16G16B16A16_SFLOAT,
+			Vulkan::getInstance()->GetWidth(),
+			Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
+		textureManager->CreateDepthResource("GBuffer_depth");
+
+		// SSAO
+		textureManager->CreateTextureFromData(
+			"ssaoNoiseMap",
+			Gloable::SSAO::ssaoNoise.data(),
+			Gloable::SSAO::ssaoNoise.size() * sizeof(glm::vec4),
+			VK_FORMAT_R32G32B32A32_SFLOAT,
+			Gloable::SSAO::SSAO_NOISE_DIM,
+			Gloable::SSAO::SSAO_NOISE_DIM,
+			VK_FILTER_NEAREST);
+
+		textureManager->CreateResource("ssaoMap",
+			VK_FORMAT_R8_UNORM, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
+
 	}
 
 	void DestroyTextureMgr()

@@ -7,6 +7,7 @@
 #include "Synchronization.h"
 #include <iostream>
 #include "CommandBuffer.h"
+#include "VulkanCore/VulkanInitalizers.hpp"
 
 namespace Graphics
 {

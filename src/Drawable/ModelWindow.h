@@ -35,6 +35,9 @@ namespace Draw
 			float zScale = 1.f;
 			float scale = 1.f;
 		};
+
+
+
 		std::map<int, TransformParameters> transformParams;
 
 		TransformParameters& ResolveTransform() noexcept

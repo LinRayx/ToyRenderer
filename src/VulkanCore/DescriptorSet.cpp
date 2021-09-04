@@ -27,11 +27,20 @@ namespace Graphics
 	}
 
 	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage, VkImageView textureImageView,
-	VkSampler textureSampler)
+	VkSampler textureSampler, uint32_t binding)
 	{
 		Add(layout_type, type, stage);
 		uint16_t index = static_cast<uint16_t>(layout_type);
-		descInfo info{ index, type, nullptr, slots_index[index]++ , textureImageView, textureSampler};
+		descInfo info{ index, type, nullptr, binding , textureImageView, textureSampler};
+		infos.emplace_back(std::move(info));
+	}
+
+	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage, VkImageView textureImageView,
+		VkSampler textureSampler)
+	{
+		Add(layout_type, type, stage);
+		uint16_t index = static_cast<uint16_t>(layout_type);
+		descInfo info{ index, type, nullptr, slots_index[index]++ , textureImageView, textureSampler };
 		infos.emplace_back(std::move(info));
 	}
 
