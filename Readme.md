@@ -2,23 +2,15 @@
 
 基于Vulkan，写一个方便自己做图形实验的渲染引擎
 
-## Doing
-
-- UI
-- 点光源
-- 延迟渲染
-- SSAO
-
-## Plan
-
-- 场景信息保存
-- 资源系统
-
-- 多渲染队列
-
 ## 阶段性成果
 
-![轮廓线和BlinnPhone](./output/outline.png)
-![PBR](./output/PBR.png)
+- 延迟渲染 + ssao 
+![SSAO_OPEN](.output/ssao_open.png)
+- 延迟渲染 without ssao
+![SSAO_CLOSE](.output/ssao_close.png)
+- pbr+IBL
 ![PBR with Outline](./output/PBR_Outline.png)
+- 模型UI
 ![UI](./output/UI.png)
+- 轮廓线和blinn-phone光照
+![轮廓线和BlinnPhone](./output/outline.png)

@@ -264,9 +264,6 @@
     <ClInclude Include="..\src\Drawable\RenderPassFactory.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Scene\Camera2.hpp">
-      <Filter>头文件\Scene</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -424,9 +421,6 @@
     </ClCompile>
     <ClCompile Include="..\src\Drawable\RenderPassFactory.cpp">
       <Filter>源文件\Drawable</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Scene\Camera2.cpp">
-      <Filter>源文件\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

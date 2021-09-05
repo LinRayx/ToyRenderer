@@ -183,7 +183,6 @@
     <ClInclude Include="..\src\RenderSystem\FrameTimer.h" />
     <ClInclude Include="..\src\RenderSystem\RenderLoop.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
-    <ClInclude Include="..\src\Scene\Camera2.hpp" />
     <ClInclude Include="..\src\Scene\DirectionLight.h" />
     <ClInclude Include="..\src\Scene\Scene.h" />
     <ClInclude Include="..\src\Test\test.h" />
@@ -244,7 +243,6 @@
     <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp" />
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
-    <ClCompile Include="..\src\Scene\Camera2.cpp" />
     <ClCompile Include="..\src\Scene\DirectionLight.cpp" />
     <ClCompile Include="..\src\Scene\Scene.cpp" />
     <ClCompile Include="..\src\Test\test.cpp" />
