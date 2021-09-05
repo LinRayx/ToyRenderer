@@ -5,9 +5,9 @@
 ## 阶段性成果
 
 - 延迟渲染 + ssao 
-![SSAO_OPEN](.output/ssao_open.png)
+![SSAO_OPEN](./output/ssao_open.png)
 - 延迟渲染 without ssao
-![SSAO_CLOSE](.output/ssao_close.png)
+![SSAO_CLOSE](./output/ssao_close.png)
 - pbr+IBL
 ![PBR with Outline](./output/PBR_Outline.png)
 - 模型UI
