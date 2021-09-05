@@ -34,18 +34,8 @@ namespace Draw
 		shaderStages.emplace_back(std::move(vertex_shader_stage));
 		shaderStages.emplace_back(std::move(frag_shader_stage));
 
-		VkViewport viewport = {};
-		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = dim;
-		viewport.height = dim;
-		viewport.minDepth = 0.0f;
-		viewport.maxDepth = 1.0f;
-
-
-		VkRect2D scissor = {};
-		scissor.extent.height = dim;
-		scissor.extent.width = dim;
+		VkViewport viewport = Graphics::initializers::viewportOffscreen((float)dim, (float)dim, 0.0f, 1.0f);
+		VkRect2D scissor = Graphics::initializers::rect2D(dim, dim, 0, 0);
 
 		VkPipelineViewportStateCreateInfo viewport_info = {};
 		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;

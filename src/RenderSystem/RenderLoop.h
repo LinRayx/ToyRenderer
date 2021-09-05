@@ -41,8 +41,8 @@ namespace RenderSystem
 		vector<Draw::Model*> models;
 		map<Draw::MaterialType, Draw::MaterialBaseParent*> mat_fullscreen_ptrs;
 
-		int width = 800;
-		int height = 600;
+		int width = 1280;
+		int height = 760;
 	};
 }
 

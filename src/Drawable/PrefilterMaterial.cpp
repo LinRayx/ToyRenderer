@@ -27,8 +27,11 @@ namespace Draw
 		loadVertexInfo();
 
 		loadShader(Bind::ShaderType::PREFILTER);
-
+		
 		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), Graphics::nameToRenderPass[Graphics::RenderPassType::PREFILTER]->renderPass, 0);
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
+		depthStencilState.depthTestEnable = VK_FALSE;
+		depthStencilState.depthWriteEnable = VK_FALSE;
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;
 		pipelineCI.pRasterizationState = &rasterizationState;
 		pipelineCI.pColorBlendState = &colorBlendState;
@@ -71,7 +74,7 @@ namespace Draw
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			subresourceRange);
 
-		VkViewport viewport = Graphics::initializers::viewport((float)dim, (float)dim, 0.0f, 1.0f);
+		VkViewport viewport = Graphics::initializers::viewportOffscreen((float)dim, (float)dim, 0.0f, 1.0f);
 		VkRect2D scissor = Graphics::initializers::rect2D(dim, dim, 0, 0);
 
 		vkCmdSetViewport(cmd, 0, 1, &viewport);
@@ -106,11 +109,12 @@ namespace Draw
 			glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 		};
 
+
 		for (uint32_t m = 0; m < numMips; m++) {
 			(*pushBlock)["roughness"]= (float)m / (float)(numMips - 1);
 			for (uint32_t f = 0; f < 6; f++) {
-				viewport.width = static_cast<float>(dim * std::pow(0.5f, m));
-				viewport.height = static_cast<float>(dim * std::pow(0.5f, m));
+				viewport = Graphics::initializers::viewportOffscreen(static_cast<float>(dim * std::pow(0.5f, m)), static_cast<float>(dim * std::pow(0.5f, m)), 0.0, 1.0);
+
 				vkCmdSetViewport(cmd, 0, 1, &viewport);
 				// Render scene from cube face's point of view
 				vkCmdBeginRenderPass(cmd, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);

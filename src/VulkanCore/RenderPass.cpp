@@ -35,7 +35,7 @@ namespace Graphics {
 		VkAttachmentDescription depthAttachment{};
 		depthAttachment.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
 		depthAttachment.samples = msaaSamples;
-		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
 		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // 设置成DONT CARE 时 outline 会出现问题
 		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -171,7 +171,7 @@ namespace Graphics {
 		clearValues.resize(5);
 		clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
 		clearValues[1].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-		clearValues[2].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+		clearValues[2].color = { { 0.0f, 0.0f, 0.0f, 0.0f } }; // albedo
 		clearValues[3].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
 		clearValues[4].depthStencil = { 1.0f, 0 };
 

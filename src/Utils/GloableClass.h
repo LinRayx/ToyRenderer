@@ -15,6 +15,8 @@ namespace Gloable
 
 	glm::mat4 ScaleTranslation(glm::mat4 matrix, float scale);
 
+	extern bool FilpY;
+
 	namespace SSAO
 	{
 		const size_t SSAO_NOISE_DIM = 4;

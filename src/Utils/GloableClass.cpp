@@ -2,6 +2,7 @@
 
 namespace Gloable
 {
+	bool FilpY = true;
 	glm::vec3 ExtractEulerAngles(const glm::mat4& mat)
 	{
 		glm::vec3 euler;

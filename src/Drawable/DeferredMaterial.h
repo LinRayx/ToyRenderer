@@ -1,12 +1,12 @@
 #ifndef DEFERRED_MATERIAL_H
 #define DEFEREED_MATERIAL_H
 
-#include "Drawable/MaterialBase.h"
+#include "Drawable/PBRMaterial.h"
 #include <array>
 
 namespace Draw
 {
-	class DeferredMaterial : public MaterialBase
+	class DeferredMaterial : public PBRMaterial
 	{
 	public:
 		DeferredMaterial();

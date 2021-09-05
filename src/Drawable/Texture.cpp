@@ -8,7 +8,7 @@ namespace Draw
 {
 	Texture::Texture( shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr) :  cmdBuf_ptr(cmdBuf_ptr)
 	{
-
+		stbi_set_flip_vertically_on_load(true);
 	}
 
 	Texture::~Texture()
@@ -113,7 +113,7 @@ namespace Draw
 		vector<stbi_uc*> textures(paths.size());
 		
 		TextureData data;
-
+		
 		for (size_t i = 0; i < paths.size(); ++i) {
 			textures[i] = stbi_load(paths[i].c_str(), &data.texWidth, &data.texHeight, &data.texChannel, STBI_rgb_alpha);
 		}
@@ -315,19 +315,29 @@ namespace Draw
 		//		-Y
 		textureManager = new Texture(cmdBuf_ptr);
 		vector<string> paths;
-		paths.emplace_back("../assets/skybox/skybox2/px.png");
-		paths.emplace_back("../assets/skybox/skybox2/nx.png");
-		paths.emplace_back("../assets/skybox/skybox2/py.png");
-		paths.emplace_back("../assets/skybox/skybox2/ny.png");
-		paths.emplace_back("../assets/skybox/skybox2/pz.png");
-		paths.emplace_back("../assets/skybox/skybox2/nz.png");
+		paths.emplace_back("../assets/newport_loft/px.png");
+		paths.emplace_back("../assets/newport_loft/nx.png");
+		paths.emplace_back("../assets/newport_loft/ny.png");
+		paths.emplace_back("../assets/newport_loft/py.png");
+		paths.emplace_back("../assets/newport_loft/pz.png");
+		paths.emplace_back("../assets/newport_loft/nz.png");
 
 		textureManager->CreateCubeTexture(std::move(paths), "skybox_texture");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_basecolor.jpg", "mitsuba-sphere.obj_AlbedoMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_metallic.jpg", "mitsuba-sphere.obj_MetallicMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_normal.jpg", "mitsuba-sphere.obj_NormalMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_roughness.jpg", "mitsuba-sphere.obj_RoughnessMap");
-		textureManager->CreateTexture("../assets/Metal_Texture/Textures/Metal_Panels_009_ambientOcclusion.jpg", "mitsuba-sphere.obj_AoMap");
+		
+		//textureManager->CreateTexture("../assets/gold/albedo.png", "mitsuba-sphere.obj_AlbedoMap");
+		//textureManager->CreateTexture("../assets/gold/metallic.png", "mitsuba-sphere.obj_MetallicMap");
+		//textureManager->CreateTexture("../assets/gold/normal.png", "mitsuba-sphere.obj_NormalMap");
+		//textureManager->CreateTexture("../assets/gold/roughness.png", "mitsuba-sphere.obj_RoughnessMap");
+
+		textureManager->CreateTexture("../assets/StoneWall/Textures/wall-stonework-sheen_albedo.png", "luxball.gltf_AlbedoMap");
+		textureManager->CreateTexture("../assets/StoneWall/Textures/wall-stonework-sheen_metallic.png", "luxball.gltf_MetallicMap");
+		textureManager->CreateTexture("../assets/StoneWall/Textures/wall-stonework-sheen_normal-ogl.png", "luxball.gltf_NormalMap");
+		textureManager->CreateTexture("../assets/StoneWall/Textures/wall-stonework-sheen_roughness.png", "luxball.gltf_RoughnessMap");
+
+		//textureManager->CreateTexture("../assets/rustediron/Textures/rustediron2_basecolor.png", "mitsuba-sphere.obj_AlbedoMap");
+		//textureManager->CreateTexture("../assets/rustediron/Textures/rustediron2_metallic.png", "mitsuba-sphere.obj_MetallicMap");
+		//textureManager->CreateTexture("../assets/rustediron/Textures/rustediron2_normal.png", "mitsuba-sphere.obj_NormalMap");
+		//textureManager->CreateTexture("../assets/rustediron/Textures/rustediron2_roughness.png", "mitsuba-sphere.obj_RoughnessMap");
 
 		textureManager->CreateTexture("../assets/Wood/Wood070_1K_Color.jpg", "plane.gltf_AlbedoMap");
 		textureManager->CreateTexture("../assets/Wood/Wood070_1K_NormalGL.jpg", "plane.gltf_NormalMap");

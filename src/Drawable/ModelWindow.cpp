@@ -72,7 +72,7 @@ namespace Draw
 			if (dirty)
 			{
 				glm::mat4 imat = glm::mat4(1.0f);
-				imat[1][1] = -1;
+				// imat[1][1] = -1;
 				imat = glm::translate(imat, glm::vec3(tf.x, tf.y, tf.z));
 				imat = glm::rotate(imat, tf.xRot, glm::vec3(1, 0, 0));
 				imat = glm::rotate(imat, tf.yRot, glm::vec3(0, 1, 0));

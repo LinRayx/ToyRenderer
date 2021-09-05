@@ -183,6 +183,7 @@
     <ClInclude Include="..\src\RenderSystem\FrameTimer.h" />
     <ClInclude Include="..\src\RenderSystem\RenderLoop.h" />
     <ClInclude Include="..\src\Scene\Camera.h" />
+    <ClInclude Include="..\src\Scene\Camera2.hpp" />
     <ClInclude Include="..\src\Scene\DirectionLight.h" />
     <ClInclude Include="..\src\Scene\Scene.h" />
     <ClInclude Include="..\src\Test\test.h" />
@@ -214,7 +215,6 @@
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\src\Bindable\DepthStencilState.cpp" />
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp" />
-    <ClCompile Include="..\src\Bindable\PipelineLayout.cpp" />
     <ClCompile Include="..\src\Bindable\PixelShader.cpp" />
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
@@ -244,6 +244,7 @@
     <ClCompile Include="..\src\RenderSystem\FrameTimer.cpp" />
     <ClCompile Include="..\src\RenderSystem\RenderLoop.cpp" />
     <ClCompile Include="..\src\Scene\Camera.cpp" />
+    <ClCompile Include="..\src\Scene\Camera2.cpp" />
     <ClCompile Include="..\src\Scene\DirectionLight.cpp" />
     <ClCompile Include="..\src\Scene\Scene.cpp" />
     <ClCompile Include="..\src\Test\test.cpp" />
@@ -256,7 +257,6 @@
     <ClCompile Include="..\src\VulkanCore\DescriptorSet.cpp" />
     <ClCompile Include="..\src\VulkanCore\Graphics.cpp" />
     <ClCompile Include="..\src\VulkanCore\Image.cpp" />
-    <ClCompile Include="..\src\VulkanCore\Pipeline.cpp" />
     <ClCompile Include="..\src\VulkanCore\RenderPass.cpp" />
     <ClCompile Include="..\src\VulkanCore\Vulkan.cpp" />
     <ClCompile Include="..\src\VulkanCore\vulkan_core_headers.cpp" />

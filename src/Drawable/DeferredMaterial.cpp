@@ -3,26 +3,14 @@
 namespace Draw
 {
 	DeferredMaterial::DeferredMaterial()
-		: MaterialBase()
+		: PBRMaterial(true)
 	{
 		using namespace Graphics;
-		desc_ptr = std::make_shared<DescriptorSetCore>();
 		Dcb::RawLayout layout;
-		layout.Add<Dcb::Matrix>("viewMat");
-		layout.Add<Dcb::Matrix>("projMat");
+
 		layout.Add<Dcb::Float>("nearPlane");
 		layout.Add<Dcb::Float>("farPlane");
-		addLayout("ViewAndProj", std::move(layout), LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::ALL);
-
-		Dcb::RawLayout transBuf;
-		transBuf.Add<Dcb::Matrix>("modelTrans");
-		addLayout("Model", std::move(transBuf), LayoutType::MODEL, DescriptorType::UNIFORM, StageFlag::ALL);
-
-		addTexture(LayoutType::MODEL, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["albedoMap"].textureImageView, Draw::textureManager->nameToTex["albedoMap"].textureSampler);
-		addTexture(LayoutType::MODEL, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["metallicMap"].textureImageView, Draw::textureManager->nameToTex["metallicMap"].textureSampler);
-		addTexture(LayoutType::MODEL, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["normalMap"].textureImageView, Draw::textureManager->nameToTex["normalMap"].textureSampler);
-		addTexture(LayoutType::MODEL, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["roughnessMap"].textureImageView, Draw::textureManager->nameToTex["roughnessMap"].textureSampler);
-		addTexture(LayoutType::MODEL, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["aoMap"].textureImageView, Draw::textureManager->nameToTex["aoMap"].textureSampler);
+		addLayout("CameraParam", std::move(layout), LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
 		
 		matType = MaterialType::GBuffer;
 	}
@@ -49,6 +37,8 @@ namespace Draw
 
 		loadVertexInfo();
 		loadShader(Bind::ShaderType::GBUFFER);
+		auto viewport = initializers::viewportOffscreen(Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(), 0.0, 1.0);
+		viewport_info.pViewports = &viewport;
 
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;
 		pipelineCI.pRasterizationState = &rasterizationState;
@@ -67,9 +57,10 @@ namespace Draw
 	}
 	void DeferredMaterial::UpdateSceneData()
 	{
-		SetValue("ViewAndProj", "nearPlane", Control::Scene::getInstance()->camera_ptr->GetNearPlane());
-		SetValue("ViewAndProj", "farPlane", Control::Scene::getInstance()->camera_ptr->GetFarPlane());
+		SetValue("CameraParam", "nearPlane", Control::Scene::getInstance()->camera_ptr->GetNearPlane());
+		SetValue("CameraParam", "farPlane", Control::Scene::getInstance()->camera_ptr->GetFarPlane());
 		SetValue("ViewAndProj", "viewMat", Control::Scene::getInstance()->camera_ptr->GetViewMatrix());
 		SetValue("ViewAndProj", "projMat", Control::Scene::getInstance()->camera_ptr->GetProjectMatrix());
 	}
+
 }

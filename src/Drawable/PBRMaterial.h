@@ -9,6 +9,7 @@ namespace Draw
 	class PBRMaterial : public MaterialBase
 	{
 	public:
+		PBRMaterial(bool flag);
 		PBRMaterial();
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName);
 		virtual void Compile();
@@ -17,7 +18,8 @@ namespace Draw
 		float& GetMetallic();
 		glm::vec3& GetAlbedo();
 		float& GetRoughness();
-	private:
+	protected:
+		void InitPBRData();
 		void addPBRTexture(string name);
 		float metallic = 0.1f;
 		glm::vec3 albedo = glm::vec3(1, 0, 0);

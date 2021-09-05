@@ -22,14 +22,14 @@ namespace Draw
 		loadVertexInfo();
 		loadShader(Bind::ShaderType::Skybox);
 		// Skybox pipeline (background cube)
-		rasterizationState.cullMode = VK_CULL_MODE_FRONT_BIT;
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
 
 		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), Graphics::nameToRenderPass[Graphics::RenderPassType::Default]->renderPass, 0);
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;
 		pipelineCI.pRasterizationState = &rasterizationState;
 		pipelineCI.pColorBlendState = &colorBlendState;
 		pipelineCI.pMultisampleState = &multisampleState;
-		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::Default);
+		depthStencilState.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 		pipelineCI.pDepthStencilState = &depthStencilState;
 		pipelineCI.stageCount = shaderStages.size();
 		pipelineCI.pStages = shaderStages.data();

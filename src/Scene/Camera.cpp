@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Utils/GloableClass.h"
 
 namespace Control
 {
@@ -9,12 +10,12 @@ namespace Control
 	Camera::Camera(int sc_width, int sc_height, float move_speed, float move_sen) 
 		: sc_width(sc_width), sc_height(sc_height)
 	{
-		Position = glm::vec3(0, -10, 5);
+		Position = glm::vec3(0, -3, 5);
 		WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 		Front = glm::vec3(0.0f, 0.0f, -1.0f);
 		Zoom = 60.0f;
 		Yaw = -90.0f;
-		Pitch = 0.0f;
+		Pitch = 25.0f;
 		firstMouse = true;
 		lastX = sc_width / 2;
 		lastY = sc_height / 2;
@@ -26,11 +27,17 @@ namespace Control
 	}
 	glm::mat4 Camera::GetViewMatrix()
 	{
-		return glm::lookAt(Position,Position + Front, Up);
+		auto view = glm::lookAt(Position, Position + Front, Up);
+		//if (Gloable::FilpY)
+		//	view[1][1] *= -1;
+		return view;
 	}
 	glm::mat4 Camera::GetProjectMatrix()
 	{
-		return glm::perspective(glm::radians(Zoom), (float)sc_width / (float)sc_height, nearPlane, farPlane);
+		auto proj = glm::perspective(glm::radians(Zoom), (float)sc_width / (float)sc_height, nearPlane, farPlane);
+		//if (Gloable::FilpY)
+		//	proj[1][1] *= -1;
+		return proj;
 	}
 	glm::vec3 Camera::GetViewPos()
 	{
@@ -43,6 +50,14 @@ namespace Control
 	float Camera::GetFarPlane()
 	{
 		return farPlane;
+	}
+	float Camera::GetYaw()
+	{
+		return Yaw;
+	}
+	float Camera::GetPitch()
+	{
+		return Pitch;
 	}
 	void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
 	{
@@ -93,7 +108,7 @@ namespace Control
 		front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 		Front = glm::normalize(front);
 		// also re-calculate the Right and Up vector
-		Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+		Right = glm::normalize(glm::cross( Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
 		Up = glm::normalize(glm::cross(Right, Front));
 	}
 	void Camera::Control_camera(GLFWwindow* window, float delta_time)
@@ -118,8 +133,8 @@ namespace Control
 				firstMouse = false;
 			}
 
-			float xoffset = mouse_position[0] - lastX;
-			float yoffset = mouse_position[1] - lastY; // reversed since y-coordinates go from bottom to top
+			float xoffset = (mouse_position[0] - lastX);
+			float yoffset = (mouse_position[1] - lastY); // reversed since y-coordinates go from bottom to top
 
 			lastX = mouse_position[0];
 			lastY = mouse_position[1];

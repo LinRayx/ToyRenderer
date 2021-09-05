@@ -6,13 +6,7 @@ namespace Draw
 	{
 		vertexInputInfo = {};
 
-		viewport = {};
-		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = (float)Graphics::Vulkan::getInstance()->GetSwapchain().extent.width;
-		viewport.height = (float)Graphics::Vulkan::getInstance()->GetSwapchain().extent.height;
-		viewport.minDepth = 0.0f;
-		viewport.maxDepth = 1.0f;
+		viewport = SetViewport(0, 0, Graphics::Vulkan::getInstance()->GetWidth(), Graphics::Vulkan::getInstance()->GetHeight());
 
 		scissor = {};
 		scissor.extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent;

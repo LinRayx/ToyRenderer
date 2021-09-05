@@ -150,6 +150,7 @@ void main()
 	else
 		roughness = texture(roughnessMap, inUV).r * pParam.roughness;
 
+	albedo = pow(albedo, vec3(2.2));
 
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, albedo, metallic);
@@ -165,7 +166,7 @@ void main()
 
 	vec3 diffuse = irradiance * albedo;
 
-	vec3 F = F_SchlickR(max(dot(N, -V), 0.0), F0, roughness);
+	vec3 F = F_SchlickR(max(dot(N, V), 0.0), F0, roughness);
 
 	vec3 specular = reflection * (F * brdf.x + brdf.y);
 
@@ -175,12 +176,15 @@ void main()
 
 	vec3 color = ambient + Lo;
 	
-	float exposure = 4.5;
+	// HDR tonemapping
+	color = color / (color + vec3(1.0));
+
+	//float exposure = 4.5;
 	float gamma = 2.2;
 
-	// Tone mapping
-	color = Uncharted2Tonemap(color * exposure);
-	color = color * (1.0f / Uncharted2Tonemap(vec3(11.2f)));
+	//// Tone mapping
+	//color = Uncharted2Tonemap(color * exposure);
+	//color = color * (1.0f / Uncharted2Tonemap(vec3(11.2f)));
 
 	// Gamma correction
 	color = pow(color, vec3(1.0f / gamma));

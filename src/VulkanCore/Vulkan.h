@@ -121,7 +121,7 @@ namespace Graphics
 		} swapchain_t;
 
 	private:
-		Vulkan(int width = 800, int height = 600);
+		Vulkan(int width = 1280, int height = 760);
 		~Vulkan();
 
 	private:

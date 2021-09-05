@@ -21,6 +21,7 @@ namespace Draw
 		layout2.Add<Dcb::Float3>("viewPos");
 		layout2.Add<Dcb::Float3>("direLightDir");
 		layout2.Add<Dcb::Float3>("direLightColor");
+		layout2.Add<Dcb::Bool>("SSAO");
 
 		addLayout("Light", std::move(layout2), LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["brdf_lut"].textureImageView, Draw::textureManager->nameToTex["brdf_lut"].textureSampler);
@@ -41,8 +42,17 @@ namespace Draw
 		loadShader(Bind::ShaderType::PBR_Deferred);
 
 		VkPipelineVertexInputStateCreateInfo emptyVertexInputState = initializers::pipelineVertexInputStateCreateInfo();
-		rasterizationState.cullMode = VK_CULL_MODE_FRONT_BIT;
 
+		VkViewport viewport = initializers::viewport((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0.0f, 1.0f);
+		VkRect2D scissor = initializers::rect2D((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0, 0);
+
+		VkPipelineViewportStateCreateInfo viewport_info = {};
+		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewport_info.viewportCount = 1;
+		viewport_info.scissorCount = 1;
+		viewport_info.pScissors = &scissor;
+		viewport_info.pViewports = &viewport;
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
 		VkGraphicsPipelineCreateInfo pipelineCreateInfo = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::Default]->renderPass, 0);
 		pipelineCreateInfo.pVertexInputState = &emptyVertexInputState;
 		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
@@ -50,6 +60,8 @@ namespace Draw
 		pipelineCreateInfo.pColorBlendState = &colorBlendState;
 		pipelineCreateInfo.pMultisampleState = &multisampleState;
 		pipelineCreateInfo.pViewportState = &viewport_info;
+		depthStencilState.depthTestEnable = VK_FALSE;
+		depthStencilState.depthWriteEnable = VK_FALSE;
 		pipelineCreateInfo.pDepthStencilState = &depthStencilState;
 		pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCreateInfo.pStages = shaderStages.data();
@@ -62,5 +74,6 @@ namespace Draw
 		SetValue("Light", "viewPos", Control::Scene::getInstance()->camera_ptr->GetViewPos());
 		SetValue("Light", "direLightDir", Control::Scene::getInstance()->directionLight.direciton);
 		SetValue("Light", "direLightColor", Control::Scene::getInstance()->directionLight.color);
+		SetValue("Light", "SSAO", Control::Scene::getInstance()->SSAO);
 	}
 }

@@ -88,6 +88,12 @@
     <Filter Include="源文件\Shaders\SSAO">
       <UniqueIdentifier>{699d732f-619f-4c3f-acd2-b06c53e748bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Serialization">
+      <UniqueIdentifier>{a63ec71c-3e53-4b4d-94e8-9947187e3881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Serialization">
+      <UniqueIdentifier>{0202702e-7207-4016-a0b2-1ec0d04f879c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -258,6 +264,9 @@
     <ClInclude Include="..\src\Drawable\RenderPassFactory.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Scene\Camera2.hpp">
+      <Filter>头文件\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -269,16 +278,10 @@
     <ClCompile Include="..\src\VulkanCore\Image.cpp">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\VulkanCore\Pipeline.cpp">
-      <Filter>源文件\VulkanCore</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\VulkanCore\Vulkan.cpp">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp">
-      <Filter>源文件\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Bindable\PipelineLayout.cpp">
       <Filter>源文件\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Bindable\PixelShader.cpp">
@@ -421,6 +424,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Drawable\RenderPassFactory.cpp">
       <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\Camera2.cpp">
+      <Filter>源文件\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

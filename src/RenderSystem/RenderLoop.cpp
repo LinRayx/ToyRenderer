@@ -41,15 +41,12 @@ namespace RenderSystem
 	void RenderLoop::Init()
 	{	
 		Draw::Model* model1 = new Draw::Model("../assets/plane.gltf", "../assets/");
-		//Draw::Model* model4 = new Draw::Model("../assets/grid.obj", "../assets/");
-		Draw::Model* model3 = new Draw::Model("../assets/mitsuba-sphere.obj", "../assets/");
+		Draw::Model* model3 = new Draw::Model("../assets/luxball.gltf", "../assets/");
 
-		model1->AddMaterial(Draw::MaterialType::PBR);
-//		model1->AddMaterial(Draw::MaterialType::GBuffer);
-//		model1->AddMaterial(Draw::MaterialType::Outline);
-//		model3->AddMaterial(Draw::MaterialType::GBuffer);
-		model3->AddMaterial(Draw::MaterialType::PBR);
-		//model4->AddMaterial(Draw::MaterialType::DEFAULT, glm::vec4(0,0,0,1));
+//		model1->AddMaterial(Draw::MaterialType::PBR);
+		model1->AddMaterial(Draw::MaterialType::GBuffer);
+		model3->AddMaterial(Draw::MaterialType::GBuffer);
+//		model3->AddMaterial(Draw::MaterialType::PBR);
 
 		Draw::Model* model2 = new Draw::Model( "../assets/cube.obj", "../assets/cube.obj");
 		model2->AddMaterial(Draw::MaterialType::Skybox);
@@ -57,7 +54,6 @@ namespace RenderSystem
 		models.emplace_back(std::move(model2));
 		models.emplace_back(std::move(model1));
 		models.emplace_back(std::move(model3));
-		// models.emplace_back(std::move(model4));
 
 		modelWindows[0].SetModel(models[1]);
 		modelWindows[1].SetModel(models[2]);
@@ -65,9 +61,14 @@ namespace RenderSystem
 		for (auto& model : models) {
 			model->Compile();
 		}
-//		Draw::SSAOgenerateMaterial* ssao_ptr = new Draw::SSAOgenerateMaterial;
-//		ssao_ptr->Compile();
-//		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO] = ssao_ptr;
+		Draw::SSAOgenerateMaterial* ssao_ptr = new Draw::SSAOgenerateMaterial;
+		ssao_ptr->Compile();
+		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO] = ssao_ptr;
+
+		Draw::PbrDeferredMaterial* pbr_deferred = new Draw::PbrDeferredMaterial;
+		pbr_deferred->Compile();
+		mat_fullscreen_ptrs[Draw::MaterialType::PBR_Deferred] = pbr_deferred;
+
 		buildCmd();
 	}
 
@@ -84,7 +85,7 @@ namespace RenderSystem
 		brdfLUT->Execute(cmdBuf_ptr);
 		delete brdfLUT;
 
-		Draw::Model* model2 = new Draw::Model("../assets/cube.obj", "../assets/cube.obj");
+		Draw::Model* model2 = new Draw::Model("../assets/cube.gltf", "../assets/");
 
 		Draw::IrradianceMaterial* irradiance = new Draw::IrradianceMaterial();
 		irradiance->BindMeshData(model2->objects[0].mesh.vertex_buffer, model2->objects[0].mesh.index_buffer);
@@ -162,7 +163,12 @@ namespace RenderSystem
 
 		ImGui::NewFrame();
 		ImGui::Begin("Hello, world!");
+		auto viewPos = Control::Scene::getInstance()->camera_ptr->GetViewPos();
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("ViewPos:  %.3f , %.3f, %.3f . Yaw: %.2f, Pitch: %.2f,", viewPos.x, viewPos.y, viewPos.z, 
+			Control::Scene::getInstance()->camera_ptr->GetYaw(),
+			Control::Scene::getInstance()->camera_ptr->GetPitch());
+		gui_ptr->updated = ImGui::Checkbox("SSAO Open", &Control::Scene::getInstance()->SSAO);
 		ImGui::End();
 		for (auto& window : modelWindows) {
 			gui_ptr->updated = window.DrawUI();
@@ -180,31 +186,33 @@ namespace RenderSystem
 	{
 		cmdBuf_ptr->Begin();
 
-		//cmdBuf_ptr->DeferredBegin();
-		//for (auto& model : models) {
-		//	model->BuildCommandBuffer(Draw::MaterialType::GBuffer, cmdBuf_ptr);
-		//}
-		//cmdBuf_ptr->DeferredEnd();
+		cmdBuf_ptr->DeferredBegin();
+		for (auto& model : models) {
+			model->BuildCommandBuffer(Draw::MaterialType::GBuffer, cmdBuf_ptr);
+		}
+		cmdBuf_ptr->DeferredEnd();
 
 		// full screen pass, output ssaoMap
-		//mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
+		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
 
 		cmdBuf_ptr->DefaultBegin();
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
-		}
+
+		mat_fullscreen_ptrs[Draw::MaterialType::PBR_Deferred]->BuildCommandBuffer(cmdBuf_ptr);
 
 		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::DEFAULT, cmdBuf_ptr);
+		 	model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
 		}
+		//for (auto& model : models) {
+		//	model->BuildCommandBuffer(Draw::MaterialType::DEFAULT, cmdBuf_ptr);
+		//}
 
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::PBR, cmdBuf_ptr);
-		}
+		//for (auto& model : models) {
+		//	model->BuildCommandBuffer(Draw::MaterialType::PBR, cmdBuf_ptr);
+		//}
 
-		for (auto& model : models) {
-			model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
-		}
+		//for (auto& model : models) {
+		//	model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
+		//}
 		renderGUI();
 		cmdBuf_ptr->DefaultEnd();
 

@@ -3,21 +3,22 @@
 layout(location = 0) in vec2 inUV;
 layout(location = 0) out vec4 outColor;
 
-layout(set = 0, binding = 1) uniform SceneParam
+layout(set = 0, binding = 0) uniform SceneParam
 {
 	vec3 viewPos;
 	vec3 directLightDir;
 	vec3 directLightColor;
+	bool SSAO;
 }sParam;
 
-layout(set = 0, binding = 2) uniform sampler2D brdfLUT;
-layout(set = 0, binding = 3) uniform samplerCube irradianceMap;
-layout(set = 0, binding = 4) uniform samplerCube prefilteredMap;
-layout(set = 0, binding = 5) uniform sampler2D gbuffer_positionDepthMap;
-layout(set = 0, binding = 6) uniform sampler2D gbuffer_normalMap;
-layout(set = 0, binding = 7) uniform sampler2D gbuffer_albedoMap;
-layout(set = 0, binding = 8) uniform sampler2D gbuffer_metallicRoughnessMap;
-layout(set = 0, binding = 9) uniform sampler2D ssaoMap;
+layout(set = 0, binding = 1) uniform sampler2D brdfLUT;
+layout(set = 0, binding = 2) uniform samplerCube irradianceMap;
+layout(set = 0, binding = 3) uniform samplerCube prefilteredMap;
+layout(set = 0, binding = 4) uniform sampler2D gbuffer_positionDepthMap;
+layout(set = 0, binding = 5) uniform sampler2D gbuffer_normalMap;
+layout(set = 0, binding = 6) uniform sampler2D gbuffer_albedoMap;
+layout(set = 0, binding = 7) uniform sampler2D gbuffer_metallicRoughnessMap;
+layout(set = 0, binding = 8) uniform sampler2D ssaoMap;
 
 
 const float PI = 3.14159265359;
@@ -102,11 +103,18 @@ vec3 specularContribution(vec3 L, vec3 V, vec3 N, vec3 F0, float metallic, float
 
 void main()
 {
+	float flag = texture(gbuffer_albedoMap, inUV).a;
+	if (flag < 1) {
+		outColor = vec4(0, 0, 0, 1);
+		return;
+	}
 	vec3 fragPos = texture(gbuffer_positionDepthMap, inUV).rgb;
 	albedo = texture(gbuffer_albedoMap, inUV).rgb;
 	vec3 N = texture(gbuffer_normalMap, inUV).rgb * 2.0 - 1.0f;
 	vec3 V = normalize(sParam.viewPos - fragPos);
 	vec3 R = reflect(-V, N);
+
+
 
 	// albedo = pow(texture(albedoMap, inUV).rgb, vec3(2.2));
 	float metallic = texture(gbuffer_metallicRoughnessMap, inUV).r;
@@ -133,7 +141,11 @@ void main()
 
 	vec3 kD = 1.0 - F;
 	kD *= 1.0 - metallic;
-	vec3 ambient = (kD * diffuse + specular) * ssao.rrr;
+
+	vec3 ao = vec3(1.);
+	if (sParam.SSAO)
+		ao = ssao.rrr;
+	vec3 ambient = (kD * diffuse + specular) * ao;
 
 	vec3 color = ambient + Lo;
 

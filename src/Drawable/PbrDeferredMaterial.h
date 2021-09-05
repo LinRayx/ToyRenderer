@@ -11,6 +11,7 @@ namespace Draw
 		PbrDeferredMaterial();
 		virtual void Compile();
 		virtual void UpdateSceneData();
+		bool SSAO = true;
 	};
 }
 

@@ -30,7 +30,7 @@ namespace Draw
 	{
 		using namespace Graphics;
 		RenderPass* rp = new RenderPass();
-		rp->CreateRenderPass(textureManager->nameToTex["depth"].textureImageView);
+		rp->CreateRenderPass(textureManager->nameToTex["GBuffer_depth"].textureImageView);
 		nameToRenderPass[RenderPassType::Default] = rp;
 
 		createOffScreenRenderPass("brdf_lut", RenderPassType::BRDFLUT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);

@@ -9,7 +9,6 @@
 
 #include "Buffer.h"
 #include "DescriptorPool.h"
-#include "Pipeline.h"
 #include <vector>
 #include <map>
 #include <string>

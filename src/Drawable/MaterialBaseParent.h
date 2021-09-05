@@ -57,6 +57,19 @@ namespace Draw
 
 		void addCubeTexture(string cube_texture_name);
 
+		VkViewport SetViewport(float x, float y, float width, float height)
+		{
+			VkViewport viewport{};
+
+			viewport.width = width;
+			viewport.height = height;
+			viewport.x = x;
+			viewport.y = y ;
+			viewport.minDepth = 0.0f;
+			viewport.maxDepth = 1.0f;
+			return viewport;
+		}
+
 		VkPipeline pipeline = VK_NULL_HANDLE;
 
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = Graphics::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);

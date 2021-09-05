@@ -44,7 +44,7 @@ namespace Draw {
 		}
 
 		auto t = glm::mat4(1);
-		t[1][1] = -1;	
+		// t[1][1] = -1;
 		int nextId = 0;
 		pRoot = ParseNode(*pScene->mRootNode, t, nextId);
 	}
@@ -233,9 +233,11 @@ namespace Draw {
 			)
 		);
 
-
 		for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
-			
+			if (Gloable::FilpY) {
+				mesh.mVertices[i].y *= -1;
+				mesh.mNormals[i].y *= -1;
+			}
 			vbuf.EmplaceBack(
 				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
 				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),

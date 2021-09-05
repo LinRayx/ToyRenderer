@@ -14,6 +14,8 @@
 #include "Drawable/ModelWindowBase.h"
 #include "Drawable/MaterialHeader.h"
 
+#include "Utils/GloableClass.h"
+
 namespace Draw
 {
 
@@ -74,8 +76,7 @@ namespace Draw
 	{
 	public:
 
-		Model(
-			std::string file_path, std::string directory);
+		Model(std::string file_path, std::string directory);
 
 		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
 

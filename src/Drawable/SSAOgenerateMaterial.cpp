@@ -42,7 +42,16 @@ namespace Draw
 		loadShader(Bind::ShaderType::SSAO, Bind::ShaderType::SSAO, specializationInfo);
 
 		VkPipelineVertexInputStateCreateInfo emptyVertexInputState = initializers::pipelineVertexInputStateCreateInfo();
-		rasterizationState.cullMode = VK_CULL_MODE_FRONT_BIT;
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
+		VkViewport viewport = initializers::viewportOffscreen((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0.0f, 1.0f);
+		VkRect2D scissor = initializers::rect2D((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0, 0);
+
+		VkPipelineViewportStateCreateInfo viewport_info = {};
+		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewport_info.viewportCount = 1;
+		viewport_info.scissorCount = 1;
+		viewport_info.pScissors = &scissor;
+		viewport_info.pViewports = &viewport;
 
 		VkGraphicsPipelineCreateInfo pipelineCreateInfo = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::FULLSCREEN_SSAO]->renderPass, 0);
 		pipelineCreateInfo.pVertexInputState = &emptyVertexInputState;
@@ -51,6 +60,8 @@ namespace Draw
 		pipelineCreateInfo.pColorBlendState = &colorBlendState;
 		pipelineCreateInfo.pMultisampleState = &multisampleState;
 		pipelineCreateInfo.pViewportState = &viewport_info;
+		depthStencilState.depthTestEnable = VK_FALSE;
+		depthStencilState.depthWriteEnable = VK_FALSE;
 		pipelineCreateInfo.pDepthStencilState = &depthStencilState;
 		pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCreateInfo.pStages = shaderStages.data();
@@ -63,6 +74,7 @@ namespace Draw
 		auto& drawCmdBuffers = cmd->drawCmdBuffers;
 
 		auto& rp = Graphics::nameToRenderPass[Graphics::RenderPassType::FULLSCREEN_SSAO];
+
 		VkRenderPassBeginInfo renderPassBeginInfo = Graphics::initializers::renderPassBeginInfo();
 		renderPassBeginInfo.framebuffer = rp->framebuffer;
 		renderPassBeginInfo.renderPass = rp->renderPass;

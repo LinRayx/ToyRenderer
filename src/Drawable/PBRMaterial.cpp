@@ -2,6 +2,10 @@
 
 namespace Draw
 {
+	PBRMaterial::PBRMaterial(bool flag) :MaterialBase(true)
+	{
+		InitPBRData();
+	}
 	PBRMaterial::PBRMaterial()
 		:MaterialBase(true)
 	{
@@ -12,28 +16,11 @@ namespace Draw
 		layout2.Add<Dcb::Float3>("direLightColor");
 
 		addLayout("Light", std::move(layout2), Graphics::LayoutType::SCENE, Graphics::DescriptorType::UNIFORM, Graphics::StageFlag::FRAGMENT);
-
-		using namespace Graphics;
-
-		Dcb::RawLayout pbrLayout;
-		pbrLayout.Add<Dcb::Bool>("HasAlbedoMap");
-		pbrLayout.Add<Dcb::Bool>("HasMetallicMap");
-		pbrLayout.Add<Dcb::Bool>("HasNormalMap");
-		pbrLayout.Add<Dcb::Bool>("HasRoughnessMap");
-		pbrLayout.Add<Dcb::Float3>("albedo");
-		pbrLayout.Add<Dcb::Float>("metallic");
-		pbrLayout.Add<Dcb::Float>("roughness");
-
-		addLayout("PbrParam", std::move(pbrLayout), LayoutType::PBRTEXTURE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
-		
-		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["brdf_lut"].textureImageView, Draw::textureManager->nameToTex["brdf_lut"].textureSampler);
+		addTexture(Graphics::LayoutType::SCENE, Graphics::StageFlag::FRAGMENT, Draw::textureManager->nameToTex["brdf_lut"].textureImageView, Draw::textureManager->nameToTex["brdf_lut"].textureSampler);
 		addCubeTexture("irradiance_map");
 		addCubeTexture("prefilter_map");
+		InitPBRData();
 
-
-		SetValue("PbrParam", "metallic", metallic);
-		SetValue("PbrParam", "roughness", roughness);
-		SetValue("PbrParam", "albedo", albedo);
 		matType = MaterialType::PBR;
 	}
 
@@ -109,6 +96,29 @@ namespace Draw
 		return roughness;
 	}
 
+	void PBRMaterial::InitPBRData()
+	{
+
+		using namespace Graphics;
+		Dcb::RawLayout pbrLayout;
+		pbrLayout.Add<Dcb::Bool>("HasAlbedoMap");
+		pbrLayout.Add<Dcb::Bool>("HasMetallicMap");
+		pbrLayout.Add<Dcb::Bool>("HasNormalMap");
+		pbrLayout.Add<Dcb::Bool>("HasRoughnessMap");
+		pbrLayout.Add<Dcb::Float3>("albedo");
+		pbrLayout.Add<Dcb::Float>("metallic");
+		pbrLayout.Add<Dcb::Float>("roughness");
+
+		addLayout("PbrParam", std::move(pbrLayout), LayoutType::PBRTEXTURE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
+
+
+
+
+		SetValue("PbrParam", "metallic", metallic);
+		SetValue("PbrParam", "roughness", roughness);
+		SetValue("PbrParam", "albedo", albedo);
+	}
+
 	void PBRMaterial::addPBRTexture(string name)
 	{
 		using namespace Graphics;
@@ -121,7 +131,9 @@ namespace Draw
 		else {
 			//addTexture(LayoutType::PBRTEXTURE, StageFlag::FRAGMENT, VK_NULL_HANDLE, VK_NULL_HANDLE,
 			//	pbrbinding++);
-			desc_ptr->Add(LayoutType::PBRTEXTURE, DescriptorType::TEXTURE2D, StageFlag::FRAGMENT);
+				addTexture(LayoutType::PBRTEXTURE, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["ssaoNoiseMap"].textureImageView, 
+					Draw::textureManager->nameToTex["ssaoNoiseMap"].textureSampler,
+					pbrbinding++);
 			SetValue("PbrParam", "Has" + name, false);
 		}
 	}

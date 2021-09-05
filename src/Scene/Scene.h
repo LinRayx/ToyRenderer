@@ -23,6 +23,7 @@ namespace Control
 			return instance;
 		}
 		DirectionLight directionLight;
+		bool SSAO = true;
 	private:
 		Scene(int width, int height);
 		class Deletor {

@@ -168,6 +168,24 @@ namespace Graphics
 			VkViewport viewport{};
 			viewport.width = width;
 			viewport.height = height;
+			viewport.x = 0;
+			viewport.y = 0;
+			viewport.minDepth = minDepth;
+			viewport.maxDepth = maxDepth;
+			return viewport;
+		}
+
+		inline VkViewport viewportOffscreen(
+			float width,
+			float height,
+			float minDepth,
+			float maxDepth)
+		{
+			VkViewport viewport{};
+			viewport.width = width;
+			viewport.height = height;
+			viewport.x = 0;
+			viewport.y = 0;
 			viewport.minDepth = minDepth;
 			viewport.maxDepth = maxDepth;
 			return viewport;

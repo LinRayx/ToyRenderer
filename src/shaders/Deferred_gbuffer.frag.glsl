@@ -12,24 +12,21 @@ layout(location = 1) out vec4 outNormal;
 layout(location = 2) out vec4 outAlbedo;
 layout(location = 3) out vec4 outMetallicRoughness;
 
-layout(set = 0, binding = 0) uniform SceneParam
+layout(set = 0, binding = 1) uniform SceneParam
 {
-	mat4 view;
-	mat4 proj;
 	float nearPlane;
 	float farPlane;
 }sParam;
 
 layout(set = 2, binding = 0) uniform PbrParam
 {
-	bool HasAlbedoTex;
-	bool HasMetallicTex;
-	bool HasNormalTex;
-	bool HasRoughnessTex;
+	bool HasAlbedoMap;
+	bool HasMetallicMap;
+	bool HasNormalMap;
+	bool HasRoughnessMap;
 	vec3 albedo;
 	float metallic;
 	float roughness;
-	bool hasDiffuseTex;
 } pParam;
 
 
@@ -60,7 +57,17 @@ void main()
 {
 	outPosition = vec4(inPos, linearDepth(gl_FragCoord.z));
 	outNormal = vec4(calculateNormal() * 0.5 + 0.5, 1.0);
-	outAlbedo = texture(albedoMap, inUV);
-	outMetallicRoughness.r = texture(roughnessMap, inUV).r;
-	outMetallicRoughness.g = texture(metallicMap, inUV).r;
+	if (pParam.HasAlbedoMap)
+		outAlbedo = texture(albedoMap, inUV);
+	else
+		outAlbedo = vec4(pParam.albedo, 1);
+	outAlbedo.a = 1; // ±ê¼ÇÎ»
+	if (pParam.HasMetallicMap)
+		outMetallicRoughness.r = texture(metallicMap, inUV).r;
+	else
+		outMetallicRoughness.r = pParam.metallic;
+	if (pParam.HasRoughnessMap)
+		outMetallicRoughness.g = texture(roughnessMap, inUV).r;
+	else
+		outMetallicRoughness.g = pParam.roughness;
 }
