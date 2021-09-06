@@ -31,7 +31,7 @@ namespace Draw
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["GBuffer_normals"].textureImageView, textureManager->nameToTex["GBuffer_normals"].textureSampler);
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["GBuffer_albedo"].textureImageView, textureManager->nameToTex["GBuffer_albedo"].textureSampler);
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["GBuffer_metallic_roughness"].textureImageView, textureManager->nameToTex["GBuffer_metallic_roughness"].textureSampler);
-		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["ssaoMap"].textureImageView, textureManager->nameToTex["ssaoMap"].textureSampler);
+		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["ssaoBlurMap"].textureImageView, textureManager->nameToTex["ssaoMap"].textureSampler);
 	}
 	void PbrDeferredMaterial::Compile()
 	{
@@ -67,6 +67,7 @@ namespace Draw
 		pipelineCreateInfo.pStages = shaderStages.data();
 
 		vkCreateGraphicsPipelines(Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCreateInfo, nullptr, &pipeline);
+		cout << "PbrDeferredMaterial::Compile() End" << endl;
 	}
 
 	void PbrDeferredMaterial::UpdateSceneData()

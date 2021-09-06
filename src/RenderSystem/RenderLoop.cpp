@@ -43,10 +43,8 @@ namespace RenderSystem
 		Draw::Model* model1 = new Draw::Model("../assets/plane.gltf", "../assets/");
 		Draw::Model* model3 = new Draw::Model("../assets/luxball.gltf", "../assets/");
 
-//		model1->AddMaterial(Draw::MaterialType::PBR);
 		model1->AddMaterial(Draw::MaterialType::GBuffer);
 		model3->AddMaterial(Draw::MaterialType::GBuffer);
-//		model3->AddMaterial(Draw::MaterialType::PBR);
 
 		Draw::Model* model2 = new Draw::Model( "../assets/cube.obj", "../assets/cube.obj");
 		model2->AddMaterial(Draw::MaterialType::Skybox);
@@ -64,6 +62,11 @@ namespace RenderSystem
 		Draw::SSAOgenerateMaterial* ssao_ptr = new Draw::SSAOgenerateMaterial;
 		ssao_ptr->Compile();
 		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO] = ssao_ptr;
+
+		Draw::BlurMaterial* blur_ptr = new Draw::BlurMaterial;
+		blur_ptr->AddBlurMap("ssaoMap");
+		blur_ptr->Compile();
+		mat_fullscreen_ptrs[Draw::MaterialType::FS_BLUR] = blur_ptr;
 
 		Draw::PbrDeferredMaterial* pbr_deferred = new Draw::PbrDeferredMaterial;
 		pbr_deferred->Compile();
@@ -194,6 +197,7 @@ namespace RenderSystem
 
 		// full screen pass, output ssaoMap
 		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
+		mat_fullscreen_ptrs[Draw::MaterialType::FS_BLUR]->BuildCommandBuffer(cmdBuf_ptr);
 
 		cmdBuf_ptr->DefaultBegin();
 
@@ -202,17 +206,6 @@ namespace RenderSystem
 		for (auto& model : models) {
 		 	model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
 		}
-		//for (auto& model : models) {
-		//	model->BuildCommandBuffer(Draw::MaterialType::DEFAULT, cmdBuf_ptr);
-		//}
-
-		//for (auto& model : models) {
-		//	model->BuildCommandBuffer(Draw::MaterialType::PBR, cmdBuf_ptr);
-		//}
-
-		//for (auto& model : models) {
-		//	model->BuildCommandBuffer(Draw::MaterialType::Outline, cmdBuf_ptr);
-		//}
 		renderGUI();
 		cmdBuf_ptr->DefaultEnd();
 

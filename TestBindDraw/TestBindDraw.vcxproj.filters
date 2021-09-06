@@ -94,6 +94,12 @@
     <Filter Include="源文件\Serialization">
       <UniqueIdentifier>{0202702e-7207-4016-a0b2-1ec0d04f879c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Scene\Light">
+      <UniqueIdentifier>{2ff95c33-9b5c-4385-a007-3ba5b63e699b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Scene\Light">
+      <UniqueIdentifier>{5d832bc1-0068-4977-a992-01b7882b4979}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -186,9 +192,6 @@
     <ClInclude Include="..\src\Scene\Scene.h">
       <Filter>头文件\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Scene\DirectionLight.h">
-      <Filter>头文件\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Exception\ChiliException.h">
       <Filter>头文件\Exception</Filter>
     </ClInclude>
@@ -264,6 +267,24 @@
     <ClInclude Include="..\src\Drawable\RenderPassFactory.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\BlurMaterial.h">
+      <Filter>头文件\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\DirectionLight.h">
+      <Filter>头文件\Scene\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\ILight.h">
+      <Filter>头文件\Scene\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\Light.h">
+      <Filter>头文件\Scene\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\PointLight.h">
+      <Filter>头文件\Scene\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Scene\SpotLight.h">
+      <Filter>头文件\Scene\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -333,9 +354,6 @@
       <Filter>源文件\Scene</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Scene\Scene.cpp">
-      <Filter>源文件\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Scene\DirectionLight.cpp">
       <Filter>源文件\Scene</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Exception\ChiliException.cpp">
@@ -422,6 +440,21 @@
     <ClCompile Include="..\src\Drawable\RenderPassFactory.cpp">
       <Filter>源文件\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\BlurMaterial.cpp">
+      <Filter>源文件\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\PointLight.cpp">
+      <Filter>源文件\Scene\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\Light.cpp">
+      <Filter>源文件\Scene\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\DirectionLight.cpp">
+      <Filter>源文件\Scene\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene\SpotLight.cpp">
+      <Filter>源文件\Scene\Light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -498,6 +531,9 @@
     </None>
     <None Include="..\src\shaders\Pbr_deferred.frag.glsl">
       <Filter>源文件\Shaders\PBR</Filter>
+    </None>
+    <None Include="..\src\shaders\Blur.frag.glsl">
+      <Filter>源文件\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

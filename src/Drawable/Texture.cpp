@@ -394,6 +394,10 @@ namespace Draw
 			VK_FORMAT_R8_UNORM, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
 			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
 
+		textureManager->CreateResource("ssaoBlurMap",
+			VK_FORMAT_R8_UNORM, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
 
 	}
 

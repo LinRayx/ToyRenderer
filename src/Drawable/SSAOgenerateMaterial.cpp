@@ -93,6 +93,7 @@ namespace Draw
 			vkCmdEndRenderPass(drawCmdBuffers[i]);
 		}
 	}
+
 	void SSAOgenerateMaterial::UpdateSceneData()
 	{
 		SetValue("Scene", "proj", Control::Scene::getInstance()->camera_ptr->GetProjectMatrix());

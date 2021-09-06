@@ -21,6 +21,7 @@ namespace Graphics {
 		PREFILTER = 3,
 		DEFERRED = 4,
 		FULLSCREEN_SSAO = 5,
+		FULLSCREEN_BLUR = 6,
 	};
 
 	class RenderPass : public Graphics

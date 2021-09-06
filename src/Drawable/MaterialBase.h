@@ -20,6 +20,7 @@ namespace Draw
 		PBR,
 		GBuffer,
 		FS_SSAO,
+		FS_BLUR,
 		PBR_Deferred,
 		DEFAULT,
 		ERROR,

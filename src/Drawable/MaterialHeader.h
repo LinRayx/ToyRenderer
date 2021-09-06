@@ -12,5 +12,6 @@
 #include "Drawable/SSAOgenerateMaterial.h"
 #include "Drawable/DefaultMaterial.h"
 #include "Drawable/PbrDeferredMaterial.h"
+#include "Drawable/BlurMaterial.h"
 
 #endif // !MATERIAL_HEADER_H

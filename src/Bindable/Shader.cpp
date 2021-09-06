@@ -182,5 +182,7 @@ namespace Bind
 		shaderFactory[ShaderType::SSAO] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Ssao_generate");
 		shaderFactory[ShaderType::DEFAULT] = make_unique< ShaderData>("Default");
 		shaderFactory[ShaderType::PBR_Deferred] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Pbr_deferred");
+		shaderFactory[ShaderType::BLUR] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Blur");
+
 	}
 }

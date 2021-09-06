@@ -25,6 +25,7 @@ namespace Bind
 		SSAO,
 		DEFAULT,
 		PBR_Deferred,
+		BLUR,
 		EMPTY,
 	};
 

@@ -14,7 +14,7 @@ namespace Draw
 		Graphics::nameToRenderPass[type] = rp4;
 	}
 
-	void createFullScreenRenderPass(string name)
+	void createFullScreenRenderPass(string name, Graphics::RenderPassType rpType)
 	{
 		Graphics::RenderPass* rp6 = new Graphics::RenderPass();
 		rp6->CreateFullScreenRenderPass(
@@ -23,7 +23,7 @@ namespace Draw
 			textureManager->nameToTex[name].texWidth,
 			textureManager->nameToTex[name].texHeight
 		);
-		Graphics::nameToRenderPass[Graphics::RenderPassType::FULLSCREEN_SSAO] = rp6;
+		Graphics::nameToRenderPass[rpType] = rp6;
 	}
 
 	void CreateRenderPass()
@@ -48,7 +48,8 @@ namespace Draw
 		rp5->CreateDeferredRenderPass(rpdatas);
 		nameToRenderPass[RenderPassType::DEFERRED] = rp5;
 
-		createFullScreenRenderPass("ssaoMap");
+		createFullScreenRenderPass("ssaoMap", RenderPassType::FULLSCREEN_SSAO);
+		createFullScreenRenderPass("ssaoBlurMap", RenderPassType::FULLSCREEN_BLUR);
 	}
 
 
