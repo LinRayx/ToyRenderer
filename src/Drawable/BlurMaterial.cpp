@@ -46,7 +46,7 @@ namespace Draw
 		renderPassBeginInfo.renderPass = rp->renderPass;
 		renderPassBeginInfo.renderArea.extent.width = rp->width;
 		renderPassBeginInfo.renderArea.extent.height = rp->height;
-		renderPassBeginInfo.clearValueCount = rp->clearValues.size();
+		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
 		renderPassBeginInfo.pClearValues = rp->clearValues.data();
 
 		for (size_t i = 0; i < drawCmdBuffers.size(); i++) {

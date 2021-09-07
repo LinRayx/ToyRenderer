@@ -12,6 +12,11 @@ namespace Draw
 		~DefaultMaterial();
 		virtual void Compile();
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
+		virtual glm::vec3 GetPosition();
+		virtual bool SetUI();
+		void SetColor(glm::vec4 color);
+		glm::vec4 GetColor();
+		
 	private:
 		Dcb::Buffer* pushBlock;
 		glm::vec4 color = glm::vec4(1, 1, 1, 1);

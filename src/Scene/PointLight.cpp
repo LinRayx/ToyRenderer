@@ -2,7 +2,23 @@
 
 namespace Control
 {
-	PointLight::PointLight()
+	PointLight::PointLight() : Light()
 	{
 	}
+
+	float PointLight::GetLightConstant()
+	{
+		return constant;
+	}
+
+	float PointLight::GetLightLinear()
+	{
+		return linear;
+	}
+
+	float PointLight::GetLightQuadratic()
+	{
+		return quadratic;
+	}
+
 }

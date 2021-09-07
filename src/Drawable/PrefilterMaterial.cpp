@@ -14,7 +14,7 @@ namespace Draw
 		pushLayout.Add<Dcb::UINT>("numSamples");
 		pushBlock = new Dcb::Buffer(std::move(pushLayout));
 		(*pushBlock)["numSamples"] = 32u;
-		desc_ptr->Add(StageFlag::ALL, pushBlock->GetSizeInBytes());
+		desc_ptr->Add(StageFlag::ALL, static_cast<uint32_t>(pushBlock->GetSizeInBytes()));
 
 
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["skybox_texture"].textureImageView,
@@ -37,7 +37,7 @@ namespace Draw
 		pipelineCI.pColorBlendState = &colorBlendState;
 		pipelineCI.pMultisampleState = &multisampleState;
 		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.stageCount = shaderStages.size();
+		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCI.pStages = shaderStages.data();
 		pipelineCI.pVertexInputState = &vertexInputInfo;
 		pipelineCI.pDynamicState = &dynamicState;

@@ -37,7 +37,7 @@ namespace Draw
 
 		loadVertexInfo();
 		loadShader(Bind::ShaderType::GBUFFER);
-		auto viewport = initializers::viewportOffscreen(Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(), 0.0, 1.0);
+		auto viewport = initializers::viewportOffscreen(static_cast<float>(Vulkan::getInstance()->GetWidth()), static_cast<float>(Vulkan::getInstance()->GetHeight()), 0.0, 1.0);
 		viewport_info.pViewports = &viewport;
 
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;

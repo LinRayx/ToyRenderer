@@ -80,7 +80,7 @@ namespace Graphics {
 		vkBindImageMemory(Vulkan::getInstance()->device.device, image, imageMemory, 0);
 	}
 
-	void Image::generateMipmap(VkImage image, uint32_t width, uint32_t height, uint32_t mipLevel, shared_ptr<CommandBuffer> cmdBuf)
+	void Image::generateMipmap(VkImage image, uint32_t width, uint32_t height, int32_t mipLevel, shared_ptr<CommandBuffer> cmdBuf)
 	{
 		auto blitCmd = cmdBuf->beginSingleTimeCommands();
 		for (int32_t i = 1; i < mipLevel; i++) {
@@ -180,7 +180,7 @@ namespace Graphics {
 		return imageView;
 	}
 
-    void Image::CopyFrameBufferToImage(VkCommandBuffer cmd, VkImage& irradiance_attachment, VkImage& image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel, int32_t viewport_width, int32_t viewport_height)
+    void Image::CopyFrameBufferToImage(VkCommandBuffer cmd, VkImage& irradiance_attachment, VkImage& image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel, float viewport_width, float viewport_height)
     {
         if (viewport_width == -1 || viewport_height == -1) {
             viewport_height = viewport_width = dim;

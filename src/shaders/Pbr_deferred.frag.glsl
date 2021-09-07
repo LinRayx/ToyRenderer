@@ -1,13 +1,24 @@
 #version 450
 
+#define MAX_POINTLIGHT_NUM 1
+
 layout(location = 0) in vec2 inUV;
 layout(location = 0) out vec4 outColor;
+
+struct PointLight
+{
+	vec3 position;
+	vec4 color;
+	float constant;
+	float lineart;
+	float quadratic;
+
+};
 
 layout(set = 0, binding = 0) uniform SceneParam
 {
 	vec3 viewPos;
-	vec3 directLightDir;
-	vec3 directLightColor;
+	PointLight pl[MAX_POINTLIGHT_NUM];
 	bool SSAO;
 }sParam;
 
@@ -77,14 +88,12 @@ vec3 prefilteredReflection(vec3 R, float roughness)
 	return mix(a, b, lod - lodf);
 }
 
-vec3 specularContribution(vec3 L, vec3 V, vec3 N, vec3 F0, float metallic, float roughness)
+vec3 specularContribution(vec3 L, vec3 LightColor, vec3 V, vec3 N, vec3 F0, float metallic, float roughness)
 {
 	vec3 H = normalize(V + L);
 	float dotNH = clamp(dot(N, H), 0.0, 1.0);
 	float dotNV = clamp(dot(N, V), 0.0, 1.0);
 	float dotNL = clamp(dot(N, L), 0.0, 1.0);
-
-	vec3 lightColor = vec3(1.0);
 
 	vec3 color = vec3(0.0);
 
@@ -94,7 +103,7 @@ vec3 specularContribution(vec3 L, vec3 V, vec3 N, vec3 F0, float metallic, float
 		vec3 F = F_Schlick(dotNV, F0);
 		vec3 spec = D * F * G / (4.0 * dotNL * dotNV + 0.001);
 		vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
-		color += (kD * albedo / PI + spec) * dotNL;
+		color += (kD * albedo / PI + spec ) * dotNL * LightColor;
 	}
 
 	return color;
@@ -108,10 +117,10 @@ void main()
 		outColor = vec4(0, 0, 0, 1);
 		return;
 	}
-	vec3 fragPos = texture(gbuffer_positionDepthMap, inUV).rgb;
+	vec3 pos = texture(gbuffer_positionDepthMap, inUV).rgb;
 	albedo = texture(gbuffer_albedoMap, inUV).rgb;
 	vec3 N = texture(gbuffer_normalMap, inUV).rgb * 2.0 - 1.0f;
-	vec3 V = normalize(sParam.viewPos - fragPos);
+	vec3 V = normalize(sParam.viewPos - pos);
 	vec3 R = reflect(-V, N);
 
 
@@ -126,7 +135,13 @@ void main()
 
 	// Specular contribution
 	vec3 Lo = vec3(0.0);
-	vec3 L = normalize(sParam.directLightDir);
+
+	for (int i = 0; i < 4; ++i) {
+		vec3 L = normalize(sParam.pl[i].position - pos);
+		vec3 color = sParam.pl[i].color.xyz * sParam.pl[i].color.w;
+		Lo += specularContribution(L,color, V, N, F0, metallic, roughness);
+	}
+
 	// Lo += specularContribution(L, V, N, F0, metallic, roughness);
 
 	vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
@@ -147,7 +162,8 @@ void main()
 		ao = ssao.rrr;
 	vec3 ambient = (kD * diffuse + specular) * ao;
 
-	vec3 color = ambient + Lo;
+	// vec3 color = ambient + Lo;
+	vec3 color = Lo;
 
 	float exposure = 4.5;
 	float gamma = 2.2;

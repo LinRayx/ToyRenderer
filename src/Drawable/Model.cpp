@@ -129,6 +129,20 @@ namespace Draw {
 		}
 	}
 
+	void Model::AddMaterial(DefaultMaterial* mat)
+	{
+		for (auto& it : objects) {
+			auto type = mat->GetMaterailType();
+			mat->SetModelName(this->name);
+			it.mesh.SetMaterial(mat);
+			it.mesh.SetPosition(mat->GetPosition());
+			it.mesh.SetScale(glm::vec3(0.01f));
+			mat->BindMeshData(it.mesh.vertex_buffer, it.mesh.index_buffer);
+			mat->SetValue("Model", "modelTrans", it.mesh.GetTransform());
+			it.materials[type] = mat;
+		}
+	}
+
 	void Model::Compile()
 	{
 		for (auto& obj : objects) {
@@ -216,6 +230,7 @@ namespace Draw {
 		
 	}
 
+
 	Mesh::Mesh(const aiMesh& mesh, const aiMaterial* material, string directoy)
 	{
 		dire = directoy;
@@ -271,8 +286,18 @@ namespace Draw {
 	{
 		this->transform = trans;
 		for (auto& ptr : mat_ptrs) {
-			ptr->SetValue("Model", "modelTrans", transform);
+			ptr->SetTransform(transform);
 		}
+	}
+
+	void Mesh::SetPosition(glm::vec3 pos)
+	{
+		transform = glm::translate(transform, pos);
+	}
+
+	void Mesh::SetScale(glm::vec3 scale)
+	{
+		transform = glm::scale(transform, scale);
 	}
 
 	MaterialBase* Mesh::GetMaterial()

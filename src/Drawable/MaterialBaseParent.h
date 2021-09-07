@@ -34,6 +34,13 @@ namespace Draw
 			if (bufs.count(key1) == 0) return;
 			(*bufs[key1])[key2][index] = value;
 		}
+
+		template<typename T>
+		void SetValue(std::string key1, std::string key2, string key3, string key4, size_t index, T value)
+		{
+			if (bufs.count(key1) == 0) return;
+			(*bufs[key1])[key2][index][key3][key4] = value;
+		}
 		virtual void UpdateSceneData() {}
 		virtual void Compile() {}
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);

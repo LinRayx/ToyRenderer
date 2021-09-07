@@ -1,6 +1,8 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 #include "Scene/ILight.h"
+#include <string>
+
 
 namespace Control
 {
@@ -16,8 +18,9 @@ namespace Control
 		virtual void SetLightPosition(glm::vec3 position) override;
 
 	protected:
+		
 		glm::vec4 color = glm::vec4(1, 1, 1, 1);
-		glm::vec3 position = glm::vec3(0, 0, 0);
+		glm::vec3 position = glm::vec3(0, -3, 0);
 	};
 }
 

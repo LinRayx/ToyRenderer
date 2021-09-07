@@ -6,6 +6,7 @@ layout(constant_id = 1) const float SSAO_RADIUS = 0.5;
 
 layout(set = 0, binding = 0) uniform SceneParam
 {
+	mat4 view;
 	mat4 proj;
 } sParam;
 
@@ -23,7 +24,7 @@ layout(location = 0) out float outColor;
 void main()
 {
 	// Get G-Buffer values
-	vec3 fragPos = texture(samplerPositionDepth, inUV).rgb;
+	vec3 fragPos = (sParam.view * vec4(texture(samplerPositionDepth, inUV).rgb, 1.0)).xyz;
 	vec3 normal = normalize(texture(samplerNormal, inUV).rgb * 2.0 - 1.0);
 
 	// Œ∆¿Ì¥Û–°

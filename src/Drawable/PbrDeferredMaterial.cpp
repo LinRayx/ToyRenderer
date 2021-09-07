@@ -19,8 +19,16 @@ namespace Draw
 		using namespace Graphics;
 		Dcb::RawLayout layout2;
 		layout2.Add<Dcb::Float3>("viewPos");
-		layout2.Add<Dcb::Float3>("direLightDir");
-		layout2.Add<Dcb::Float3>("direLightColor");
+
+		layout2.Add<Dcb::Array>("PointLights");
+		layout2["PointLights"].Set<Dcb::Struct>(Control::Scene::getInstance()->pointLights.size());
+		layout2["PointLights"].T().Add<Dcb::Struct>("pl");
+		layout2["PointLights"].T()["pl"].Add<Dcb::Float3>("position");
+		layout2["PointLights"].T()["pl"].Add<Dcb::Float4>("color");
+		layout2["PointLights"].T()["pl"].Add<Dcb::Float>("constant");
+		layout2["PointLights"].T()["pl"].Add<Dcb::Float>("linear");
+		layout2["PointLights"].T()["pl"].Add<Dcb::Float>("quadratic");
+
 		layout2.Add<Dcb::Bool>("SSAO");
 
 		addLayout("Light", std::move(layout2), LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
@@ -42,9 +50,10 @@ namespace Draw
 		loadShader(Bind::ShaderType::PBR_Deferred);
 
 		VkPipelineVertexInputStateCreateInfo emptyVertexInputState = initializers::pipelineVertexInputStateCreateInfo();
-
-		VkViewport viewport = initializers::viewport((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0.0f, 1.0f);
-		VkRect2D scissor = initializers::rect2D((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0, 0);
+		float width = static_cast<float>(Vulkan::getInstance()->GetWidth());
+		float height = static_cast<float>(Vulkan::getInstance()->GetHeight());
+		VkViewport viewport = initializers::viewport(width, height, 0.0f, 1.0f);
+		VkRect2D scissor = initializers::rect2D(width, height, 0, 0);
 
 		VkPipelineViewportStateCreateInfo viewport_info = {};
 		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -73,8 +82,18 @@ namespace Draw
 	void PbrDeferredMaterial::UpdateSceneData()
 	{
 		SetValue("Light", "viewPos", Control::Scene::getInstance()->camera_ptr->GetViewPos());
-		SetValue("Light", "direLightDir", Control::Scene::getInstance()->directionLight.direciton);
-		SetValue("Light", "direLightColor", Control::Scene::getInstance()->directionLight.color);
 		SetValue("Light", "SSAO", Control::Scene::getInstance()->SSAO);
+
+		auto& pl = Control::Scene::getInstance()->pointLights;
+		string key = "pl";
+		for (size_t i = 0; i < pl.size(); ++i) {
+			// b[PointLights][pointLight][i][position] = 
+			SetValue("Light", "PointLights", key, "position", i,  pl[i].GetLightPosition());
+			SetValue("Light", "PointLights", key, "color", i, pl[i].GetLightColor());
+			SetValue("Light", "PointLights", key, "constant", i, pl[i].GetLightConstant());
+			SetValue("Light", "PointLights", key, "linear", i, pl[i].GetLightLinear());
+			SetValue("Light", "PointLights", key, "quadratic", i, pl[i].GetLightQuadratic());
+			// std::cout << pl[i].GetLightColor().x << " " << pl[i].GetLightColor().y << " " << pl[i].GetLightColor().z << std::endl;
+		}
 	}
 }

@@ -23,7 +23,9 @@ namespace Draw
 		FS_BLUR,
 		PBR_Deferred,
 		DEFAULT,
+		POINTLIGHT,
 		ERROR,
+		
 	};
 	class MaterialBase : public MaterialBaseParent
 	{
@@ -43,6 +45,7 @@ namespace Draw
 			shared_ptr<Bind::IndexBuffer> iBuffer_ptr);
 		void SetModelName(string name);
 		virtual void UpdateSceneData();
+		virtual void SetTransform(glm::mat4 transform);
 	protected:
 		int loadTextures(const aiMaterial* mat, aiTextureType type, string directory, string meshName);
 		string getTypeName(aiTextureType type);

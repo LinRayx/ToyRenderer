@@ -100,6 +100,12 @@
     <Filter Include="头文件\Scene\Light">
       <UniqueIdentifier>{5d832bc1-0068-4977-a992-01b7882b4979}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Drawable\LightMaterial">
+      <UniqueIdentifier>{352866c3-093b-4e1b-a739-7cacc6ac1c2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Drawable\LightMaterial">
+      <UniqueIdentifier>{3461e807-f365-46d7-8b1a-683874c2888a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -285,6 +291,9 @@
     <ClInclude Include="..\src\Scene\SpotLight.h">
       <Filter>头文件\Scene\Light</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\LightMaterial\PointLightMaterial.h">
+      <Filter>头文件\Drawable\LightMaterial</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -454,6 +463,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Scene\SpotLight.cpp">
       <Filter>源文件\Scene\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\LightMaterial\PointLightMaterial.cpp">
+      <Filter>源文件\Drawable\LightMaterial</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

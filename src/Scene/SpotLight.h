@@ -1,7 +1,7 @@
 #ifndef SPOT_LIGHT_H
 #define SPOT_LIGHT_H
 
-#include "Scene/SpotLight.h"
+#include "Scene/Light.h"
 
 namespace Control
 {

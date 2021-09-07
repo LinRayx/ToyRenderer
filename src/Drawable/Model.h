@@ -40,6 +40,8 @@ namespace Draw
 		shared_ptr<Bind::IndexBuffer> index_buffer;
 		void SetMaterial(MaterialBase* mat);
 		void SetTransform(glm::mat4 trans);
+		void SetPosition(glm::vec3 pos);
+		void SetScale(glm::vec3 scale);
 		MaterialBase* GetMaterial();
 		glm::mat4 GetTransform();
 	private:
@@ -87,6 +89,7 @@ namespace Draw
 		void Accept(ModelWindowBase* window);
 
 		void AddMaterial(MaterialType type, glm::vec4 color = glm::vec4(1, 1, 1, 1));
+		void AddMaterial(DefaultMaterial* mat);
 
 		void Compile();
 

@@ -13,7 +13,7 @@ namespace Draw
 
 		pushBlock = new Dcb::Buffer(std::move(pushLayout));
 
-		desc_ptr->Add(StageFlag::VERTEX, pushBlock->GetSizeInBytes());
+		desc_ptr->Add(StageFlag::VERTEX, static_cast<uint32_t>(pushBlock->GetSizeInBytes()));
 
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["skybox_texture"].textureImageView,
 			textureManager->nameToTex["skybox_texture"].textureSampler);
@@ -42,7 +42,7 @@ namespace Draw
 		pipelineCI.pColorBlendState = &colorBlendState;
 		pipelineCI.pMultisampleState = &multisampleState;
 		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.stageCount = shaderStages.size();
+		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCI.pStages = shaderStages.data();
 		pipelineCI.pVertexInputState = &vertexInputInfo;
 		pipelineCI.pViewportState = &viewport_info;
@@ -101,7 +101,7 @@ namespace Draw
 			vkCmdBeginRenderPass(cmdbuf, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 			glm::mat mvp = glm::perspective((float)(M_PI / 2.0), 1.0f, 0.1f, 512.0f) * matrices[f];
 			(*pushBlock)["mvp"] = mvp;
-			vkCmdPushConstants(cmdbuf, desc_ptr->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, pushBlock->GetSizeInBytes(), pushBlock->GetData());
+			vkCmdPushConstants(cmdbuf, desc_ptr->GetPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, static_cast<uint32_t>(pushBlock->GetSizeInBytes()), pushBlock->GetData());
 
 			vkCmdBindPipeline(cmdbuf, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 			VkBuffer vertexBuffers[] = { vBuffer_ptr->Get() };

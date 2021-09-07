@@ -29,10 +29,10 @@ void main()
 	outUV = inUV;
 
 	// Vertex position in view space
-	outPos = vec3(sParam.view * mParam.model * inPos);
+	outPos = vec3(mParam.model * inPos);
 
 	// Normal in view space
-	mat3 normalMatrix = transpose(inverse(mat3(sParam.view * mParam.model)));
+	mat3 normalMatrix = transpose(inverse(mat3(mParam.model)));
 	outNormal = normalMatrix * inNormal;
-	outTangent = vec4(mat3(mParam.model) * inTangent.xyz, inTangent.w);
+	outTangent = vec4(normalMatrix * inTangent.xyz, inTangent.w);
 }

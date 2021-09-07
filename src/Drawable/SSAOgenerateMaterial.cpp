@@ -8,7 +8,7 @@ namespace Draw
 		using namespace Graphics;
 		desc_ptr = make_unique<DescriptorSetCore>();
 		Dcb::RawLayout sceneLayout;
-
+		sceneLayout.Add<Dcb::Matrix>("view");
 		sceneLayout.Add<Dcb::Matrix>("proj");
 		addLayout("Scene", std::move(sceneLayout), LayoutType::SCENE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
 	
@@ -43,8 +43,11 @@ namespace Draw
 
 		VkPipelineVertexInputStateCreateInfo emptyVertexInputState = initializers::pipelineVertexInputStateCreateInfo();
 		rasterizationState.cullMode = VK_CULL_MODE_NONE;
-		VkViewport viewport = initializers::viewportOffscreen((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0.0f, 1.0f);
-		VkRect2D scissor = initializers::rect2D((float)Vulkan::getInstance()->GetWidth(), (float)Vulkan::getInstance()->GetHeight(), 0, 0);
+
+		float width = static_cast<float>(Vulkan::getInstance()->GetWidth());
+		float height = static_cast<float>(Vulkan::getInstance()->GetHeight());
+		VkViewport viewport = initializers::viewportOffscreen(width,height, 0.0f, 1.0f);
+		VkRect2D scissor = initializers::rect2D(width, height, 0, 0);
 
 		VkPipelineViewportStateCreateInfo viewport_info = {};
 		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -80,7 +83,7 @@ namespace Draw
 		renderPassBeginInfo.renderPass = rp->renderPass;
 		renderPassBeginInfo.renderArea.extent.width = rp->width;
 		renderPassBeginInfo.renderArea.extent.height = rp->height;
-		renderPassBeginInfo.clearValueCount = rp->clearValues.size();
+		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
 		renderPassBeginInfo.pClearValues = rp->clearValues.data();
 
 		for (size_t i = 0; i < drawCmdBuffers.size(); i++) {
@@ -96,6 +99,7 @@ namespace Draw
 
 	void SSAOgenerateMaterial::UpdateSceneData()
 	{
+		SetValue("Scene", "view", Control::Scene::getInstance()->camera_ptr->GetViewMatrix());
 		SetValue("Scene", "proj", Control::Scene::getInstance()->camera_ptr->GetProjectMatrix());
 	}
 }

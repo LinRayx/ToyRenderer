@@ -9,6 +9,7 @@
 #include "Drawable/ModelWindow.h"
 #include "Drawable/MaterialHeader.h"
 #include "Drawable/RenderPassFactory.h"
+#include "Scene/PointLight.h"
 
 namespace RenderSystem
 {

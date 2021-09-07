@@ -159,6 +159,7 @@
     <ClInclude Include="..\src\Drawable\DefaultMaterial.h" />
     <ClInclude Include="..\src\Drawable\DeferredMaterial.h" />
     <ClInclude Include="..\src\Drawable\IrradianceMaterial.h" />
+    <ClInclude Include="..\src\Drawable\LightMaterial\PointLightMaterial.h" />
     <ClInclude Include="..\src\Drawable\MaterialBase.h" />
     <ClInclude Include="..\src\Drawable\MaterialBaseParent.h" />
     <ClInclude Include="..\src\Drawable\MaterialHeader.h" />
@@ -227,6 +228,7 @@
     <ClCompile Include="..\src\Drawable\DefaultMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\DeferredMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\IrradianceMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\LightMaterial\PointLightMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\MaterialBase.cpp" />
     <ClCompile Include="..\src\Drawable\MaterialBaseParent.cpp" />
     <ClCompile Include="..\src\Drawable\Model.cpp" />

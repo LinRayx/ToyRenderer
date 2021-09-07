@@ -23,11 +23,11 @@ namespace Graphics {
 
 		void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 		void createCubeImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-		void generateMipmap(VkImage image, uint32_t width, uint32_t height, uint32_t mipLevel,
+		void generateMipmap(VkImage image, uint32_t width, uint32_t height, int32_t mipLevel,
 			shared_ptr<CommandBuffer> cmdBuf);
 		VkImageView createImageView(VkImage image, VkImageViewType viewType, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, uint32_t layoutCount = 1);
 		void generateMipmap(VkCommandBuffer commandbuffer, VkImage image, VkImageBlit imageBlit, VkImageSubresourceRange mipSubRange);
-		void CopyFrameBufferToImage(VkCommandBuffer cmd, VkImage& irradiance_attachment, VkImage& image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel = 0, int32_t viewport_width = -1, int32_t viewport_height = -1);
+		void CopyFrameBufferToImage(VkCommandBuffer cmd, VkImage& irradiance_attachment, VkImage& image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel = 0, float viewport_width = -1, float viewport_height = -1);
 		// Put an image memory barrier for setting an image layout on the sub resource into the given command buffer
 		void setImageLayout(
 			VkCommandBuffer cmdbuffer,

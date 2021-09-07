@@ -13,5 +13,6 @@
 #include "Drawable/DefaultMaterial.h"
 #include "Drawable/PbrDeferredMaterial.h"
 #include "Drawable/BlurMaterial.h"
+#include "Drawable/LightMaterial/PointLightMaterial.h"
 
 #endif // !MATERIAL_HEADER_H

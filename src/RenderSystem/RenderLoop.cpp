@@ -40,22 +40,35 @@ namespace RenderSystem
 
 	void RenderLoop::Init()
 	{	
+		//Control::PointLight pl;
+		//Draw::Model* lightModel = new Draw::Model("../assets/cube.gltf", "../assets/");
+		//pl.model = lightModel;
+		//pl.model->AddMaterial(Draw::MaterialType::DEFAULT);
+
+		//Control::Scene::getInstance()->pointLights.push_back(pl);
+
 		Draw::Model* model1 = new Draw::Model("../assets/plane.gltf", "../assets/");
 		Draw::Model* model3 = new Draw::Model("../assets/luxball.gltf", "../assets/");
 
 		model1->AddMaterial(Draw::MaterialType::GBuffer);
 		model3->AddMaterial(Draw::MaterialType::GBuffer);
 
-		Draw::Model* model2 = new Draw::Model( "../assets/cube.obj", "../assets/cube.obj");
+		Draw::Model* model2 = new Draw::Model( "../assets/cube.gltf", "../assets/");
 		model2->AddMaterial(Draw::MaterialType::Skybox);
+
+		Draw::Model* lightModel = new Draw::Model("../assets/cube.gltf", "../assets/");
+		Draw::PointLightMaterial* plMaterial = new Draw::PointLightMaterial;
+		plMaterial->SetPointLight(&Control::Scene::getInstance()->pointLights[0]);
+		lightModel->AddMaterial(plMaterial);
 
 		models.emplace_back(std::move(model2));
 		models.emplace_back(std::move(model1));
 		models.emplace_back(std::move(model3));
+		models.emplace_back(std::move(lightModel));
 
 		modelWindows[0].SetModel(models[1]);
 		modelWindows[1].SetModel(models[2]);
-
+		modelWindows[2].SetModel(models[3]);
 		for (auto& model : models) {
 			model->Compile();
 		}
@@ -203,8 +216,12 @@ namespace RenderSystem
 
 		mat_fullscreen_ptrs[Draw::MaterialType::PBR_Deferred]->BuildCommandBuffer(cmdBuf_ptr);
 
+		// Draw Light
 		for (auto& model : models) {
-		 	model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
+			model->BuildCommandBuffer(Draw::MaterialType::POINTLIGHT, cmdBuf_ptr);
+		}
+		for (auto& model : models) {
+		 	// model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
 		}
 		renderGUI();
 		cmdBuf_ptr->DefaultEnd();

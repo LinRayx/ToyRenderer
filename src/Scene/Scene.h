@@ -5,6 +5,7 @@
 #include "DirectionLight.h"
 #include <memory>
 #include <iostream>
+#include "Scene/PointLight.h"
 
 using namespace std;
 
@@ -23,7 +24,9 @@ namespace Control
 			return instance;
 		}
 		DirectionLight directionLight;
+		vector<PointLight> pointLights;
 		bool SSAO = true;
+
 	private:
 		Scene(int width, int height);
 		class Deletor {

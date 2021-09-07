@@ -51,7 +51,7 @@ namespace Draw
 		pipelineCI.pColorBlendState = &colorBlendState;
 		pipelineCI.pMultisampleState = &multisampleState;
 		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.stageCount = shaderStages.size();
+		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCI.pStages = shaderStages.data();
 		pipelineCI.pVertexInputState = &emptyInputState;
 		pipelineCI.pViewportState = &viewport_info;
