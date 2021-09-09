@@ -26,6 +26,7 @@ namespace Bind
 		DEFAULT,
 		PBR_Deferred,
 		BLUR,
+		OMNISHADOW,
 		EMPTY,
 	};
 
@@ -97,10 +98,14 @@ namespace Bind
 			frag_shader = sd.frag_shader;
 		}
 
-		ShaderData(string name, bool only_vert = false)
+		ShaderData(string name, bool has_frag = true, bool has_gemo = false)
 		{
 			vert_shader = make_shared<Shader>("../src/shaders/" + name + ".vert.glsl", "../src/shaders", "main", VK_SHADER_STAGE_VERTEX_BIT);
-			if(!only_vert) frag_shader = make_shared<Shader>("../src/shaders/" + name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
+			if (has_frag) {
+				frag_shader = make_shared<Shader>("../src/shaders/" + name + ".frag.glsl", "../src/shaders", "main", VK_SHADER_STAGE_FRAGMENT_BIT);
+			}
+			if (has_gemo)
+				gemo_shader = make_shared<Shader>("../src/shaders/" + name + ".geom.glsl", "../src/shaders", "main", VK_SHADER_STAGE_GEOMETRY_BIT);
 		}
 		~ShaderData()
 		{
@@ -108,6 +113,7 @@ namespace Bind
 
 		shared_ptr<Shader> vert_shader = nullptr;
 		shared_ptr<Shader>  frag_shader = nullptr;
+		shared_ptr<Shader>  gemo_shader = nullptr;
 	};
 
 	extern std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;

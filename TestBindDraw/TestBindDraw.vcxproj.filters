@@ -106,6 +106,15 @@
     <Filter Include="头文件\Drawable\LightMaterial">
       <UniqueIdentifier>{3461e807-f365-46d7-8b1a-683874c2888a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Drawable\Shadow">
+      <UniqueIdentifier>{70c434d5-a6c8-4b01-ad57-937ae1e4656c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Drawable\Shadow">
+      <UniqueIdentifier>{156a70a7-837c-4684-8498-c050be688cf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shaders\Shadow">
+      <UniqueIdentifier>{e41bebb5-1178-4d50-8009-ebda7ca4f1a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -294,6 +303,9 @@
     <ClInclude Include="..\src\Drawable\LightMaterial\PointLightMaterial.h">
       <Filter>头文件\Drawable\LightMaterial</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.h">
+      <Filter>头文件\Drawable\Shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -383,9 +395,6 @@
     <ClCompile Include="..\src\imgui\ImguiManager.cpp">
       <Filter>源文件\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\imgui\backends\imgui_impl_vulkan.cpp">
-      <Filter>源文件\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\VulkanCore\CommandQueue.cpp">
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
@@ -467,6 +476,9 @@
     <ClCompile Include="..\src\Drawable\LightMaterial\PointLightMaterial.cpp">
       <Filter>源文件\Drawable\LightMaterial</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.cpp">
+      <Filter>源文件\Drawable\Shadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -546,6 +558,15 @@
     </None>
     <None Include="..\src\shaders\Blur.frag.glsl">
       <Filter>源文件\Shaders</Filter>
+    </None>
+    <None Include="..\src\shaders\shadow\omni_shadow.vert.glsl">
+      <Filter>源文件\Shaders\Shadow</Filter>
+    </None>
+    <None Include="..\src\shaders\shadow\omni_shadow.geom.glsl">
+      <Filter>源文件\Shaders\Shadow</Filter>
+    </None>
+    <None Include="..\src\shaders\shadow\omni_shadow.frag.glsl">
+      <Filter>源文件\Shaders\Shadow</Filter>
     </None>
   </ItemGroup>
 </Project>

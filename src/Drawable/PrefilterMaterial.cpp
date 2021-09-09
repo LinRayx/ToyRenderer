@@ -133,7 +133,7 @@ namespace Draw
 				vkCmdDrawIndexed(cmd, static_cast<uint32_t>(iBuffer_ptr->GetCount()), 1, 0, 0, 0);
 				vkCmdEndRenderPass(cmd);
 				
-				Graphics::Image::getInstance()->CopyFrameBufferToImage(cmd, Draw::textureManager->nameToTex[framebuffer_attachment].textureImage, Draw::textureManager->nameToTex[resources].textureImage, f, dim, m, viewport.width, viewport.height);
+				Graphics::Image::getInstance()->CopyFrameBufferToImage(cmd, Draw::textureManager->nameToTex[framebuffer_attachment].textureImage, Draw::textureManager->nameToTex[resources].textureImage, f, dim, m, abs(viewport.width), abs(viewport.height));
 			}
 		}
 

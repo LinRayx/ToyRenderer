@@ -12,7 +12,6 @@ struct PointLight
 	float constant;
 	float lineart;
 	float quadratic;
-
 };
 
 layout(set = 0, binding = 0) uniform SceneParam
@@ -30,7 +29,7 @@ layout(set = 0, binding = 5) uniform sampler2D gbuffer_normalMap;
 layout(set = 0, binding = 6) uniform sampler2D gbuffer_albedoMap;
 layout(set = 0, binding = 7) uniform sampler2D gbuffer_metallicRoughnessMap;
 layout(set = 0, binding = 8) uniform sampler2D ssaoMap;
-
+layout(set = 0, binding = 9) uniform samplerCube lightShadowMap;
 
 const float PI = 3.14159265359;
 vec3 albedo;
@@ -109,6 +108,8 @@ vec3 specularContribution(vec3 L, vec3 LightColor, vec3 V, vec3 N, vec3 F0, floa
 	return color;
 }
 
+#define EPSILON 0.10
+#define SHADOW_OPACITY 0.5
 
 void main()
 {
@@ -122,8 +123,6 @@ void main()
 	vec3 N = texture(gbuffer_normalMap, inUV).rgb * 2.0 - 1.0f;
 	vec3 V = normalize(sParam.viewPos - pos);
 	vec3 R = reflect(-V, N);
-
-
 
 	// albedo = pow(texture(albedoMap, inUV).rgb, vec3(2.2));
 	float metallic = texture(gbuffer_metallicRoughnessMap, inUV).r;
@@ -162,8 +161,19 @@ void main()
 		ao = ssao.rrr;
 	vec3 ambient = (kD * diffuse + specular) * ao;
 
-	// vec3 color = ambient + Lo;
-	vec3 color = Lo;
+	vec3 color = ambient + Lo;
+	// vec3 color = Lo;
+
+	// shadow, only enable in pointLight[0]
+	vec3 lightVec = pos - sParam.pl[0].position;
+	float sampledDist = texture(lightShadowMap, lightVec).r;
+// 	color = vec3(sampledDist, 0, 0);
+	float dist = length(lightVec);
+
+	// Check if fragment is in shadow
+	float shadow = (dist <= sampledDist + EPSILON) ? 1.0 : 0.0;
+
+	color *= shadow;
 
 	float exposure = 4.5;
 	float gamma = 2.2;

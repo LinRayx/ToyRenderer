@@ -53,8 +53,9 @@ namespace Draw
 
 		TransformParameters& LoadTransform(int id) noexcept
 		{
-			const auto& applied = pSelectedNode->GetTransform();
-			const auto angles = Gloable::ExtractEulerAngles(applied);
+			const auto& applied = pSelectedNode->GetTranslate();
+			const auto& applied2 = pSelectedNode->GetRotate();
+			const auto angles = Gloable::ExtractEulerAngles(applied2);
 			const auto translation = Gloable::ExtractTranslation(applied);
 			TransformParameters tp;
 			tp.zRot = angles.z;

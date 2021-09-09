@@ -28,6 +28,10 @@ namespace Graphics
 		case StageFlag::FRAGMENT:
 			return VK_SHADER_STAGE_FRAGMENT_BIT;
 			break;
+		case StageFlag::GEOMETRY:
+			return VK_SHADER_STAGE_GEOMETRY_BIT;
+		case StageFlag::VERTEX_GEOMETRY:
+			return VK_SHADER_STAGE_GEOMETRY_BIT | VK_SHADER_STAGE_VERTEX_BIT;
 		case StageFlag::ALL:
 			return VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 			break;

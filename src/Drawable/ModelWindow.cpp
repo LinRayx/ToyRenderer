@@ -73,13 +73,13 @@ namespace Draw
 			{
 				glm::mat4 imat = glm::mat4(1.0f);
 				// imat[1][1] = -1;
-				imat = glm::translate(imat, glm::vec3(tf.x, tf.y, tf.z));
-				imat = glm::rotate(imat, tf.xRot, glm::vec3(1, 0, 0));
-				imat = glm::rotate(imat, tf.yRot, glm::vec3(0, 1, 0));
-				imat = glm::rotate(imat, tf.zRot, glm::vec3(0, 0, 1));
-				imat = glm::scale(imat, glm::vec3(tf.xScale, tf.yScale, tf.zScale) * glm::vec3(tf.scale));
+				auto tran = glm::translate(imat, glm::vec3(tf.x, tf.y, tf.z));
+				auto rot = glm::rotate(imat, tf.xRot, glm::vec3(1, 0, 0));
+				rot = glm::rotate(rot, tf.yRot, glm::vec3(0, 1, 0));
+				rot = glm::rotate(rot, tf.zRot, glm::vec3(0, 0, 1));
+				auto scl = glm::scale(imat, glm::vec3(tf.xScale, tf.yScale, tf.zScale) * glm::vec3(tf.scale));
 
-				pSelectedNode->SetTransform(imat);
+				pSelectedNode->SetTransform(tran, rot);
 			}
 			
 			if (!pSelectedNode->HasChild())

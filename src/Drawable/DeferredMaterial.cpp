@@ -34,7 +34,7 @@ namespace Draw
 		colorBlendState.attachmentCount = static_cast<uint32_t>(blendAttachmentStates.size());
 		colorBlendState.pAttachments = blendAttachmentStates.data();
 		rasterizationState.cullMode = VK_CULL_MODE_BACK_BIT;
-
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
 		loadVertexInfo();
 		loadShader(Bind::ShaderType::GBUFFER);
 		auto viewport = initializers::viewportOffscreen(static_cast<float>(Vulkan::getInstance()->GetWidth()), static_cast<float>(Vulkan::getInstance()->GetHeight()), 0.0, 1.0);

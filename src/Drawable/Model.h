@@ -39,31 +39,33 @@ namespace Draw
 		shared_ptr<Bind::VertexBuffer> vertex_buffer;
 		shared_ptr<Bind::IndexBuffer> index_buffer;
 		void SetMaterial(MaterialBase* mat);
-		void SetTransform(glm::mat4 trans);
+		void SetTransform(glm::mat4 translate, glm::mat4 rotate);
 		void SetPosition(glm::vec3 pos);
-		void SetScale(glm::vec3 scale);
 		MaterialBase* GetMaterial();
-		glm::mat4 GetTransform();
+		glm::mat4 GetTranslate();
+		glm::mat4 GetRotate();
 	private:
 		const aiMaterial* material;
 		vector<MaterialBase*> mat_ptrs;
 		string dire;
 		string name;
-		glm::mat4 transform;
+		glm::mat4 translate;
+		glm::mat4 rotate;
 	};
 
 	class Node
 	{
 	public:
-		Node(std::vector<Mesh*> meshPtrs, const glm::mat4& transform, const char* name, int id) ;
+		Node(std::vector<Mesh*> meshPtrs, glm::mat4 translate, glm::mat4 rotate, const char* name, int id) ;
 		void AddChild(std::unique_ptr<Node> pChild);
 		void Accept(ModelWindowBase* window);
 		int GetId();
 		string GetName();
 		bool HasChild();
 		bool AddMaterialUI();
-		glm::mat4& GetTransform();
-		void SetTransform(glm::mat4 transform);
+		glm::mat4& GetTranslate();
+		glm::mat4& GetRotate();
+		void SetTransform(glm::mat4 translate, glm::mat4 rotate);
 		void Traverse(vector<Mesh*> meshes);
 
 	private:
@@ -71,18 +73,19 @@ namespace Draw
 		vector< Mesh* > curMeshes;
 		string name;
 		int id;
-		glm::mat4 transform;
+		glm::mat4 translate;
+		glm::mat4 rotate;
 	};
 
 	class Model : public ModelBase
 	{
 	public:
 
-		Model(std::string file_path, std::string directory);
+		Model(std::string file_path, std::string directory, glm::mat4 translate = glm::mat4(1.0f), glm::mat4 rotate = glm::mat4(1.0));
 
 		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
 
-		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 nowTrans, int& nextId);
+		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 translate, glm::mat4 rotate, int& nextId);
 
 		void Update(int cur);
 
@@ -94,7 +97,7 @@ namespace Draw
 		void Compile();
 
 		void BuildCommandBuffer(Draw::MaterialType matType, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr);
-
+		void BuildCommandBuffer(Draw::MaterialType matType, shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr, int index, int face);
 		std::unique_ptr<Node> pRoot;
 		
 		vector<Mesh> meshes;

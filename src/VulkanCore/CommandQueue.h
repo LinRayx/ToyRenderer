@@ -40,6 +40,7 @@ namespace Graphics
 
 	private:
 		void drawFrame();
+		void drawFrameSimple();
 
 	private:
 		uint32_t currentFrame = 0;

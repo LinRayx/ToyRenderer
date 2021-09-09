@@ -107,6 +107,8 @@ namespace Graphics {
 
 	void RenderPass::CreateOffScreenRenderPass(VkFormat format,VkImageView& view, int width, int height, VkImageLayout finalLayout)
 	{
+		this->width = width;
+		this->height = height;
 		// FB, Att, RP, Pipe, etc.
 		VkAttachmentDescription attDesc = {};
 		// Color attachment
@@ -168,14 +170,13 @@ namespace Graphics {
 
 	void RenderPass::CreateDeferredRenderPass(vector<RpData>& data)
 	{
-		clearValues.resize(5);
-		clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-		clearValues[1].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-		clearValues[2].color = { { 0.0f, 0.0f, 0.0f, 0.0f } }; // albedo
-		clearValues[3].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
-		clearValues[4].depthStencil = { 1.0f, 0 };
+		clearValues.resize(data.size());
+		for (int i = 0; i < data.size(); ++i) {
+			clearValues[i].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
+			clearValues[i].depthStencil = { 1.0f, 0 };
+		}
 
-		std::array<VkAttachmentDescription, 5> attachmentDescs = {};
+		std::vector<VkAttachmentDescription> attachmentDescs(data.size());
 
 		// Init attachment properties
 		for (uint32_t i = 0; i < static_cast<uint32_t>(attachmentDescs.size()); i++)
@@ -192,20 +193,18 @@ namespace Graphics {
 		for (int i = 0; i < data.size(); ++i) {
 			attachmentDescs[i].format = data[i].format;
 		}
-		//attachmentDescs[0].format = Draw::textureManager->nameToTex["GBuffer_position"].format;
-		//attachmentDescs[1].format = Draw::textureManager->nameToTex["GBuffer_normals"].format;
-		//attachmentDescs[2].format = Draw::textureManager->nameToTex["GBuffer_albedo"].format;
-		//attachmentDescs[3].format = Draw::textureManager->nameToTex["GBuffer_metallic_roughness"].format;
-		//attachmentDescs[4].format = Draw::textureManager->nameToTex["GBuffer_depth"].format;
 
 		std::vector<VkAttachmentReference> colorReferences;
-		colorReferences.push_back({ 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });
-		colorReferences.push_back({ 1, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });
-		colorReferences.push_back({ 2, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });
-		colorReferences.push_back({ 3, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL });
+
+		for (int i = 0; i < data.size()-1; ++i) {
+			VkAttachmentReference ref;
+			ref.attachment = i;
+			ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			colorReferences.emplace_back(ref);
+		}
 
 		VkAttachmentReference depthReference = {};
-		depthReference.attachment = 4;
+		depthReference.attachment = data.size()-1;
 		depthReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 		VkSubpassDescription subpass = {};
@@ -243,15 +242,10 @@ namespace Graphics {
 		renderPassInfo.pDependencies = dependencies.data();
 		vkCreateRenderPass(Vulkan::getInstance()->GetDevice().device, &renderPassInfo, nullptr, &renderPass);
 
-		std::array<VkImageView, 5> attachments;
+		vector<VkImageView> attachments(data.size());
 		for (int i = 0; i < data.size(); ++i) {
 			attachments[i] = data[i].view;
 		}
-		//attachments[0] = Draw::textureManager->nameToTex["GBuffer_position"].textureImageView;
-		//attachments[1] = Draw::textureManager->nameToTex["GBuffer_normals"].textureImageView;
-		//attachments[2] = Draw::textureManager->nameToTex["GBuffer_albedo"].textureImageView;
-		//attachments[3] = Draw::textureManager->nameToTex["GBuffer_metallic_roughness"].textureImageView;
-		//attachments[4] = Draw::textureManager->nameToTex["GBuffer_depth"].textureImageView;
 
 		VkFramebufferCreateInfo fbufCreateInfo = initializers::framebufferCreateInfo();
 		fbufCreateInfo.renderPass = renderPass;
@@ -262,11 +256,12 @@ namespace Graphics {
 		fbufCreateInfo.layers = 1;
 
 		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &fbufCreateInfo, nullptr, &framebuffer);
-
 	}
 
 	void RenderPass::CreateFullScreenRenderPass(VkFormat format, VkImageView& view, int width, int height)
 	{
+		this->width = width;
+		this->height = height;
 		clearValues.resize(2);
 		clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
 		clearValues[1].depthStencil = { 1.0f, 0 };
@@ -317,7 +312,6 @@ namespace Graphics {
 
 		vkCreateRenderPass(Vulkan::getInstance()->GetDevice().device, &renderPassCI, nullptr, &renderPass);
 
-
 		VkFramebufferCreateInfo framebufferCI{};
 		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferCI.renderPass = renderPass;
@@ -328,6 +322,80 @@ namespace Graphics {
 		framebufferCI.layers = 1;
 
 		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &framebufferCI, nullptr, &framebuffer);
+	}
+
+	void RenderPass::CreateShadowMappingRenderPass(VkFormat format, VkImageView& view, int width, int height, VkImageView& depthView)
+	{
+		this->width = width;
+		this->height = height;
+		VkAttachmentDescription colorAttachment{};
+		colorAttachment.format = format;
+		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		VkAttachmentDescription depthAttachment{};
+		depthAttachment.format = VK_FORMAT_D32_SFLOAT_S8_UINT;
+		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // 设置成DONT CARE 时 outline 会出现问题
+		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		clearValues.resize(2);
+		clearValues[0].color = { 0.0, 0, 0, 1 };
+		clearValues[1].depthStencil = { 1.0, 0 };
+
+		VkAttachmentReference colorAttachmentRef{};
+		colorAttachmentRef.attachment = 0;
+		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		VkAttachmentReference depthAttachmentRef{};
+		depthAttachmentRef.attachment = 1;
+		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		VkSubpassDescription subpass{};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &colorAttachmentRef;
+		subpass.pDepthStencilAttachment = &depthAttachmentRef;
+		
+
+		std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
+		VkRenderPassCreateInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		renderPassInfo.pAttachments = attachments.data();
+		renderPassInfo.subpassCount = 1;
+		renderPassInfo.pSubpasses = &subpass;
+
+		if (vkCreateRenderPass(Vulkan::getInstance()->device.device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create render pass!");
+		}
+
+		std::vector<VkImageView> atts;
+
+		atts.emplace_back(view);
+		atts.emplace_back(depthView);
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(atts.size());
+		framebufferInfo.pAttachments = atts.data();
+		framebufferInfo.width = width;
+		framebufferInfo.height = height;
+		framebufferInfo.layers = 1;
+
+		if (vkCreateFramebuffer(Vulkan::getInstance()->device.device, &framebufferInfo, nullptr, &framebuffer) != VK_SUCCESS) {
+			throw std::runtime_error("failed to create framebuffer!");
+		}
 	}
 
 	map<RenderPassType, RenderPass*> nameToRenderPass;

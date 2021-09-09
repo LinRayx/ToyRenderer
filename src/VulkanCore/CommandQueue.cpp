@@ -44,10 +44,8 @@ namespace Graphics
 
 	void CommandQueue::drawFrame()
 	{
-
 		std::vector< VkSemaphore > waitSemaphores;
 		std::vector< VkSemaphore > signalSemaphores;
-
 
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -95,5 +93,21 @@ namespace Graphics
 		}
 
 		currentFrame = (currentFrame + 1) % Vulkan::getInstance()->swapchain.image_count;
+	}
+	void CommandQueue::drawFrameSimple()
+	{
+		VkResult result = vkAcquireNextImageKHR(Vulkan::getInstance()->device.device, Vulkan::getInstance()->swapchain.swapchain, UINT64_MAX, sync_ptr->presentComplete[currentFrame], VK_NULL_HANDLE, &imageIndex);
+		VkSubmitInfo submitInfo;
+		submitInfo.commandBufferCount = cmdBufs.size();
+		submitInfo.pCommandBuffers = cmdBufs.data();
+		vkQueueSubmit(Vulkan::getInstance()->device.queue, 1, &submitInfo, VK_NULL_HANDLE);
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.pNext = NULL;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &Vulkan::getInstance()->swapchain.swapchain;
+		presentInfo.pImageIndices = &imageIndex;
+		vkQueuePresentKHR(Vulkan::getInstance()->device.queue, &presentInfo);
+		vkQueueWaitIdle(Vulkan::getInstance()->device.queue);
 	}
 }

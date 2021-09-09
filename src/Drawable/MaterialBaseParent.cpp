@@ -5,10 +5,8 @@ namespace Draw
 	MaterialBaseParent::MaterialBaseParent()
 	{
 		vertexInputInfo = {};
+		viewport = Graphics::initializers::viewport(static_cast<float>(Graphics::Vulkan::getInstance()->GetWidth()), static_cast<float>(Graphics::Vulkan::getInstance()->GetHeight()), 0, 1.0);
 
-		viewport = SetViewport(0, 0, static_cast<float>(Graphics::Vulkan::getInstance()->GetWidth()), static_cast<float>(Graphics::Vulkan::getInstance()->GetHeight()));
-
-		scissor = {};
 		scissor.extent = Graphics::Vulkan::getInstance()->GetSwapchain().extent;
 
 		viewport_info = {};
@@ -76,6 +74,15 @@ namespace Draw
 
 		shaderStages.emplace_back(vertex_shader_stage);
 		shaderStages.emplace_back(frag_shader_stage);
+
+		if (Bind::shaderFactory[frag]->gemo_shader != nullptr) {
+			VkPipelineShaderStageCreateInfo gemo_shader_stage = {};
+			gemo_shader_stage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+			gemo_shader_stage.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+			gemo_shader_stage.module = Bind::shaderFactory[frag]->gemo_shader->GetShaderModule();
+			gemo_shader_stage.pName = "main";
+			shaderStages.emplace_back(gemo_shader_stage);
+		}
 	}
 	void MaterialBaseParent::loadVertexInfo()
 	{

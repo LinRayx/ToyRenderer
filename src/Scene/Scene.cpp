@@ -8,6 +8,7 @@ namespace Control
 	{
 		camera_ptr = make_shared<Camera>(width, height);
 		PointLight pl;
+		// pl.SetLightPosition(glm::vec3(3, -3, -3));
 		pointLights.emplace_back(std::move(pl));
 	}
 

@@ -29,6 +29,7 @@ namespace Control
         Camera(int sc_width, int sc_height, float move_speed = 50, float move_sen = 1);
         glm::mat4 GetViewMatrix();
         glm::mat4 GetProjectMatrix();
+        glm::mat4 GetCustomProjectMatrix(float aspect, float near, float far, float radians);
         glm::vec3 GetViewPos();
         float GetNearPlane();
         float GetFarPlane();

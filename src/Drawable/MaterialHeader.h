@@ -14,5 +14,6 @@
 #include "Drawable/PbrDeferredMaterial.h"
 #include "Drawable/BlurMaterial.h"
 #include "Drawable/LightMaterial/PointLightMaterial.h"
+#include "Drawable/Shadow/OnmiShadowGenMaterial.h"
 
 #endif // !MATERIAL_HEADER_H

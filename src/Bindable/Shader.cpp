@@ -178,11 +178,12 @@ namespace Bind
 		shaderFactory[ShaderType::PREFILTER] = make_unique< ShaderData>("Prefilter_map");
 		shaderFactory[ShaderType::UI] = make_unique< ShaderData>("UIoverlay");
 		shaderFactory[ShaderType::GBUFFER] = make_unique< ShaderData>("Deferred_gbuffer");
-		shaderFactory[ShaderType::FULLSCREEN_VERT] = make_unique< ShaderData>("FullScreen", true);
+		shaderFactory[ShaderType::FULLSCREEN_VERT] = make_unique< ShaderData>("FullScreen", false);
 		shaderFactory[ShaderType::SSAO] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Ssao_generate");
 		shaderFactory[ShaderType::DEFAULT] = make_unique< ShaderData>("Default");
 		shaderFactory[ShaderType::PBR_Deferred] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Pbr_deferred");
 		shaderFactory[ShaderType::BLUR] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Blur");
+		shaderFactory[ShaderType::OMNISHADOW] = make_unique< ShaderData>("shadow/omni_shadow", true);
 
 	}
 }

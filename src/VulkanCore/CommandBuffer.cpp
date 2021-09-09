@@ -224,4 +224,24 @@ namespace Graphics
             throw std::runtime_error("failed to record command buffer!");
         }
     }
+
+    void CommandBuffer::ShadowBegin(RenderPassType type, int index)
+    {
+        auto& rp = nameToRenderPass[type];
+        VkRenderPassBeginInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        renderPassInfo.renderPass = rp->renderPass;
+        renderPassInfo.framebuffer = rp->framebuffer;
+        renderPassInfo.renderArea.offset = { 0, 0 };
+        renderPassInfo.renderArea.extent.width = rp->width;
+        renderPassInfo.renderArea.extent.height = rp->height;
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(rp->clearValues.size());
+        renderPassInfo.pClearValues = rp->clearValues.data();
+        vkCmdBeginRenderPass(drawCmdBuffers[index], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+    }
+
+    void CommandBuffer::ShadowEnd(int index)
+    {
+        vkCmdEndRenderPass(drawCmdBuffers[index]);
+    }
 }

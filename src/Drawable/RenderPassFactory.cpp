@@ -50,6 +50,16 @@ namespace Draw
 
 		createFullScreenRenderPass("ssaoMap", RenderPassType::FULLSCREEN_SSAO);
 		createFullScreenRenderPass("ssaoBlurMap", RenderPassType::FULLSCREEN_BLUR);
+
+		RenderPass* rp6 = new RenderPass();
+		rp6->CreateShadowMappingRenderPass(
+			textureManager->nameToTex["omni_color_attachment"].format,
+			textureManager->nameToTex["omni_color_attachment"].textureImageView,
+			textureManager->nameToTex["omni_color_attachment"].texWidth,
+			textureManager->nameToTex["omni_color_attachment"].texHeight,
+			textureManager->nameToTex["omni_depth_attachment"].textureImageView
+		);
+		nameToRenderPass[RenderPassType::ONMISHADOW] = rp6;
 	}
 
 

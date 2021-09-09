@@ -1,5 +1,7 @@
 #include "Camera.h"
 #include "Utils/GloableClass.h"
+#include <iostream>
+#include <glm/gtx/string_cast.hpp>
 
 namespace Control
 {
@@ -10,12 +12,12 @@ namespace Control
 	Camera::Camera(int sc_width, int sc_height, float move_speed, float move_sen) 
 		: sc_width(sc_width), sc_height(sc_height)
 	{
-		Position = glm::vec3(0, -3, 5);
-		WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		Position = glm::vec3(0, 5, 5);
+		WorldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 		Front = glm::vec3(0.0f, 0.0f, -1.0f);
-		Zoom = 60.0f;
+		Zoom = 45.f;
 		Yaw = -90.0f;
-		Pitch = 25.0f;
+		Pitch = 0.0f;
 		firstMouse = true;
 		lastX = sc_width / 2;
 		lastY = sc_height / 2;
@@ -34,10 +36,14 @@ namespace Control
 	}
 	glm::mat4 Camera::GetProjectMatrix()
 	{
-		auto proj = glm::perspective(glm::radians(Zoom), (float)sc_width / (float)sc_height, nearPlane, farPlane);
+		auto proj = glm::perspective(glm::radians(45.f), (float)sc_width / (float)sc_height, nearPlane, farPlane);
 		//if (Gloable::FilpY)
 		//	proj[1][1] *= -1;
 		return proj;
+	}
+	glm::mat4 Camera::GetCustomProjectMatrix(float aspect, float near, float far, float radians)
+	{
+		return glm::perspective(glm::radians(radians), aspect, near, far);
 	}
 	glm::vec3 Camera::GetViewPos()
 	{
@@ -120,8 +126,8 @@ namespace Control
 		int left_mouse_state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1);
 		double mouse_position_double[2];
 		glfwGetCursorPos(window, &mouse_position_double[0], &mouse_position_double[1]);
-		mousePos.x = mouse_position_double[0];
-		mousePos.y = mouse_position_double[1];
+		mousePos.x = static_cast<float>(mouse_position_double[0]);
+		mousePos.y = static_cast<float>(mouse_position_double[1]);
 
 		float mouse_position[2] = { (float)mouse_position_double[0], (float)mouse_position_double[1] };
 		if (right_mouse_state == GLFW_PRESS) {
@@ -134,7 +140,7 @@ namespace Control
 			}
 
 			float xoffset = (mouse_position[0] - lastX);
-			float yoffset = (mouse_position[1] - lastY); // reversed since y-coordinates go from bottom to top
+			float yoffset = (lastY - mouse_position[1]); // reversed since y-coordinates go from bottom to top
 
 			lastX = mouse_position[0];
 			lastY = mouse_position[1];

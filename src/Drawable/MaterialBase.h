@@ -24,6 +24,7 @@ namespace Draw
 		PBR_Deferred,
 		DEFAULT,
 		POINTLIGHT,
+		OMNISHADOW,
 		ERROR,
 		
 	};
@@ -40,12 +41,13 @@ namespace Draw
 		}
 
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
+		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd, int index, int face) {}
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName) {}
 		void BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr,
 			shared_ptr<Bind::IndexBuffer> iBuffer_ptr);
 		void SetModelName(string name);
 		virtual void UpdateSceneData();
-		virtual void SetTransform(glm::mat4 transform);
+		virtual void SetTransform(glm::mat4 translate, glm::mat4 rotate);
 	protected:
 		int loadTextures(const aiMaterial* mat, aiTextureType type, string directory, string meshName);
 		string getTypeName(aiTextureType type);

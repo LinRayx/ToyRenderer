@@ -172,6 +172,7 @@
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
     <ClInclude Include="..\src\Drawable\PrefilterMaterial.h" />
     <ClInclude Include="..\src\Drawable\RenderPassFactory.h" />
+    <ClInclude Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.h" />
     <ClInclude Include="..\src\Drawable\SkyboxMaterial.h" />
     <ClInclude Include="..\src\Drawable\SSAOgenerateMaterial.h" />
     <ClInclude Include="..\src\Drawable\Texture.h" />
@@ -213,7 +214,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\include\imgui\backends\imgui_impl_glfw.cpp" />
-    <ClCompile Include="..\include\imgui\backends\imgui_impl_vulkan.cpp" />
     <ClCompile Include="..\include\imgui\imgui.cpp" />
     <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\include\imgui\imgui_tables.cpp" />
@@ -239,6 +239,7 @@
     <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PrefilterMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\RenderPassFactory.cpp" />
+    <ClCompile Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\SkyboxMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\SSAOgenerateMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\Texture.cpp" />
@@ -292,6 +293,9 @@
     <None Include="..\src\shaders\Phone.vert.glsl" />
     <None Include="..\src\shaders\Prefilter_map.frag.glsl" />
     <None Include="..\src\shaders\Prefilter_map.vert.glsl" />
+    <None Include="..\src\shaders\shadow\omni_shadow.frag.glsl" />
+    <None Include="..\src\shaders\shadow\omni_shadow.geom.glsl" />
+    <None Include="..\src\shaders\shadow\omni_shadow.vert.glsl" />
     <None Include="..\src\shaders\Skybox.frag.glsl" />
     <None Include="..\src\shaders\Skybox.vert.glsl" />
     <None Include="..\src\shaders\Ssao_generate.frag.glsl" />

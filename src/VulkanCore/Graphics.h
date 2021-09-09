@@ -6,6 +6,7 @@
 #define VK_LOAD(FUNCTION_NAME) PFN_##FUNCTION_NAME p##FUNCTION_NAME = (PFN_##FUNCTION_NAME) glfwGetInstanceProcAddress(device->instance, #FUNCTION_NAME);
 #define COUNT_OF(ARRAY) (sizeof(ARRAY) / sizeof(ARRAY[0]))
 
+
 namespace Graphics
 {
 
@@ -21,6 +22,8 @@ namespace Graphics
 	{
 		VERTEX,
 		FRAGMENT,
+		GEOMETRY,
+		VERTEX_GEOMETRY,
 		ALL,
 	};
 

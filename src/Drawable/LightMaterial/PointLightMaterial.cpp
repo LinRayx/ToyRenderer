@@ -1,4 +1,5 @@
 #include "Drawable/LightMaterial/PointLightMaterial.h"
+#include <glm/gtx/string_cast.hpp>
 namespace Draw
 {
 	PointLightMaterial::PointLightMaterial()
@@ -15,12 +16,17 @@ namespace Draw
 	{
 		return pl_ptr->GetLightPosition();
 	}
-	void PointLightMaterial::SetTransform(glm::mat4 transform)
+	void PointLightMaterial::UpdateSceneData()
 	{
-		glm::vec3 pos = Gloable::ExtractTranslation(transform);
-		pl_ptr->SetLightPosition(pos);
-		transform = glm::scale(transform, glm::vec3(0.1f));
-		MaterialBase::SetTransform(transform);
+		MaterialBase::UpdateSceneData();
+	}
+	void PointLightMaterial::SetTransform(glm::mat4 translate, glm::mat4 rotate)
+	{
+		glm::mat4 transform = translate * rotate * glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
+		glm::vec3 pos = Gloable::ExtractTranslation(translate);
+		// pl_ptr->SetLightPosition(pos);
+		std::cout << glm::to_string(transform) << std::endl;
+		SetValue("Model", "modelTrans", transform);
 	}
 	bool PointLightMaterial::SetUI()
 	{

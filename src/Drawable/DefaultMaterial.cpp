@@ -26,11 +26,6 @@ namespace Draw
 		desc_ptr->Compile();
 		using namespace Graphics;
 		VkGraphicsPipelineCreateInfo pipelineCI = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::Default]->renderPass);
-		//rasterizationState.depthBiasEnable = VK_TRUE;
-		//rasterizationState.depthBiasConstantFactor = 1.25f;
-		////rasterizationState.depthClampEnable = VK_TRUE;
-		//rasterizationState.depthBiasClamp = 0.0f;
-		//rasterizationState.depthBiasSlopeFactor = 1.75f;
 		loadVertexInfo();
 		loadShader(Bind::ShaderType::DEFAULT);
 		pipelineCI.pInputAssemblyState = &inputAssemblyState;
@@ -38,8 +33,7 @@ namespace Draw
 		pipelineCI.pColorBlendState = &colorBlendState;
 		pipelineCI.pMultisampleState = &multisampleState;
 		pipelineCI.pViewportState = &viewport_info;
-		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::WriteStencil);
-		
+	
 		pipelineCI.pDepthStencilState = &depthStencilState;
 		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCI.pStages = shaderStages.data();

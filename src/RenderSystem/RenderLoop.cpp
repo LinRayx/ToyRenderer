@@ -40,18 +40,34 @@ namespace RenderSystem
 
 	void RenderLoop::Init()
 	{	
-		//Control::PointLight pl;
-		//Draw::Model* lightModel = new Draw::Model("../assets/cube.gltf", "../assets/");
-		//pl.model = lightModel;
-		//pl.model->AddMaterial(Draw::MaterialType::DEFAULT);
-
-		//Control::Scene::getInstance()->pointLights.push_back(pl);
-
 		Draw::Model* model1 = new Draw::Model("../assets/plane.gltf", "../assets/");
-		Draw::Model* model3 = new Draw::Model("../assets/luxball.gltf", "../assets/");
+		glm::mat4 I = glm::mat4(1.f);
+		auto rot = I;
+		// auto rot = glm::rotate(I, glm::radians(90.f), glm::vec3(1, 0, 0));
+		Draw::Model* model3 = new Draw::Model("../assets/luxball.gltf", "../assets/", I, I);
+
+		
+		auto tran = glm::translate(I, glm::vec3(0, 5, -5));
+		rot = glm::rotate(I, glm::radians(90.f), glm::vec3(1, 0, 0));
+		
+		Draw::Model* model11 = new Draw::Model("../assets/plane.gltf", "../assets/", tran, rot);
+
+		tran = glm::translate(I, glm::vec3(-5, 5, 0));
+		rot = glm::rotate(I, glm::radians(-90.f), glm::vec3(0, 0, 1));
+		
+		
+		Draw::Model* model111 = new Draw::Model("../assets/plane.gltf", "../assets/", tran, rot);
+
+		model111->AddMaterial(Draw::MaterialType::GBuffer);
+		model111->AddMaterial(Draw::MaterialType::OMNISHADOW);
+
+		model11->AddMaterial(Draw::MaterialType::GBuffer);
+		model11->AddMaterial(Draw::MaterialType::OMNISHADOW);
 
 		model1->AddMaterial(Draw::MaterialType::GBuffer);
 		model3->AddMaterial(Draw::MaterialType::GBuffer);
+		model1->AddMaterial(Draw::MaterialType::OMNISHADOW);
+		model3->AddMaterial(Draw::MaterialType::OMNISHADOW);
 
 		Draw::Model* model2 = new Draw::Model( "../assets/cube.gltf", "../assets/");
 		model2->AddMaterial(Draw::MaterialType::Skybox);
@@ -65,6 +81,8 @@ namespace RenderSystem
 		models.emplace_back(std::move(model1));
 		models.emplace_back(std::move(model3));
 		models.emplace_back(std::move(lightModel));
+		models.emplace_back(std::move(model11));
+		models.emplace_back(std::move(model111));
 
 		modelWindows[0].SetModel(models[1]);
 		modelWindows[1].SetModel(models[2]);
@@ -202,6 +220,22 @@ namespace RenderSystem
 	{
 		cmdBuf_ptr->Begin();
 
+		for (int cmdIndex = 0; cmdIndex < 2; ++cmdIndex) {
+			for (int i = 0; i < 6; ++i) {
+				cmdBuf_ptr->ShadowBegin(Graphics::RenderPassType::ONMISHADOW, cmdIndex);
+				for (auto& model : models) {
+					model->BuildCommandBuffer(Draw::MaterialType::OMNISHADOW, cmdBuf_ptr,cmdIndex, i);
+				}
+				cmdBuf_ptr->ShadowEnd(cmdIndex);
+				Graphics::Image::getInstance()->CopyFrameBufferToImage2(cmdBuf_ptr->drawCmdBuffers[cmdIndex],
+					Draw::textureManager->nameToTex["omni_depth_map"].textureImage,
+					Draw::textureManager->nameToTex["omni_color_attachment"].textureImage,
+					1024,
+					i);
+			}
+		}
+
+
 		cmdBuf_ptr->DeferredBegin();
 		for (auto& model : models) {
 			model->BuildCommandBuffer(Draw::MaterialType::GBuffer, cmdBuf_ptr);
@@ -221,7 +255,7 @@ namespace RenderSystem
 			model->BuildCommandBuffer(Draw::MaterialType::POINTLIGHT, cmdBuf_ptr);
 		}
 		for (auto& model : models) {
-		 	// model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
+		 	 // model->BuildCommandBuffer(Draw::MaterialType::Skybox, cmdBuf_ptr);
 		}
 		renderGUI();
 		cmdBuf_ptr->DefaultEnd();

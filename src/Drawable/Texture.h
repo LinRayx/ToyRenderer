@@ -32,9 +32,10 @@ namespace Draw
 		void CreateCubeTexture(vector<string> paths, std::string texName);
 		void CreateCubeTextureWithMipmap(vector<string> paths, std::string texName);
 		void CreateResource(string name, VkFormat format, uint32_t dim, VkImageUsageFlags usage);
-		void CreateResource(string name, VkFormat format, uint32_t width, uint32_t height, VkImageUsageFlags usage);
+		void CreateResource(string name, VkFormat format, uint32_t width, uint32_t height, VkImageUsageFlags usage, bool flag = false);
 		void CreateCubeResource(string name, VkFormat format, uint32_t dim, uint32_t mipLevels = 1);
-		void CreateDepthResource(string name);
+		void CreateCubeResource(string name, VkImageCreateInfo imageCreateInfo, VkSamplerCreateInfo sampler, VkImageViewCreateInfo view);
+		void CreateDepthResource(string name, int width, int height, bool flag = false);
 		std::map< std::string, TextureData > nameToTex;
 	private:
 		void createTextureImage(std::string path, TextureData& texData);

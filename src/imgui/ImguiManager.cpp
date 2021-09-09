@@ -313,7 +313,8 @@ namespace GUI
             auto& commandBuffer = commandBuffers[i];
             int width = Graphics::Vulkan::getInstance()->GetWidth();
             int height = Graphics::Vulkan::getInstance()->GetHeight();
-            const VkViewport viewport = Graphics::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+            VkViewport viewport = Graphics::initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+
             const VkRect2D scissor = Graphics::initializers::rect2D(width, height, 0, 0);
             vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
             vkCmdSetScissor(commandBuffer, 0, 1, &scissor);

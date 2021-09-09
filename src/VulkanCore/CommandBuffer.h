@@ -55,6 +55,9 @@ namespace Graphics
 		void OffScreenBegin();
 		void OffScreenEnd();
 		
+
+		void ShadowBegin(RenderPassType type, int index);
+		void ShadowEnd(int index);
 	public:
 		vector<VkCommandBuffer> drawCmdBuffers;
 	};

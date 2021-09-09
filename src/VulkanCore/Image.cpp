@@ -8,7 +8,28 @@ namespace Graphics {
 	}
 
 
-	void Image::createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
+    void Image::createImage(VkImageCreateInfo imageCreateInfo, VkImage& image, VkDeviceMemory& imageMemory)
+    {
+        if (vkCreateImage(Vulkan::getInstance()->device.device, &imageCreateInfo, nullptr, &image) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create image!");
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetImageMemoryRequirements(Vulkan::getInstance()->device.device, image, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = Vulkan::getInstance()->findMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+        if (vkAllocateMemory(Vulkan::getInstance()->device.device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+            throw std::runtime_error("failed to allocate image memory!");
+        }
+
+        vkBindImageMemory(Vulkan::getInstance()->device.device, image, imageMemory, 0);
+    }
+
+    void Image::createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
 	{
 		VkImageCreateInfo imageInfo{};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -159,6 +180,16 @@ namespace Graphics {
 		cmdBuf->endSingleTimeCommands(blitCmd);
 	}
 
+    VkImageView Image::createImageView(VkImageViewCreateInfo view)
+    {
+        VkImageView imageView;
+        if (vkCreateImageView(Vulkan::getInstance()->device.device, &view, nullptr, &imageView) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture image view!");
+        }
+
+        return imageView;
+    }
+
 	VkImageView Image::createImageView(VkImage image, VkImageViewType viewType, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, uint32_t layoutCount)
 	{
 		VkImageViewCreateInfo viewInfo{};
@@ -180,14 +211,24 @@ namespace Graphics {
 		return imageView;
 	}
 
-    void Image::CopyFrameBufferToImage(VkCommandBuffer cmd, VkImage& irradiance_attachment, VkImage& image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel, float viewport_width, float viewport_height)
+    VkSampler Image::createSampler(VkSamplerCreateInfo samplerInfo)
     {
+        VkSampler sampler;
+        if (vkCreateSampler(Vulkan::getInstance()->GetDevice().device, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+        return sampler;
+    }
+
+    void Image::CopyFrameBufferToImage(VkCommandBuffer cmd, VkImage& attachment, VkImage& image_name, uint32_t dstBaseArrayLayer, int32_t dim, int32_t mipLevel, float viewport_width, float viewport_height)
+    {
+
         if (viewport_width == -1 || viewport_height == -1) {
             viewport_height = viewport_width = dim;
         }
         setImageLayout(
             cmd,
-            irradiance_attachment,
+            attachment,
             VK_IMAGE_ASPECT_COLOR_BIT,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
@@ -212,7 +253,7 @@ namespace Graphics {
         copyRegion.extent.depth = 1;
         vkCmdCopyImage(
             cmd,
-            irradiance_attachment,
+            attachment,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
             image_name,
             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -221,12 +262,38 @@ namespace Graphics {
 
         setImageLayout(
             cmd,
-            irradiance_attachment,
+            attachment,
             VK_IMAGE_ASPECT_COLOR_BIT,
             VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
             VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
     }
 
+    void Image::CopyFrameBufferToImage2(VkCommandBuffer cmd, VkImage& resource, VkImage& attachment, int32_t dim, int face)
+    {
+        VkImageSubresourceRange subresourceRange = {};
+        subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        subresourceRange.baseMipLevel = 0;
+        subresourceRange.levelCount = 1;
+        subresourceRange.layerCount = 6;
+
+        setImageLayout(
+            cmd,
+            resource,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            subresourceRange);
+
+       CopyFrameBufferToImage(cmd, attachment,
+           resource, face, dim);
+
+
+       setImageLayout(
+            cmd,
+            resource,
+            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+            subresourceRange);
+    }
     // Create an image memory barrier for changing the layout of
         // an image and put it into an active command buffer
         // See chapter 11.4 "Image Layout" for details
