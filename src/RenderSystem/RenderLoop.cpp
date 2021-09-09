@@ -43,8 +43,9 @@ namespace RenderSystem
 		Draw::Model* model1 = new Draw::Model("../assets/plane.gltf", "../assets/");
 		glm::mat4 I = glm::mat4(1.f);
 		auto rot = I;
-		// auto rot = glm::rotate(I, glm::radians(90.f), glm::vec3(1, 0, 0));
-		Draw::Model* model3 = new Draw::Model("../assets/luxball.gltf", "../assets/", I, I);
+		rot = glm::rotate(I, glm::radians(-90.f), glm::vec3(1, 0, 0));
+		rot = glm::rotate(rot, glm::radians(180.f), glm::vec3(0, 0, 1));
+		Draw::Model* model3 = new Draw::Model("../assets/mary.gltf", "../assets/", I, rot);
 
 		
 		auto tran = glm::translate(I, glm::vec3(0, 5, -5));

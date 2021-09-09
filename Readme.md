@@ -3,7 +3,8 @@
 基于Vulkan，写一个方便自己做图形实验的渲染引擎
 
 ## 阶段性成果
-
+- 点光源阴影
+![PointLight_Shadow](.output/mary_shadow.png)
 - 延迟渲染 + ssao 
 ![SSAO_OPEN](./output/ssao_open.png)
 - 延迟渲染 without ssao

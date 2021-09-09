@@ -31,8 +31,21 @@ layout(set = 0, binding = 7) uniform sampler2D gbuffer_metallicRoughnessMap;
 layout(set = 0, binding = 8) uniform sampler2D ssaoMap;
 layout(set = 0, binding = 9) uniform samplerCube lightShadowMap;
 
+#define EPSILON 0.15
+#define SHADOW_OPACITY 0.5
+
 const float PI = 3.14159265359;
 vec3 albedo;
+
+// array of offset direction for sampling
+vec3 gridSamplingDisk[20] = vec3[]
+(
+	vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+	vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+	vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+	vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+	vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+);
 
 // From http://filmicgames.com/archives/75
 vec3 Uncharted2Tonemap(vec3 x)
@@ -108,8 +121,27 @@ vec3 specularContribution(vec3 L, vec3 LightColor, vec3 V, vec3 N, vec3 F0, floa
 	return color;
 }
 
-#define EPSILON 0.10
-#define SHADOW_OPACITY 0.5
+float calulateShadow(vec3 pos)
+{
+	// shadow, only enable in pointLight[0]
+	vec3 lightVec = pos - sParam.pl[0].position;
+	float dist = length(lightVec);
+
+	float viewDistance = length(sParam.viewPos - pos);
+	float diskRadius = (1.0 + (viewDistance / 256.0)) / 25.0;
+
+	// Check if fragment is in shadow
+	float shadow = 0.0;
+	int samples = 20;
+	for (int i = 0; i < 20; ++i) {
+		float sampledDist = texture(lightShadowMap, lightVec + gridSamplingDisk[i] * diskRadius).r;
+		shadow += (dist <= sampledDist + EPSILON) ? 1.0 : SHADOW_OPACITY;
+	}
+	shadow /= float(samples);
+	return shadow;
+}
+
+
 
 void main()
 {
@@ -141,8 +173,6 @@ void main()
 		Lo += specularContribution(L,color, V, N, F0, metallic, roughness);
 	}
 
-	// Lo += specularContribution(L, V, N, F0, metallic, roughness);
-
 	vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
 	vec3 reflection = prefilteredReflection(R, roughness).rgb;
 	vec3 irradiance = texture(irradianceMap, N).rgb;
@@ -164,16 +194,7 @@ void main()
 	vec3 color = ambient + Lo;
 	// vec3 color = Lo;
 
-	// shadow, only enable in pointLight[0]
-	vec3 lightVec = pos - sParam.pl[0].position;
-	float sampledDist = texture(lightShadowMap, lightVec).r;
-// 	color = vec3(sampledDist, 0, 0);
-	float dist = length(lightVec);
-
-	// Check if fragment is in shadow
-	float shadow = (dist <= sampledDist + EPSILON) ? 1.0 : 0.0;
-
-	color *= shadow;
+	color *= calulateShadow(pos);
 
 	float exposure = 4.5;
 	float gamma = 2.2;

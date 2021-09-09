@@ -435,6 +435,9 @@ namespace Draw
 		//textureManager->CreateTexture("../assets/gold/normal.png", "mitsuba-sphere.obj_NormalMap");
 		//textureManager->CreateTexture("../assets/gold/roughness.png", "mitsuba-sphere.obj_RoughnessMap");
 
+		textureManager->CreateTexture("../assets/MC003_Kozakura_Mari.png", "mary.gltf_AlbedoMap");
+
+
 		textureManager->CreateTexture("../assets/StoneWall/Textures/wall-stonework-sheen_albedo.png", "luxball.gltf_AlbedoMap");
 		textureManager->CreateTexture("../assets/StoneWall/Textures/wall-stonework-sheen_metallic.png", "luxball.gltf_MetallicMap");
 		textureManager->CreateTexture("../assets/StoneWall/Textures/wall-stonework-sheen_normal-ogl.png", "luxball.gltf_NormalMap");

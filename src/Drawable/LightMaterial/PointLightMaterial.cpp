@@ -24,8 +24,7 @@ namespace Draw
 	{
 		glm::mat4 transform = translate * rotate * glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
 		glm::vec3 pos = Gloable::ExtractTranslation(translate);
-		// pl_ptr->SetLightPosition(pos);
-		std::cout << glm::to_string(transform) << std::endl;
+		pl_ptr->SetLightPosition(pos);
 		SetValue("Model", "modelTrans", transform);
 	}
 	bool PointLightMaterial::SetUI()

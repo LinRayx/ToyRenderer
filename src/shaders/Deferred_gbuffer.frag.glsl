@@ -44,7 +44,9 @@ float linearDepth(float depth)
 
 vec3 calculateNormal()
 {
-	vec3 tangentNormal = texture(normalMap, inUV).xyz * 2.0 - 1.0;
+	vec3 tangentNormal = vec3(0, 0, 1);
+	if (pParam.HasNormalMap)
+		tangentNormal = texture(normalMap, inUV).xyz * 2.0 - 1.0;
 
 	vec3 N = normalize(inNormal);
 	vec3 T = normalize(inTangent.xyz);

@@ -139,7 +139,7 @@ namespace Control
 				firstMouse = false;
 			}
 
-			float xoffset = (mouse_position[0] - lastX);
+			float xoffset = -(mouse_position[0] - lastX);
 			float yoffset = (lastY - mouse_position[1]); // reversed since y-coordinates go from bottom to top
 
 			lastX = mouse_position[0];
