@@ -16,10 +16,9 @@ namespace Draw
 	{
 	public:
 		PrefilterMaterial();
-		virtual void Compile();
 		virtual void Execute(shared_ptr<Graphics::CommandBuffer> cmdBuf);
-		void BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr,
-			shared_ptr<Bind::IndexBuffer> iBuffer_ptr);
+	protected:
+		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo);
 	private:
 		const int32_t dim = 512;
 		const int32_t numMips = static_cast<uint32_t>(floor(log2(dim))) + 1;

@@ -37,7 +37,7 @@ namespace Bind
 		//! Handles all information needed to compile a shader into a module
 		typedef struct shader_request_s {
 			//! A path to the file with the GLSL source code (relative to the CWD)
-			const char* shader_file_path;
+			string shader_file_path;
 			//! The director(ies) which are searched for includes
 			const char* include_path;
 			//! The name of the function that serves as entry point
@@ -46,11 +46,7 @@ namespace Bind
 			//! stage
 			VkShaderStageFlags stage;
 			//! Number of defines
-			uint32_t define_count;
-			//! A list of strings providing the defines, either as "IDENTIFIER" or
-			//! "IDENTIFIER=VALUE". Do not use white space, these strings go into the
-			//! command line unmodified.
-			char** defines;
+			vector<string> defines;
 		} shader_request_t;
 
 
@@ -66,21 +62,21 @@ namespace Bind
 			uint32_t* spirv_code;
 		} shader_t;
 		Shader()  {}
+		Shader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage, vector<string>&& defines);
+
 		Shader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage);
 		~Shader();
-		void CompileShader(std::string shader_file_path, std::string include_path, std::string entry_point, VkShaderStageFlagBits stage, 
-			shader_t* shader);
 
 		VkShaderModule GetShaderModule();
 
 	private:
-		int compile_glsl_shader(shader_t* shader, const shader_request_t* request);
+		int compile_glsl_shader(const shader_request_t* request);
 		const char* get_shader_stage_name(VkShaderStageFlags stage);
-		int compile_glsl_shader_with_second_chance(shader_t* shader, const shader_request_t* request);
-		void destroy_shader(shader_t* shader);
+		int compile_glsl_shader_with_second_chance(const shader_request_t* request);
+		void destroy_shader();
 
 	private:
-		shader_t shader;
+		unique_ptr<shader_t> shader;
 		
 	};
 
@@ -118,6 +114,8 @@ namespace Bind
 
 	extern std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;
 	void LoadShaders();
+	void LoadShaderPaths();
+	VkPipelineShaderStageCreateInfo CreateShaderStage(ShaderType type, VkShaderStageFlagBits stage, vector<string>&& defs);
 }
 
 #endif // !SHADER_H

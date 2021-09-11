@@ -11,10 +11,9 @@ namespace Draw
 	public:
 		SkyboxMaterial();
 		void AddCubeTexture(string skybox_texture_name);
-
-		virtual void Compile();
 		virtual void UpdateSceneData();
-
+	protected:
+		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo);
 	private:	
 	};
 }

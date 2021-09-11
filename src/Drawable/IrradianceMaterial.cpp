@@ -18,39 +18,6 @@ namespace Draw
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["skybox_texture"].textureImageView,
 			textureManager->nameToTex["skybox_texture"].textureSampler);
 	}
-	void IrradianceMaterial::Compile()
-	{
-		desc_ptr->Compile();
-
-		loadVertexInfo();
-		loadShader(Bind::ShaderType::IRRADIANCE);
-
-		VkViewport viewport = Graphics::initializers::viewportOffscreen((float)dim, (float)dim, 0.0f, 1.0f);
-		VkRect2D scissor = Graphics::initializers::rect2D(dim, dim, 0, 0);
-
-		VkPipelineViewportStateCreateInfo viewport_info = {};
-		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewport_info.viewportCount = 1;
-		viewport_info.scissorCount = 1;
-		viewport_info.pScissors = &scissor;
-		viewport_info.pViewports = &viewport;
-
-		rasterizationState.cullMode = VK_CULL_MODE_NONE;
-		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), Graphics::nameToRenderPass[Graphics::RenderPassType::IRRADIANCE]->renderPass, 0);
-		pipelineCI.pInputAssemblyState = &inputAssemblyState;
-		pipelineCI.pRasterizationState = &rasterizationState;
-		pipelineCI.pColorBlendState = &colorBlendState;
-		pipelineCI.pMultisampleState = &multisampleState;
-		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
-		pipelineCI.pStages = shaderStages.data();
-		pipelineCI.pVertexInputState = &vertexInputInfo;
-		pipelineCI.pViewportState = &viewport_info;
-
-		if (vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCI, NULL, &pipeline)) {
-			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
-		}
-	}
 	void IrradianceMaterial::Execute(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
 		cout << "IrradianceMaterial::Execute" << endl;
@@ -131,5 +98,14 @@ namespace Draw
 	{
 		this->vBuffer_ptr = vBuffer_ptr;
 		this->iBuffer_ptr = iBuffer_ptr;
+	}
+	void IrradianceMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
+	{
+		viewport_info.pScissors = &scissor;
+		viewport_info.pViewports = &viewport;
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::IRRADIANCE, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::IRRADIANCE, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(frag_defs)));
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
+		pinfo.renderPass = Graphics::nameToRenderPass[Graphics::RenderPassType::IRRADIANCE]->renderPass;
 	}
 }

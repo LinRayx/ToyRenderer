@@ -5,12 +5,15 @@ layout(location = 0) in vec3 inNormal;
 layout(location = 1) in vec3 inPos;
 layout(location = 2) in vec2 inUV;
 layout(location = 3) in vec4 inTangent;
-
+//layout(location = 4) in vec3 inPrecomputeLT1;
+//layout(location = 5) in vec3 inPrecomputeLT2;
+//layout(location = 6) in vec3 inPrecomputeLT3;
 
 layout(location = 0) out vec4 outPosition;
 layout(location = 1) out vec4 outNormal;
 layout(location = 2) out vec4 outAlbedo;
 layout(location = 3) out vec4 outMetallicRoughness;
+//layout(location = 4) out vec4 outIndirectColor;
 
 layout(set = 0, binding = 1) uniform SceneParam
 {
@@ -27,6 +30,7 @@ layout(set = 2, binding = 0) uniform PbrParam
 	vec3 albedo;
 	float metallic;
 	float roughness;
+	// vec3 preComputeL[9];
 } pParam;
 
 
@@ -72,4 +76,7 @@ void main()
 		outMetallicRoughness.g = texture(roughnessMap, inUV).r;
 	else
 		outMetallicRoughness.g = pParam.roughness;
+
+	//outIndirectColor = vec4(SHrecon(), 1.0f);
+
 }

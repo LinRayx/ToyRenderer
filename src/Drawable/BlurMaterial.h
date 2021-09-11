@@ -9,9 +9,10 @@ namespace Draw
 	{
 	public:
 		BlurMaterial();
-		virtual void Compile();
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd);
 		void AddBlurMap(string name);
+	protected:
+		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo) override;
 	};
 }
 

@@ -115,6 +115,9 @@
     <Filter Include="源文件\Shaders\Shadow">
       <UniqueIdentifier>{e41bebb5-1178-4d50-8009-ebda7ca4f1a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Drawable\Private">
+      <UniqueIdentifier>{5299bee6-275b-4282-863b-c7b1b0f511d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -150,16 +153,10 @@
     <ClInclude Include="..\src\Bindable\IndexBuffer.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Bindable\PixelShader.h">
-      <Filter>头文件\Bindable</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Bindable\Shader.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Bindable\VertexBuffer.h">
-      <Filter>头文件\Bindable</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Bindable\VertexShader.h">
       <Filter>头文件\Bindable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Utils\string_utils.h">
@@ -237,9 +234,6 @@
     <ClInclude Include="..\src\Drawable\OutlineMaterial.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Drawable\MaterialBase.h">
-      <Filter>头文件\Drawable</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
@@ -259,9 +253,6 @@
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Drawable\IrradianceMaterial.h">
-      <Filter>头文件\Drawable</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\Drawable\MaterialBaseParent.h">
       <Filter>头文件\Drawable</Filter>
     </ClInclude>
     <ClInclude Include="..\src\Drawable\PrefilterMaterial.h">
@@ -306,6 +297,15 @@
     <ClInclude Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.h">
       <Filter>头文件\Drawable\Shadow</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\Private\IMaterial.h">
+      <Filter>头文件\Drawable\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\MaterialBase.h">
+      <Filter>头文件\Drawable\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Drawable\MaterialBaseParent.h">
+      <Filter>头文件\Drawable\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -321,9 +321,6 @@
       <Filter>源文件\VulkanCore</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp">
-      <Filter>源文件\Bindable</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\Bindable\PixelShader.cpp">
       <Filter>源文件\Bindable</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Bindable\Shader.cpp">

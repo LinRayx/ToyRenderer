@@ -30,6 +30,9 @@ namespace Gloable
 		void InitSSAOKernel();
 
 	}
+
+	void ReadpreComputeFile();
+	glm::vec3 GetPreComputeLT(size_t i, size_t j);
 }
 #endif // !GLOABLE_CLASS_H
 

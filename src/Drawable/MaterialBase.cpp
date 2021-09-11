@@ -38,11 +38,6 @@ namespace Draw
 			vkCmdDrawIndexed(drawCmdBuffers[i], static_cast<uint32_t>(iBuffer_ptr->GetCount()), 1, 0, 0, 0);
 		}
 	}
-	void MaterialBase::BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr, shared_ptr<Bind::IndexBuffer> iBuffer_ptr)
-	{
-		this->vBuffer_ptr = vBuffer_ptr;
-		this->iBuffer_ptr = iBuffer_ptr;
-	}
 
 	void MaterialBase::SetModelName(string name)
 	{

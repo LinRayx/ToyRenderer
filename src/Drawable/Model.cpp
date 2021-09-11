@@ -263,6 +263,9 @@ namespace Draw {
 				.Append(VertexLayout::Normal)
 				.Append(VertexLayout::Texture2D)
 				.Append(VertexLayout::Tangent)
+				//.Append(VertexLayout::Float3Color)
+				//.Append(VertexLayout::Float3Color)
+				//.Append(VertexLayout::Float3Color)
 			)
 		);
 
@@ -271,11 +274,15 @@ namespace Draw {
 				mesh.mVertices[i].y *= -1;
 				mesh.mNormals[i].y *= -1;
 			}
+
 			vbuf.EmplaceBack(
 				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
 				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
 				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i]),
 				*reinterpret_cast<glm::vec4*>(&mesh.mTangents[i])
+				//Gloable::GetPreComputeLT(i, 0),
+				//Gloable::GetPreComputeLT(i, 1),
+				//Gloable::GetPreComputeLT(i, 2)
 			);
 		}
 

@@ -32,31 +32,6 @@ namespace Draw
 		addPBRTexture("RoughnessMap");
 	}
 
-	void PBRMaterial::Compile()
-	{
-		cout << "PBRMaterial::Compile()" << endl;
-		desc_ptr->Compile();
-		using namespace Graphics;
-		VkGraphicsPipelineCreateInfo pipelineCI = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::Default]->renderPass);
-		
-		loadVertexInfo();
-		loadShader(Bind::ShaderType::PBR);
-		pipelineCI.pInputAssemblyState = &inputAssemblyState;
-		pipelineCI.pRasterizationState = &rasterizationState;
-		pipelineCI.pColorBlendState = &colorBlendState;
-		pipelineCI.pMultisampleState = &multisampleState;
-		pipelineCI.pViewportState = &viewport_info;
-		auto depthStencilState = Bind::depthStencilState_ptr->GetDepthStencilState(Bind::DepthStencilStateType::WriteStencil);
-		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
-		pipelineCI.pStages = shaderStages.data();
-		pipelineCI.pVertexInputState = &vertexInputInfo;
-
-		if (vkCreateGraphicsPipelines(Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCI, NULL, &pipeline)) {
-			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
-		}
-	}
-
 	void PBRMaterial::UpdateSceneData()
 	{
 		MaterialBase::UpdateSceneData();
@@ -94,6 +69,16 @@ namespace Draw
 	float& PBRMaterial::GetRoughness()
 	{
 		return roughness;
+	}
+
+	void PBRMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
+	{
+		cout << "hgghhhgg" << endl;
+		using namespace Graphics;
+		pinfo.renderPass = nameToRenderPass[RenderPassType::Default]->renderPass;
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::PBR, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::PBR, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(vert_defs)));
+
 	}
 
 	void PBRMaterial::InitPBRData()

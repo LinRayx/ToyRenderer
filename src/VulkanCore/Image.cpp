@@ -438,8 +438,17 @@ namespace Graphics {
         setImageLayout(cmdbuffer, image, oldImageLayout, newImageLayout, subresourceRange, srcStageMask, dstStageMask);
     }
 
+    /// <summary>
+    /// https://blog.csdn.net/yjr3426619/article/details/101371746
+    /// ①等待srcStageMask所代表的流水线阶段上的所有操作执行完成
+    /// ②等待srcAccessMask所代表的内存操作available
+    /// ③进行ImageLayout Transition
+    /// ④等待相应的available内存对于dstAccessMask所代表的内存操作是visible的
+    /// ⑤唤醒dstStageMask所代表的流水线阶段上的所有操作
+    /// </summary>
     void Image::insertImageMemoryBarrier(VkCommandBuffer commandbuffer, VkImage image, VkAccessFlags srcAccessMask, VkAccessFlags dstAccessMask, VkImageLayout oldImageLayout, VkImageLayout newImageLayout, VkPipelineStageFlags srcStageMask, VkPipelineStageFlags dstStageMask, VkImageSubresourceRange subresourceRange)
     {
+        
         VkImageMemoryBarrier imageMemoryBarrier = initializers::imageMemoryBarrier();
         imageMemoryBarrier.srcAccessMask = srcAccessMask;
         imageMemoryBarrier.dstAccessMask = dstAccessMask;

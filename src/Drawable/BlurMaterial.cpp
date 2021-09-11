@@ -8,33 +8,6 @@ namespace Draw
 
 	}
 
-	void BlurMaterial::Compile()
-	{
-		cout << "BlurMaterial::Compile()" << endl;
-		using namespace Graphics;
-		desc_ptr->Compile();
-		loadShader(Bind::ShaderType::BLUR);
-
-		VkPipelineVertexInputStateCreateInfo emptyVertexInputState = initializers::pipelineVertexInputStateCreateInfo();
-		rasterizationState.cullMode = VK_CULL_MODE_NONE;
-
-		VkGraphicsPipelineCreateInfo pipelineCreateInfo = initializers::pipelineCreateInfo(
-			desc_ptr->GetPipelineLayout(), 
-			nameToRenderPass[RenderPassType::FULLSCREEN_BLUR]->renderPass, 0);
-		pipelineCreateInfo.pVertexInputState = &emptyVertexInputState;
-		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
-		pipelineCreateInfo.pRasterizationState = &rasterizationState;
-		pipelineCreateInfo.pColorBlendState = &colorBlendState;
-		pipelineCreateInfo.pMultisampleState = &multisampleState;
-		pipelineCreateInfo.pViewportState = &viewport_info;
-		depthStencilState.depthTestEnable = VK_FALSE;
-		depthStencilState.depthWriteEnable = VK_FALSE;
-		pipelineCreateInfo.pDepthStencilState = &depthStencilState;
-		pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
-		pipelineCreateInfo.pStages = shaderStages.data();
-
-		vkCreateGraphicsPipelines(Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCreateInfo, nullptr, &pipeline);
-	}
 	void BlurMaterial::BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
 		auto& drawCmdBuffers = cmd->drawCmdBuffers;
@@ -64,5 +37,16 @@ namespace Draw
 		addTexture(Graphics::LayoutType::SCENE, Graphics::StageFlag::FRAGMENT,
 			Draw::textureManager->nameToTex[name].textureImageView,
 			Draw::textureManager->nameToTex[name].textureSampler);
+	}
+	void BlurMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
+	{
+		using namespace Graphics;
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::FULLSCREEN_VERT, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::BLUR, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(frag_defs)));
+		depthStencilState.depthTestEnable = VK_FALSE;
+		depthStencilState.depthWriteEnable = VK_FALSE;
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
+		pinfo.renderPass = nameToRenderPass[RenderPassType::FULLSCREEN_BLUR]->renderPass;
+		pinfo.pVertexInputState = &emptyVertexInputState;
 	}
 }

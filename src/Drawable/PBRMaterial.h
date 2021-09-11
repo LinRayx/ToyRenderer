@@ -12,13 +12,13 @@ namespace Draw
 		PBRMaterial(bool flag);
 		PBRMaterial();
 		virtual void LoadModelTexture(const aiMaterial* material, string directory, string meshName);
-		virtual void Compile();
 		virtual void UpdateSceneData();
 		virtual bool SetUI();
 		float& GetMetallic();
 		glm::vec3& GetAlbedo();
 		float& GetRoughness();
 	protected:
+		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo);
 		void InitPBRData();
 		void addPBRTexture(string name);
 		float metallic = 0.1f;

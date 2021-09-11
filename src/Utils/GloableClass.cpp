@@ -1,4 +1,6 @@
 #include "Utils/GloableClass.h"
+#include <iostream>
+#include <fstream>
 
 namespace Gloable
 {
@@ -38,6 +40,32 @@ namespace Gloable
 		return a + f * (b - a);
 	}
 
+	std::vector<float> preComputeLT;
+	std::vector<float> preComputeL;
+
+	void ReadpreComputeFile()
+	{
+		float data;
+		std::ifstream ifs;
+		ifs.open("../assets/precompute/light.txt");
+		while (!ifs.eof()) {
+			ifs >> data;
+			preComputeL.emplace_back(data);
+		}
+		ifs.close();
+		ifs.open("../assets/precompute/transport.txt");
+		ifs >> data; // read head
+		while (!ifs.eof()) {
+			ifs >> data;
+			preComputeLT.emplace_back(data);
+		}
+		ifs.close();
+	}
+
+	glm::vec3 GetPreComputeLT(size_t i, size_t j)
+	{
+		return glm::vec3(preComputeLT[i * 9 + j * 3], preComputeLT[i * 9 + j * 3 + 1], preComputeLT[i * 9 + j * 3 + 2]);
+	}
 
 	namespace SSAO
 	{

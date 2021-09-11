@@ -9,9 +9,10 @@ namespace Draw
 	{
 	public:
 		PbrDeferredMaterial();
-		virtual void Compile();
 		virtual void UpdateSceneData();
 		bool SSAO = true;
+	protected:
+		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo);
 	};
 }
 

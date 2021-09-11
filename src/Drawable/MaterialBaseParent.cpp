@@ -2,6 +2,7 @@
 
 namespace Draw
 {
+
 	MaterialBaseParent::MaterialBaseParent()
 	{
 		vertexInputInfo = {};
@@ -15,6 +16,25 @@ namespace Draw
 		viewport_info.scissorCount = 1;
 		viewport_info.pScissors = &scissor;
 		viewport_info.pViewports = &viewport;
+	}
+
+	void MaterialBaseParent::Compile()
+	{
+		desc_ptr->Compile();
+		loadVertexInfo();
+		VkGraphicsPipelineCreateInfo pipelineCreateInfo = Graphics::initializers::pipelineCreateInfo();
+		pipelineCreateInfo.layout = desc_ptr->GetPipelineLayout();
+		pipelineCreateInfo.pVertexInputState = &vertexInputInfo;
+		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
+		pipelineCreateInfo.pRasterizationState = &rasterizationState;
+		pipelineCreateInfo.pColorBlendState = &colorBlendState;
+		pipelineCreateInfo.pMultisampleState = &multisampleState;
+		pipelineCreateInfo.pViewportState = &viewport_info;
+		pipelineCreateInfo.pDepthStencilState = &depthStencilState;
+		initPipelineCreateInfo(pipelineCreateInfo);
+		pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
+		pipelineCreateInfo.pStages = shaderStages.data();
+		vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCreateInfo, nullptr, &pipeline);
 	}
 
 	/// <summary>
@@ -37,6 +57,11 @@ namespace Draw
 		{
 			it.second->UpdateData(cur, bufs[it.first]->GetSizeInBytes(), bufs[it.first]->GetData());
 		}
+	}
+	void MaterialBaseParent::BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr, shared_ptr<Bind::IndexBuffer> iBuffer_ptr)
+	{
+		this->vBuffer_ptr = vBuffer_ptr;
+		this->iBuffer_ptr = iBuffer_ptr;
 	}
 	void MaterialBaseParent::addLayout(std::string key, Dcb::RawLayout&& layout, Graphics::LayoutType layoutType, Graphics::DescriptorType descType, Graphics::StageFlag stage)
 	{
@@ -86,6 +111,7 @@ namespace Draw
 	}
 	void MaterialBaseParent::loadVertexInfo()
 	{
+		if (vBuffer_ptr == nullptr) return;
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInputInfo.vertexBindingDescriptionCount = 1;
 		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(vBuffer_ptr->attributeDescriptions.size());

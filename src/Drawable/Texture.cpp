@@ -1,8 +1,11 @@
 #include "Drawable/Texture.h"
 #include <stdexcept>
 
+#define TINYGLTF_NO_STB_IMAGE_WRITE
+#define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+
+#include <tinygltf/tiny_gltf.h>
 
 namespace Draw
 {
@@ -164,7 +167,7 @@ namespace Draw
 			VK_ACCESS_TRANSFER_READ_BIT,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-			VK_PIPELINE_STAGE_TRANSFER_BIT,
+			VK_PIPELINE_STAGE_TRANSFER_BIT, // 等待该阶段所有operation执行完后才开始layout 转换
 			VK_PIPELINE_STAGE_TRANSFER_BIT,
 			subresourceRange);
 		cmdBuf_ptr->endSingleTimeCommands(cmd);

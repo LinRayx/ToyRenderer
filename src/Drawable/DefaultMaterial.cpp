@@ -20,30 +20,6 @@ namespace Draw
 		delete pushBlock;
 	}
 
-	void DefaultMaterial::Compile()
-	{
-		cout << "DefaultMaterial::Compile()" << endl;
-		desc_ptr->Compile();
-		using namespace Graphics;
-		VkGraphicsPipelineCreateInfo pipelineCI = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::Default]->renderPass);
-		loadVertexInfo();
-		loadShader(Bind::ShaderType::DEFAULT);
-		pipelineCI.pInputAssemblyState = &inputAssemblyState;
-		pipelineCI.pRasterizationState = &rasterizationState;
-		pipelineCI.pColorBlendState = &colorBlendState;
-		pipelineCI.pMultisampleState = &multisampleState;
-		pipelineCI.pViewportState = &viewport_info;
-	
-		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
-		pipelineCI.pStages = shaderStages.data();
-		pipelineCI.pVertexInputState = &vertexInputInfo;
-
-		if (vkCreateGraphicsPipelines(Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCI, NULL, &pipeline)) {
-			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
-		}
-	}
-
 	void DefaultMaterial::BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
 		auto& drawCmdBuffers = cmd->drawCmdBuffers;
@@ -83,5 +59,12 @@ namespace Draw
 	glm::vec4 DefaultMaterial::GetColor()
 	{
 		return color;
+	}
+	void DefaultMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
+	{
+		using namespace Graphics;
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::DEFAULT, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::DEFAULT, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(vert_defs)));
+		pinfo.renderPass = nameToRenderPass[RenderPassType::Default]->renderPass;
 	}
 }

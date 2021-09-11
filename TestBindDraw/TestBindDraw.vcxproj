@@ -149,11 +149,9 @@
     <ClInclude Include="..\src\Bindable\Bindable.h" />
     <ClInclude Include="..\src\Bindable\Bindable_heads.h" />
     <ClInclude Include="..\src\Bindable\IndexBuffer.h" />
-    <ClInclude Include="..\src\Bindable\PixelShader.h" />
     <ClInclude Include="..\src\Bindable\Shader.h" />
     <ClInclude Include="..\src\Bindable\DepthStencilState.h" />
     <ClInclude Include="..\src\Bindable\VertexBuffer.h" />
-    <ClInclude Include="..\src\Bindable\VertexShader.h" />
     <ClInclude Include="..\src\Drawable\BlurMaterial.h" />
     <ClInclude Include="..\src\Drawable\BrdfMaterial.h" />
     <ClInclude Include="..\src\Drawable\DefaultMaterial.h" />
@@ -171,6 +169,7 @@
     <ClInclude Include="..\src\Drawable\PBRMaterial.h" />
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
     <ClInclude Include="..\src\Drawable\PrefilterMaterial.h" />
+    <ClInclude Include="..\src\Drawable\Private\IMaterial.h" />
     <ClInclude Include="..\src\Drawable\RenderPassFactory.h" />
     <ClInclude Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.h" />
     <ClInclude Include="..\src\Drawable\SkyboxMaterial.h" />
@@ -220,7 +219,6 @@
     <ClCompile Include="..\include\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\src\Bindable\DepthStencilState.cpp" />
     <ClCompile Include="..\src\Bindable\IndexBuffer.cpp" />
-    <ClCompile Include="..\src\Bindable\PixelShader.cpp" />
     <ClCompile Include="..\src\Bindable\Shader.cpp" />
     <ClCompile Include="..\src\Bindable\VertexBuffer.cpp" />
     <ClCompile Include="..\src\Drawable\BlurMaterial.cpp" />

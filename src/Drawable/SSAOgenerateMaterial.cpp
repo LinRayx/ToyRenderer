@@ -44,18 +44,6 @@ namespace Draw
 		VkPipelineVertexInputStateCreateInfo emptyVertexInputState = initializers::pipelineVertexInputStateCreateInfo();
 		rasterizationState.cullMode = VK_CULL_MODE_NONE;
 
-		float width = static_cast<float>(Vulkan::getInstance()->GetWidth());
-		float height = static_cast<float>(Vulkan::getInstance()->GetHeight());
-		VkViewport viewport = initializers::viewportOffscreen(width,height, 0.0f, 1.0f);
-		VkRect2D scissor = initializers::rect2D(width, height, 0, 0);
-
-		VkPipelineViewportStateCreateInfo viewport_info = {};
-		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewport_info.viewportCount = 1;
-		viewport_info.scissorCount = 1;
-		viewport_info.pScissors = &scissor;
-		viewport_info.pViewports = &viewport;
-
 		VkGraphicsPipelineCreateInfo pipelineCreateInfo = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::FULLSCREEN_SSAO]->renderPass, 0);
 		pipelineCreateInfo.pVertexInputState = &emptyVertexInputState;
 		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
@@ -73,11 +61,8 @@ namespace Draw
 	}
 	void SSAOgenerateMaterial::BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
-		
 		auto& drawCmdBuffers = cmd->drawCmdBuffers;
-
 		auto& rp = Graphics::nameToRenderPass[Graphics::RenderPassType::FULLSCREEN_SSAO];
-
 		VkRenderPassBeginInfo renderPassBeginInfo = Graphics::initializers::renderPassBeginInfo();
 		renderPassBeginInfo.framebuffer = rp->framebuffer;
 		renderPassBeginInfo.renderPass = rp->renderPass;

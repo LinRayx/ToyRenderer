@@ -10,10 +10,16 @@ namespace Draw
 	{
 	public:
 		DeferredMaterial();
-		virtual void Compile();
 		virtual void UpdateSceneData();
+	protected:
+		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo);
 	private:
-
+		std::array<VkPipelineColorBlendAttachmentState, 4> blendAttachmentStates = {
+			Graphics::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE),
+			Graphics::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE),
+			Graphics::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE),
+			Graphics::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE)
+		};
 	};
 }
 

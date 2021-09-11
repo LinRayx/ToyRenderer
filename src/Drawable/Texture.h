@@ -6,6 +6,7 @@
 #include "VulkanCore/vulkan_core_headers.h"
 #include <memory>
 
+
 namespace Draw
 {
 	class Texture

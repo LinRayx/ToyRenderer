@@ -20,33 +20,6 @@ namespace Draw
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["skybox_texture"].textureImageView,
 			textureManager->nameToTex["skybox_texture"].textureSampler);
 	}
-	void PrefilterMaterial::Compile()
-	{
-		desc_ptr->Compile();
-
-		loadVertexInfo();
-
-		loadShader(Bind::ShaderType::PREFILTER);
-		
-		VkGraphicsPipelineCreateInfo pipelineCI = Graphics::initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), Graphics::nameToRenderPass[Graphics::RenderPassType::PREFILTER]->renderPass, 0);
-		rasterizationState.cullMode = VK_CULL_MODE_NONE;
-		depthStencilState.depthTestEnable = VK_FALSE;
-		depthStencilState.depthWriteEnable = VK_FALSE;
-		pipelineCI.pInputAssemblyState = &inputAssemblyState;
-		pipelineCI.pRasterizationState = &rasterizationState;
-		pipelineCI.pColorBlendState = &colorBlendState;
-		pipelineCI.pMultisampleState = &multisampleState;
-		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
-		pipelineCI.pStages = shaderStages.data();
-		pipelineCI.pVertexInputState = &vertexInputInfo;
-		pipelineCI.pDynamicState = &dynamicState;
-		pipelineCI.pViewportState = &viewportState;
-
-		if (vkCreateGraphicsPipelines(Graphics::Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCI, NULL, &pipeline)) {
-			throw std::runtime_error("Failed to create a graphics pipeline for the geometry pass.\n");
-		}
-	}
 	void PrefilterMaterial::Execute(shared_ptr<Graphics::CommandBuffer> cmdBuf)
 	{
 		cout << "PrefilterMaterial::Execute" << endl;
@@ -146,9 +119,16 @@ namespace Draw
 		cmdBuf->endSingleTimeCommands(cmd);
 		cout << "PrefilterMaterial::Execute End" << endl;
 	}
-	void PrefilterMaterial::BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr, shared_ptr<Bind::IndexBuffer> iBuffer_ptr)
+
+	void PrefilterMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
-		this->vBuffer_ptr = vBuffer_ptr;
-		this->iBuffer_ptr = iBuffer_ptr;
+		using namespace Graphics;
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::PREFILTER, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::PREFILTER, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(vert_defs)));
+		pinfo.renderPass = nameToRenderPass[RenderPassType::PREFILTER]->renderPass;
+		rasterizationState.cullMode = VK_CULL_MODE_NONE;
+		depthStencilState.depthTestEnable = VK_FALSE;
+		depthStencilState.depthWriteEnable = VK_FALSE;
+		pinfo.pDynamicState = &dynamicState;
 	}
 }

@@ -4,9 +4,10 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_vulkan.h"
 
+
 namespace RenderSystem
 {
-
+	
 	RenderLoop::RenderLoop()
 	{
 		cmdBuf_ptr = make_shared<Graphics::CommandBuffer>();
@@ -110,9 +111,11 @@ namespace RenderSystem
 	void RenderLoop::PreSolve()
 	{
 		Gloable::SSAO::InitSSAOKernel();
+		Gloable::ReadpreComputeFile();
 		Draw::InitTextureMgr(cmdBuf_ptr);
 		Draw::CreateRenderPass();
 		Bind::LoadShaders();
+		Bind::LoadShaderPaths();
 		UIInit();
 
 		Draw::BrdfMaterial* brdfLUT = new Draw::BrdfMaterial();

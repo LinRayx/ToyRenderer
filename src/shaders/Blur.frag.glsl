@@ -6,6 +6,13 @@ layout(location = 0) in vec2 inUV;
 
 layout(location = 0) out float outFragColor;
 
+#ifdef TEST
+void test()
+{
+
+}
+#endif
+
 void main()
 {
 	const int blurRange = 2;

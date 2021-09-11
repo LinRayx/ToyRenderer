@@ -42,43 +42,6 @@ namespace Draw
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["ssaoBlurMap"].textureImageView, textureManager->nameToTex["ssaoMap"].textureSampler);
 		addCubeTexture("omni_depth_map");
 	}
-	void PbrDeferredMaterial::Compile()
-	{
-		cout << "PbrDeferredMaterial::Compile()" << endl;
-		using namespace Graphics;
-		desc_ptr->Compile();
-
-		loadShader(Bind::ShaderType::PBR_Deferred);
-
-		VkPipelineVertexInputStateCreateInfo emptyVertexInputState = initializers::pipelineVertexInputStateCreateInfo();
-		float width = static_cast<float>(Vulkan::getInstance()->GetWidth());
-		float height = static_cast<float>(Vulkan::getInstance()->GetHeight());
-		VkViewport viewport = initializers::viewport(width, height, 0.0f, 1.0f);
-		VkRect2D scissor = initializers::rect2D(width, height, 0, 0);
-
-		VkPipelineViewportStateCreateInfo viewport_info = {};
-		viewport_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewport_info.viewportCount = 1;
-		viewport_info.scissorCount = 1;
-		viewport_info.pScissors = &scissor;
-		viewport_info.pViewports = &viewport;
-		rasterizationState.cullMode = VK_CULL_MODE_NONE;
-		VkGraphicsPipelineCreateInfo pipelineCreateInfo = initializers::pipelineCreateInfo(desc_ptr->GetPipelineLayout(), nameToRenderPass[RenderPassType::Default]->renderPass, 0);
-		pipelineCreateInfo.pVertexInputState = &emptyVertexInputState;
-		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
-		pipelineCreateInfo.pRasterizationState = &rasterizationState;
-		pipelineCreateInfo.pColorBlendState = &colorBlendState;
-		pipelineCreateInfo.pMultisampleState = &multisampleState;
-		pipelineCreateInfo.pViewportState = &viewport_info;
-		depthStencilState.depthTestEnable = VK_FALSE;
-		depthStencilState.depthWriteEnable = VK_FALSE;
-		pipelineCreateInfo.pDepthStencilState = &depthStencilState;
-		pipelineCreateInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
-		pipelineCreateInfo.pStages = shaderStages.data();
-
-		vkCreateGraphicsPipelines(Vulkan::getInstance()->GetDevice().device, NULL, 1, &pipelineCreateInfo, nullptr, &pipeline);
-		cout << "PbrDeferredMaterial::Compile() End" << endl;
-	}
 
 	void PbrDeferredMaterial::UpdateSceneData()
 	{
@@ -96,5 +59,15 @@ namespace Draw
 			SetValue("Light", "PointLights", key, "quadratic", i, pl[i].GetLightQuadratic());
 			// std::cout << pl[i].GetLightColor().x << " " << pl[i].GetLightColor().y << " " << pl[i].GetLightColor().z << std::endl;
 		}
+	}
+	void PbrDeferredMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
+	{
+		using namespace Graphics;
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::FULLSCREEN_VERT, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
+		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::PBR_Deferred, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(frag_defs)));
+		pinfo.pVertexInputState = &emptyVertexInputState;
+		pinfo.renderPass = nameToRenderPass[RenderPassType::Default]->renderPass;
+		depthStencilState.depthTestEnable = VK_FALSE;
+		depthStencilState.depthWriteEnable = VK_FALSE;
 	}
 }
