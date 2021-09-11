@@ -9,7 +9,7 @@
 
 #include "Drawable/MaterialBaseParent.h"
 #include "Bindable/DepthStencilState.h"
-
+#include <algorithm>  
 namespace Draw
 {
 	enum class MaterialType

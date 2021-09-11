@@ -26,10 +26,10 @@ namespace Draw
 
 	void PBRMaterial::LoadModelTexture(const aiMaterial* material, string directory, string meshName)
 	{
-		addPBRTexture("AlbedoMap");
-		addPBRTexture("MetallicMap");
-		addPBRTexture("NormalMap");
-		addPBRTexture("RoughnessMap");
+		addPBRTexture("Albedo");
+		addPBRTexture("Metallic");
+		addPBRTexture("Normal");
+		addPBRTexture("Roughness");
 	}
 
 	void PBRMaterial::UpdateSceneData()
@@ -83,21 +83,13 @@ namespace Draw
 
 	void PBRMaterial::InitPBRData()
 	{
-
 		using namespace Graphics;
 		Dcb::RawLayout pbrLayout;
-		pbrLayout.Add<Dcb::Bool>("HasAlbedoMap");
-		pbrLayout.Add<Dcb::Bool>("HasMetallicMap");
-		pbrLayout.Add<Dcb::Bool>("HasNormalMap");
-		pbrLayout.Add<Dcb::Bool>("HasRoughnessMap");
 		pbrLayout.Add<Dcb::Float3>("albedo");
 		pbrLayout.Add<Dcb::Float>("metallic");
 		pbrLayout.Add<Dcb::Float>("roughness");
 
 		addLayout("PbrParam", std::move(pbrLayout), LayoutType::PBRTEXTURE, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
-
-
-
 
 		SetValue("PbrParam", "metallic", metallic);
 		SetValue("PbrParam", "roughness", roughness);
@@ -109,17 +101,10 @@ namespace Draw
 		using namespace Graphics;
 		string texName = modelName + "_" + name;
 		if (Draw::textureManager->nameToTex.count(texName) > 0) {
+			std::transform(name.begin(), name.end(), name.begin(), std::toupper);
+			frag_defs.emplace_back("BINDING_" + name + "=" + std::to_string(pbrbinding));
 			addTexture(LayoutType::PBRTEXTURE, StageFlag::FRAGMENT, Draw::textureManager->nameToTex[texName].textureImageView, Draw::textureManager->nameToTex[texName].textureSampler,
 				pbrbinding++);
-			SetValue("PbrParam", "Has" + name , true);
-		}
-		else {
-			//addTexture(LayoutType::PBRTEXTURE, StageFlag::FRAGMENT, VK_NULL_HANDLE, VK_NULL_HANDLE,
-			//	pbrbinding++);
-				addTexture(LayoutType::PBRTEXTURE, StageFlag::FRAGMENT, Draw::textureManager->nameToTex["ssaoNoiseMap"].textureImageView, 
-					Draw::textureManager->nameToTex["ssaoNoiseMap"].textureSampler,
-					pbrbinding++);
-			SetValue("PbrParam", "Has" + name, false);
 		}
 	}
 

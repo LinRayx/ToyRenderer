@@ -69,7 +69,7 @@ namespace Bind
 
 		string concatenated_defines = "";
 		for (auto& str : request->defines) {
-			concatenated_defines += "-D" + str + " ";
+			concatenated_defines += "--D " + str + " ";
 		}
 		// Construct the command line
 		const char* command_line_pieces[] = {

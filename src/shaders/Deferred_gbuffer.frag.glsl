@@ -1,6 +1,5 @@
 #version 450
 
-
 layout(location = 0) in vec3 inNormal;
 layout(location = 1) in vec3 inPos;
 layout(location = 2) in vec2 inUV;
@@ -23,10 +22,6 @@ layout(set = 0, binding = 1) uniform SceneParam
 
 layout(set = 2, binding = 0) uniform PbrParam
 {
-	bool HasAlbedoMap;
-	bool HasMetallicMap;
-	bool HasNormalMap;
-	bool HasRoughnessMap;
 	vec3 albedo;
 	float metallic;
 	float roughness;
@@ -34,11 +29,18 @@ layout(set = 2, binding = 0) uniform PbrParam
 } pParam;
 
 
-layout(set = 2, binding = 1) uniform sampler2D albedoMap;
-layout(set = 2, binding = 2) uniform sampler2D metallicMap;
-layout(set = 2, binding = 3) uniform sampler2D normalMap;
-layout(set = 2, binding = 4) uniform sampler2D roughnessMap;
-
+#ifdef BINDING_ALBEDO
+layout(set = 2, binding = BINDING_ALBEDO) uniform sampler2D albedoMap;
+#endif
+#ifdef BINDING_METALLIC
+layout(set = 2, binding = BINDING_METALLIC) uniform sampler2D metallicMap;
+#endif
+#ifdef BINDING_NORMAL
+layout(set = 2, binding = BINDING_NORMAL) uniform sampler2D normalMap;
+#endif
+#ifdef BINDING_ROUGHNESS
+layout(set = 2, binding = BINDING_ROUGHNESS) uniform sampler2D roughnessMap;
+#endif
 
 float linearDepth(float depth)
 {
@@ -49,9 +51,9 @@ float linearDepth(float depth)
 vec3 calculateNormal()
 {
 	vec3 tangentNormal = vec3(0, 0, 1);
-	if (pParam.HasNormalMap)
+#ifdef BINDING_NORMAL
 		tangentNormal = texture(normalMap, inUV).xyz * 2.0 - 1.0;
-
+#endif
 	vec3 N = normalize(inNormal);
 	vec3 T = normalize(inTangent.xyz);
 	vec3 B = normalize(cross(N, T));
@@ -63,20 +65,22 @@ void main()
 {
 	outPosition = vec4(inPos, linearDepth(gl_FragCoord.z));
 	outNormal = vec4(calculateNormal() * 0.5 + 0.5, 1.0);
-	if (pParam.HasAlbedoMap)
+#ifdef BINDING_ALBEDO
 		outAlbedo = texture(albedoMap, inUV);
-	else
+#else
 		outAlbedo = vec4(pParam.albedo, 1);
-	outAlbedo.a = 1; // 标记位
-	if (pParam.HasMetallicMap)
+#endif
+		outAlbedo.a = 1; // 标记位
+#ifdef BINDING_METALLIC
 		outMetallicRoughness.r = texture(metallicMap, inUV).r;
-	else
+#else
 		outMetallicRoughness.r = pParam.metallic;
-	if (pParam.HasRoughnessMap)
+#endif
+#ifdef BINDING_ROUGHNESS
 		outMetallicRoughness.g = texture(roughnessMap, inUV).r;
-	else
+#else
 		outMetallicRoughness.g = pParam.roughness;
-
+#endif
 	//outIndirectColor = vec4(SHrecon(), 1.0f);
 
 }
