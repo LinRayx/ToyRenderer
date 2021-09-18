@@ -6,7 +6,6 @@ namespace Draw
 	{
 		using namespace Graphics;
 
-		desc_ptr = std::make_shared<DescriptorSetCore>();
 		Dcb::RawLayout layout;
 		layout.Add<Dcb::Matrix>("projMat");
 		layout.Add<Dcb::Float3>("lightPos");
@@ -77,6 +76,7 @@ namespace Draw
 	}
 	void OnmiShadowGenMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
+		cout << "OnmiShadowGenMaterial::initPipelineCreateInfo" << endl;
 		using namespace Graphics;
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::OMNISHADOW, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::OMNISHADOW, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(frag_defs)));

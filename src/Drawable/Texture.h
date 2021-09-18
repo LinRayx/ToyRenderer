@@ -49,7 +49,8 @@ namespace Draw
 
 	extern Texture* textureManager;
 	void InitTextureMgr( shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr);
-
+	VkImageView GetImageView(string name);
+	VkSampler GetSampler(string name);
 	void DestroyTextureMgr();
 }
 

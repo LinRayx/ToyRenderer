@@ -21,6 +21,7 @@ namespace Draw
 		GBuffer,
 		FS_SSAO,
 		FS_BLUR,
+		FS_COMPOSITION,
 		PBR_Deferred,
 		DEFAULT,
 		POINTLIGHT,

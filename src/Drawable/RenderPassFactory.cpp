@@ -60,6 +60,13 @@ namespace Draw
 			textureManager->nameToTex["omni_depth_attachment"].textureImageView
 		);
 		nameToRenderPass[RenderPassType::ONMISHADOW] = rp6;
+
+		RenderPass* rp7 = new RenderPass();
+		rpdatas.clear();
+		rpdatas.emplace_back(RenderPass::RpData{ textureManager->nameToTex["diffuseMap"].format, textureManager->nameToTex["diffuseMap"].textureImageView });
+		rpdatas.emplace_back(RenderPass::RpData{ textureManager->nameToTex["specularMap"].format, textureManager->nameToTex["specularMap"].textureImageView });
+		rp7->CreateLightPass(rpdatas, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight());
+		nameToRenderPass[RenderPassType::LIGHT] = rp7;
 	}
 
 

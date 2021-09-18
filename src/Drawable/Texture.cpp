@@ -510,10 +510,26 @@ namespace Draw
 			VK_FORMAT_R8_UNORM, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
 			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
 
+		textureManager->CreateResource("diffuseMap",
+			VK_FORMAT_R32G32B32A32_SFLOAT, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
+		textureManager->CreateResource("specularMap",
+			VK_FORMAT_R32G32B32A32_SFLOAT, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight(),
+			VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+
 		// Shadow
 		createCubeDepthResource();
 	}
 
+	VkImageView GetImageView(string name)
+	{
+		return textureManager->nameToTex[name].textureImageView;
+	}
+	VkSampler GetSampler(string name)
+	{
+		return textureManager->nameToTex[name].textureSampler;
+	}
 	void DestroyTextureMgr()
 	{
 		delete textureManager;

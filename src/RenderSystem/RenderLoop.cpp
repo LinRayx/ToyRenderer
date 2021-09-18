@@ -105,6 +105,9 @@ namespace RenderSystem
 		pbr_deferred->Compile();
 		mat_fullscreen_ptrs[Draw::MaterialType::PBR_Deferred] = pbr_deferred;
 
+		Draw::CompositionMaterial* comp_ptr = new Draw::CompositionMaterial;
+		comp_ptr->Compile();
+		mat_fullscreen_ptrs[Draw::MaterialType::FS_COMPOSITION] = comp_ptr;
 		buildCmd();
 	}
 
@@ -249,10 +252,11 @@ namespace RenderSystem
 		// full screen pass, output ssaoMap
 		mat_fullscreen_ptrs[Draw::MaterialType::FS_SSAO]->BuildCommandBuffer(cmdBuf_ptr);
 		mat_fullscreen_ptrs[Draw::MaterialType::FS_BLUR]->BuildCommandBuffer(cmdBuf_ptr);
+		mat_fullscreen_ptrs[Draw::MaterialType::PBR_Deferred]->BuildCommandBuffer(cmdBuf_ptr);
 
 		cmdBuf_ptr->DefaultBegin();
 
-		mat_fullscreen_ptrs[Draw::MaterialType::PBR_Deferred]->BuildCommandBuffer(cmdBuf_ptr);
+		mat_fullscreen_ptrs[Draw::MaterialType::FS_COMPOSITION]->BuildCommandBuffer(cmdBuf_ptr);
 
 		// Draw Light
 		for (auto& model : models) {

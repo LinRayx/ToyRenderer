@@ -398,6 +398,83 @@ namespace Graphics {
 		}
 	}
 
+	void RenderPass::CreateLightPass(vector<RpData>& data, int width, int height)
+	{
+		this->width = width;
+		this->height = height;
+		clearValues.resize(data.size());
+		for (auto& it : clearValues) {
+			it.color = { {0, 0, 0, 0} };
+		}
+		vector<VkAttachmentDescription> colorAttDescs;
+		vector<VkAttachmentReference> colorAttRefs;
+		for (size_t i = 0; i < data.size(); ++i) {
+			VkAttachmentDescription attDesc = {};
+			// Color attachment
+			attDesc.format = data[i].format;
+			attDesc.samples = VK_SAMPLE_COUNT_1_BIT;
+			attDesc.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+			attDesc.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			attDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			attDesc.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			attDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			attDesc.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+			colorAttDescs.emplace_back(std::move(attDesc));
+			VkAttachmentReference colorReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+			colorAttRefs.emplace_back(std::move(colorReference));
+		}
+
+		VkSubpassDescription subpassDescription = {};
+		subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpassDescription.colorAttachmentCount = static_cast<uint32_t>(colorAttRefs.size());
+		subpassDescription.pColorAttachments = colorAttRefs.data();
+
+		// Use subpass dependencies for layout transitions
+		std::array<VkSubpassDependency, 2> dependencies;
+		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+		dependencies[1].srcSubpass = 0;
+		dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+		// Create the actual renderpass
+		VkRenderPassCreateInfo renderPassCI{};
+		renderPassCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassCI.attachmentCount = static_cast<uint32_t>(colorAttDescs.size());
+		renderPassCI.pAttachments = colorAttDescs.data();
+		renderPassCI.subpassCount = 1;
+		renderPassCI.pSubpasses = &subpassDescription;
+		renderPassCI.dependencyCount = 2;
+		renderPassCI.pDependencies = dependencies.data();
+
+		vkCreateRenderPass(Vulkan::getInstance()->GetDevice().device, &renderPassCI, nullptr, &renderPass);
+
+		vector<VkImageView> attachments;
+		for (auto& it : data) {
+			attachments.emplace_back(it.view);
+		}
+
+		VkFramebufferCreateInfo framebufferCI{};
+		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferCI.renderPass = renderPass;
+		framebufferCI.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferCI.pAttachments = attachments.data();
+		framebufferCI.width = width;
+		framebufferCI.height = height;
+		framebufferCI.layers = 1;
+
+		vkCreateFramebuffer(Vulkan::getInstance()->GetDevice().device, &framebufferCI, nullptr, &framebuffer);
+	}
+
 	map<RenderPassType, RenderPass*> nameToRenderPass;
 
 	void DestroyRenderPass()

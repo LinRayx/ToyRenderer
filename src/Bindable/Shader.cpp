@@ -179,9 +179,7 @@ namespace Bind
 
 	void LoadShaderPaths()
 	{
-		
 		shaderFilePath[ShaderType::Skybox] = dict+"Skybox";
-
 		shaderFilePath[ShaderType::Outline] = dict+"Outline";
 		shaderFilePath[ShaderType::Phone] = dict+"Phone";
 		shaderFilePath[ShaderType::PBR] = dict+"Pbr_basic";
@@ -196,6 +194,7 @@ namespace Bind
 		shaderFilePath[ShaderType::PBR_Deferred] = dict+"Pbr_deferred";
 		shaderFilePath[ShaderType::BLUR] = dict+"Blur";
 		shaderFilePath[ShaderType::OMNISHADOW] = dict+"shadow/omni_shadow";
+		shaderFilePath[ShaderType::COMPOSITION] = dict + "composition/Composition";
 	}
 
 	std::vector< unique_ptr<Shader> > shaderCollection;

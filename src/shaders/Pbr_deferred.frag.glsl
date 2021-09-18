@@ -3,7 +3,8 @@
 #define MAX_POINTLIGHT_NUM 1
 
 layout(location = 0) in vec2 inUV;
-layout(location = 0) out vec4 outColor;
+layout(location = 0) out vec4 outDiffuse;
+layout(location = 1) out vec4 outSpecular;
 
 struct PointLight
 {
@@ -141,13 +142,12 @@ float calulateShadow(vec3 pos)
 	return shadow;
 }
 
-
-
 void main()
 {
 	float flag = texture(gbuffer_albedoMap, inUV).a;
 	if (flag < 1) {
-		outColor = vec4(0, 0, 0, 1);
+		outDiffuse = vec4(0, 0, 0, 1);
+		outSpecular = vec4(0, 0, 0, 1);
 		return;
 	}
 	vec3 pos = texture(gbuffer_positionDepthMap, inUV).rgb;
@@ -191,20 +191,12 @@ void main()
 		ao = ssao.rrr;
 	vec3 ambient = (kD * diffuse + specular) * ao;
 
-	vec3 color = ambient + Lo;
+	// vec3 color = ambient + Lo;
 	// vec3 color = Lo;
 
-	color *= calulateShadow(pos);
+	float shadow = calulateShadow(pos);
 
-	float exposure = 4.5;
-	float gamma = 2.2;
 
-	// Tone mapping
-	color = Uncharted2Tonemap(color * exposure);
-	color = color * (1.0f / Uncharted2Tonemap(vec3(11.2f)));
-
-	// Gamma correction
-	color = pow(color, vec3(1.0f / gamma));
-
-	outColor = vec4(color, 1.0);
+	outDiffuse = vec4(kD * diffuse * ao * shadow, 1);
+	outSpecular = vec4((specular * ao + Lo) * shadow, 1);
 }

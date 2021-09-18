@@ -62,6 +62,7 @@ namespace Draw
 	}
 	void DefaultMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
+		cout << "DefaultMaterial::initPipelineCreateInfo" << endl;
 		using namespace Graphics;
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::DEFAULT, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::DEFAULT, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(vert_defs)));

@@ -21,6 +21,7 @@ namespace Draw
 	}
 	void SkyboxMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
+		cout << "SkyboxMaterial::initPipelineCreateInfo" << endl;
 		using namespace Graphics;
 		pinfo.renderPass = nameToRenderPass[RenderPassType::Default]->renderPass;
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::Skybox, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));

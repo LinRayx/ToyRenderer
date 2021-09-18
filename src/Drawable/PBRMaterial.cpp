@@ -73,7 +73,7 @@ namespace Draw
 
 	void PBRMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
-		cout << "hgghhhgg" << endl;
+		cout << "PBRMaterial::initPipelineCreateInfo" << endl;
 		using namespace Graphics;
 		pinfo.renderPass = nameToRenderPass[RenderPassType::Default]->renderPass;
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::PBR, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));

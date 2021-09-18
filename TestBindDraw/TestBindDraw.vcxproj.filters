@@ -118,6 +118,18 @@
     <Filter Include="头文件\Drawable\Private">
       <UniqueIdentifier>{5299bee6-275b-4282-863b-c7b1b0f511d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="源文件\Shaders\SSR">
+      <UniqueIdentifier>{cd45f1ef-8727-4e4e-8536-638962cc2c63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Drawable\PostProcess">
+      <UniqueIdentifier>{3c43adb9-74ba-4a14-a5f4-f2444021f4ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Drawable\PostProcess">
+      <UniqueIdentifier>{d81432e2-d409-4475-95e9-8c838a00697a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Shaders\Composition">
+      <UniqueIdentifier>{933aa011-60f3-443a-996b-140da003b9a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\VulkanCore\Buffer.h">
@@ -306,6 +318,9 @@
     <ClInclude Include="..\src\Drawable\MaterialBaseParent.h">
       <Filter>头文件\Drawable\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\PostProcess\CompositionMaterial.h">
+      <Filter>头文件\Drawable\PostProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -476,6 +491,9 @@
     <ClCompile Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.cpp">
       <Filter>源文件\Drawable\Shadow</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\PostProcess\CompositionMaterial.cpp">
+      <Filter>源文件\Drawable\PostProcess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -564,6 +582,12 @@
     </None>
     <None Include="..\src\shaders\shadow\omni_shadow.frag.glsl">
       <Filter>源文件\Shaders\Shadow</Filter>
+    </None>
+    <None Include="..\src\shaders\ssr\ScreenSpaceReflection.frag.glsl">
+      <Filter>源文件\Shaders\SSR</Filter>
+    </None>
+    <None Include="..\src\shaders\composition\Composition.frag.glsl">
+      <Filter>源文件\Shaders\Composition</Filter>
     </None>
   </ItemGroup>
 </Project>

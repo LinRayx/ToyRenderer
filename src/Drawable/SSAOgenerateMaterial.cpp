@@ -6,7 +6,6 @@ namespace Draw
 		: MaterialBaseParent()
 	{
 		using namespace Graphics;
-		desc_ptr = make_unique<DescriptorSetCore>();
 		Dcb::RawLayout sceneLayout;
 		sceneLayout.Add<Dcb::Matrix>("view");
 		sceneLayout.Add<Dcb::Matrix>("proj");

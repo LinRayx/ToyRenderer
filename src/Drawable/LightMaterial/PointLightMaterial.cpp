@@ -2,7 +2,7 @@
 #include <glm/gtx/string_cast.hpp>
 namespace Draw
 {
-	PointLightMaterial::PointLightMaterial()
+	PointLightMaterial::PointLightMaterial() : DefaultMaterial()
 	{
 		pl_ptr = nullptr;
 		this->matType = MaterialType::POINTLIGHT;

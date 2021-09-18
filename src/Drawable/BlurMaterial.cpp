@@ -4,7 +4,6 @@ namespace Draw
 {
 	BlurMaterial::BlurMaterial() : MaterialBaseParent()
 	{
-		desc_ptr = make_shared<Graphics::DescriptorSetCore>();
 
 	}
 
@@ -40,6 +39,7 @@ namespace Draw
 	}
 	void BlurMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
+		cout << "BlurMaterial::initPipelineCreateInfo" << endl;
 		using namespace Graphics;
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::FULLSCREEN_VERT, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::BLUR, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(frag_defs)));

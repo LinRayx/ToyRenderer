@@ -23,6 +23,7 @@ namespace Graphics {
 		FULLSCREEN_SSAO = 5,
 		FULLSCREEN_BLUR = 6,
 		ONMISHADOW = 7,
+		LIGHT = 8,
 	};
 
 	class RenderPass : public Graphics
@@ -43,6 +44,7 @@ namespace Graphics {
 		void CreateDeferredRenderPass(vector<RpData>& data);
 		void CreateFullScreenRenderPass(VkFormat format, VkImageView& view, int width, int height);
 		void CreateShadowMappingRenderPass(VkFormat format, VkImageView& view, int width, int height, VkImageView& depthView);
+		void CreateLightPass(vector<RpData>& data, int width, int height);
 	private:
 		VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;		
 	public:

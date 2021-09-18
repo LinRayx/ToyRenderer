@@ -2,11 +2,9 @@
 
 namespace Draw
 {
-	PrefilterMaterial::PrefilterMaterial()
+	PrefilterMaterial::PrefilterMaterial() : MaterialBaseParent()
 	{
 		using namespace Graphics;
-
-		desc_ptr = std::make_shared<DescriptorSetCore>();
 
 		Dcb::RawLayout pushLayout;
 		pushLayout.Add<Dcb::Matrix>("mvp");

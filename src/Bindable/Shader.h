@@ -27,6 +27,7 @@ namespace Bind
 		PBR_Deferred,
 		BLUR,
 		OMNISHADOW,
+		COMPOSITION,
 		EMPTY,
 	};
 

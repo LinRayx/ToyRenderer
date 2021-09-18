@@ -101,6 +101,7 @@ namespace Draw
 	}
 	void IrradianceMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
+		cout << "IrradianceMaterial::initPipelineCreateInfo" << endl;
 		viewport_info.pScissors = &scissor;
 		viewport_info.pViewports = &viewport;
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::IRRADIANCE, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));

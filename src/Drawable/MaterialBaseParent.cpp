@@ -5,6 +5,7 @@ namespace Draw
 
 	MaterialBaseParent::MaterialBaseParent()
 	{
+		desc_ptr = make_unique<Graphics::DescriptorSetCore>();
 		vertexInputInfo = {};
 		viewport = Graphics::initializers::viewport(static_cast<float>(Graphics::Vulkan::getInstance()->GetWidth()), static_cast<float>(Graphics::Vulkan::getInstance()->GetHeight()), 0, 1.0);
 

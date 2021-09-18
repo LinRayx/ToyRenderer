@@ -168,6 +168,7 @@
     <ClInclude Include="..\src\Drawable\PbrDeferredMaterial.h" />
     <ClInclude Include="..\src\Drawable\PBRMaterial.h" />
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
+    <ClInclude Include="..\src\Drawable\PostProcess\CompositionMaterial.h" />
     <ClInclude Include="..\src\Drawable\PrefilterMaterial.h" />
     <ClInclude Include="..\src\Drawable\Private\IMaterial.h" />
     <ClInclude Include="..\src\Drawable\RenderPassFactory.h" />
@@ -235,6 +236,7 @@
     <ClCompile Include="..\src\Drawable\PbrDeferredMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PBRMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\PostProcess\CompositionMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PrefilterMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\RenderPassFactory.cpp" />
     <ClCompile Include="..\src\Drawable\Shadow\OnmiShadowGenMaterial.cpp" />
@@ -273,6 +275,7 @@
     <None Include="..\src\shaders\Blur.frag.glsl" />
     <None Include="..\src\shaders\Brdf_lut.frag.glsl" />
     <None Include="..\src\shaders\Brdf_lut.vert.glsl" />
+    <None Include="..\src\shaders\composition\Composition.frag.glsl" />
     <None Include="..\src\shaders\Default.frag.glsl" />
     <None Include="..\src\shaders\Default.vert.glsl" />
     <None Include="..\src\shaders\Deferred_gbuffer.frag.glsl" />
@@ -297,6 +300,7 @@
     <None Include="..\src\shaders\Skybox.frag.glsl" />
     <None Include="..\src\shaders\Skybox.vert.glsl" />
     <None Include="..\src\shaders\Ssao_generate.frag.glsl" />
+    <None Include="..\src\shaders\ssr\ScreenSpaceReflection.frag.glsl" />
     <None Include="..\src\shaders\UIoverlay.frag.glsl" />
     <None Include="..\src\shaders\UIoverlay.vert.glsl" />
   </ItemGroup>
