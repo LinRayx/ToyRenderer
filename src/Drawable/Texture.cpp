@@ -111,6 +111,70 @@ namespace Draw
 		nameToTex[texName] = std::move(data);
 	}
 
+	void Texture::CreateCSMDepthAndViews(string depthName, string cascadeName, VkFormat format,int width, int height, int count)
+	{
+		TextureData texData;
+
+		VkImageCreateInfo imageInfo = Graphics::initializers::imageCreateInfo();
+		imageInfo.imageType = VK_IMAGE_TYPE_2D;
+		imageInfo.extent.width = width;
+		imageInfo.extent.height = height;
+		imageInfo.extent.depth = 1;
+		imageInfo.mipLevels = 1;
+		imageInfo.arrayLayers = count;
+		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+		imageInfo.format = format;
+		imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		Graphics::Image::getInstance()->createImage(imageInfo, texData.textureImage, texData.textureImageMemory);
+
+		// Full depth map view (all layers)
+		VkImageViewCreateInfo viewInfo = Graphics::initializers::imageViewCreateInfo();
+		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+		viewInfo.format = format;
+		viewInfo.subresourceRange = {};
+		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+		viewInfo.subresourceRange.baseMipLevel = 0;
+		viewInfo.subresourceRange.levelCount = 1;
+		viewInfo.subresourceRange.baseArrayLayer = 0;
+		viewInfo.subresourceRange.layerCount = count;
+		viewInfo.image = texData.textureImage;
+		texData.textureImageView = Graphics::Image::getInstance()->createImageView(viewInfo);
+
+		// Shared sampler for cascade depth reads
+		VkSamplerCreateInfo sampler = Graphics::initializers::samplerCreateInfo();
+		sampler.magFilter = VK_FILTER_LINEAR;
+		sampler.minFilter = VK_FILTER_LINEAR;
+		sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		sampler.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+		sampler.addressModeV = sampler.addressModeU;
+		sampler.addressModeW = sampler.addressModeU;
+		sampler.mipLodBias = 0.0f;
+		sampler.maxAnisotropy = 1.0f;
+		sampler.minLod = 0.0f;
+		sampler.maxLod = 1.0f;
+		sampler.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+		vkCreateSampler(Graphics::Vulkan::getInstance()->GetDevice().device, &sampler, nullptr, &texData.textureSampler);
+
+		for (int i = 0; i < count; ++i) {
+			VkImageViewCreateInfo viewInfo = Graphics::initializers::imageViewCreateInfo();
+			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+			viewInfo.format = format;
+			viewInfo.subresourceRange = {};
+			viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+			viewInfo.subresourceRange.baseMipLevel = 0;
+			viewInfo.subresourceRange.levelCount = 1;
+			viewInfo.subresourceRange.baseArrayLayer = i;
+			viewInfo.subresourceRange.layerCount = 1;
+			viewInfo.image = texData.textureImage;
+
+			TextureData cas;
+			cas.textureImageView = Graphics::Image::getInstance()->createImageView(viewInfo);
+			nameToTex[cascadeName + to_string(i)] = std::move(cas);
+		}
+		nameToTex[depthName] = std::move(texData);
+	}
+
 	void Texture::CreateCubeTextureWithMipmap(vector<string> paths, std::string texName)
 	{
 		vector<stbi_uc*> textures(paths.size());
@@ -520,6 +584,8 @@ namespace Draw
 
 		// Shadow
 		createCubeDepthResource();
+
+		textureManager->CreateCSMDepthAndViews("casDepth", "cascades", VK_FORMAT_D32_SFLOAT_S8_UINT, 1024, 1024, SHADOWMAP_COUNT);
 	}
 
 	VkImageView GetImageView(string name)

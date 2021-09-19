@@ -108,6 +108,12 @@ namespace RenderSystem
 		Draw::CompositionMaterial* comp_ptr = new Draw::CompositionMaterial;
 		comp_ptr->Compile();
 		mat_fullscreen_ptrs[Draw::MaterialType::FS_COMPOSITION] = comp_ptr;
+
+		csm_ptr = make_shared<Draw::CascadeShadowMaterial>();
+		
+		for (auto& model : models) {
+			model->CollectMesh(csm_ptr);
+		}
 		buildCmd();
 	}
 
@@ -225,6 +231,8 @@ namespace RenderSystem
 
 	void RenderLoop::buildCmd()
 	{
+		csm_ptr->BuildCommandBuffer(cmdBuf_ptr);
+
 		cmdBuf_ptr->Begin();
 
 		for (int cmdIndex = 0; cmdIndex < 2; ++cmdIndex) {
@@ -241,7 +249,6 @@ namespace RenderSystem
 					i);
 			}
 		}
-
 
 		cmdBuf_ptr->DeferredBegin();
 		for (auto& model : models) {

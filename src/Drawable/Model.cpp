@@ -131,6 +131,15 @@ namespace Draw {
 		}
 	}
 
+	void Model::CollectMesh(shared_ptr<Draw::CascadeShadowMaterial> csm_ptr) {
+		for (auto& it : objects) {
+			csm_ptr->CollectVAndIBuffers(it.mesh.vertex_buffer, it.mesh.index_buffer);
+			csm_ptr->SetTransform(it.mesh.GetTranslate(), it.mesh.GetRotate());
+			it.mesh.SetMaterial(csm_ptr.get());
+			it.materials[MaterialType::CASCADESHADOW] = csm_ptr.get();
+		}
+	}
+
 	void Model::AddMaterial(DefaultMaterial* mat)
 	{
 		for (auto& it : objects) {

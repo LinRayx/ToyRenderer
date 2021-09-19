@@ -67,6 +67,19 @@ namespace Draw
 		rpdatas.emplace_back(RenderPass::RpData{ textureManager->nameToTex["specularMap"].format, textureManager->nameToTex["specularMap"].textureImageView });
 		rp7->CreateLightPass(rpdatas, Vulkan::getInstance()->GetWidth(), Vulkan::getInstance()->GetHeight());
 		nameToRenderPass[RenderPassType::LIGHT] = rp7;
+
+		RenderPass* rp8 = new RenderPass();
+		vector<VkImageView> views;
+		for (int i = 0; i < SHADOWMAP_COUNT; ++i) {
+			views.emplace_back(textureManager->nameToTex["cascades" + to_string(i)].textureImageView);
+		}
+		rp8->CreateCSMRenderPass(textureManager->nameToTex["casDepth"].textureImage,
+			textureManager->nameToTex["casDepth"].textureImageView,
+			views,
+			textureManager->nameToTex["casDepth"].format,
+			1024,
+			1024);
+		nameToRenderPass[RenderPassType::CASCADE_SHADOW] = rp8;
 	}
 
 

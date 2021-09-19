@@ -321,6 +321,9 @@
     <ClInclude Include="..\src\Drawable\PostProcess\CompositionMaterial.h">
       <Filter>头文件\Drawable\PostProcess</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\Shadow\CascadeShadowMaterial.h">
+      <Filter>头文件\Drawable\Shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -494,6 +497,9 @@
     <ClCompile Include="..\src\Drawable\PostProcess\CompositionMaterial.cpp">
       <Filter>源文件\Drawable\PostProcess</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Drawable\Shadow\CascadeShadowMaterial.cpp">
+      <Filter>源文件\Drawable\Shadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">
@@ -588,6 +594,12 @@
     </None>
     <None Include="..\src\shaders\composition\Composition.frag.glsl">
       <Filter>源文件\Shaders\Composition</Filter>
+    </None>
+    <None Include="..\src\shaders\shadow\CascadeShadow.vert.glsl">
+      <Filter>源文件\Shaders\Shadow</Filter>
+    </None>
+    <None Include="..\src\shaders\shadow\CascadeShadow.frag.glsl">
+      <Filter>源文件\Shaders\Shadow</Filter>
     </None>
   </ItemGroup>
 </Project>

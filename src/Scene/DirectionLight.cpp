@@ -1,7 +1,15 @@
 #include "DirectionLight.h"
 
-Control::DirectionLight::DirectionLight()
+Control::DirectionLight::DirectionLight() : Light()
 {
-	direciton = glm::vec3(0, 1, -1);
-	color = glm::vec3(5, 5, 5);
+}
+
+glm::vec3 Control::DirectionLight::GetDirection()
+{
+	return direction;
+}
+
+void Control::DirectionLight::SetDirection(glm::vec3 dir)
+{
+	this->direction = dir;
 }

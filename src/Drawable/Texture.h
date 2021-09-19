@@ -9,6 +9,16 @@
 
 namespace Draw
 {
+	/*
+	const是默认具有内部链接属性(internal linkage)，
+	也就是说仅在定义这个变量的文件内可见，在链接时对外是不可见的。
+	头文件里的全局常量实际上是include该头文件的CPP都有自己的一份额外的定义，
+	而对于其他编译单元来说是透明的，不会造成重定义的链接错误。
+
+	而至于改成const char*的写法，就需要注意了：
+	这时候定义的只是一个指向常量字符串的普通指针而已，而不是常量指针。正确的写法应该是const char* const
+	*/
+	const int SHADOWMAP_COUNT = 4;
 	class Texture
 	{
 	private:
@@ -37,6 +47,8 @@ namespace Draw
 		void CreateCubeResource(string name, VkFormat format, uint32_t dim, uint32_t mipLevels = 1);
 		void CreateCubeResource(string name, VkImageCreateInfo imageCreateInfo, VkSamplerCreateInfo sampler, VkImageViewCreateInfo view);
 		void CreateDepthResource(string name, int width, int height, bool flag = false);
+
+		void CreateCSMDepthAndViews(string depthName, string cascadeName, VkFormat format, int width, int height, int count);
 		std::map< std::string, TextureData > nameToTex;
 	private:
 		void createTextureImage(std::string path, TextureData& texData);

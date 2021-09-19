@@ -28,6 +28,7 @@ namespace Bind
 		BLUR,
 		OMNISHADOW,
 		COMPOSITION,
+		CASCADE_SHADOW,
 		EMPTY,
 	};
 

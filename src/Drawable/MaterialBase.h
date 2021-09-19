@@ -26,6 +26,7 @@ namespace Draw
 		DEFAULT,
 		POINTLIGHT,
 		OMNISHADOW,
+		CASCADESHADOW,
 		ERROR,
 		
 	};

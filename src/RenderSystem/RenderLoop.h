@@ -35,6 +35,8 @@ namespace RenderSystem
 		shared_ptr<Graphics::CommandQueue> cmdQue_ptr;
 		shared_ptr<Graphics::Synchronization> sync_ptr;
 		shared_ptr<GUI::ImguiManager> gui_ptr;
+
+		shared_ptr<Draw::CascadeShadowMaterial> csm_ptr;
 		
 		std::shared_ptr<FrameTimer> frameT_ptr;
 

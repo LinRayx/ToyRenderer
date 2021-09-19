@@ -93,6 +93,7 @@ namespace Draw
 
 		void AddMaterial(MaterialType type, glm::vec4 color = glm::vec4(1, 1, 1, 1));
 		void AddMaterial(DefaultMaterial* mat);
+		void CollectMesh(shared_ptr<Draw::CascadeShadowMaterial> csm_ptr);
 
 		void Compile();
 

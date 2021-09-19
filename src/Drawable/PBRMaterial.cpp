@@ -36,8 +36,8 @@ namespace Draw
 	{
 		MaterialBase::UpdateSceneData();
 		SetValue("Light", "viewPos", Control::Scene::getInstance()->camera_ptr->GetViewPos());
-		SetValue("Light", "direLightDir", Control::Scene::getInstance()->directionLight.direciton);
-		SetValue("Light", "direLightColor", Control::Scene::getInstance()->directionLight.color);
+		SetValue("Light", "direLightDir", Control::Scene::getInstance()->directionLight.GetDirection());
+		SetValue("Light", "direLightColor", Control::Scene::getInstance()->directionLight.GetLightColor());
 	}
 
 	bool PBRMaterial::SetUI()
