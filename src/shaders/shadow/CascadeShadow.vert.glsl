@@ -12,9 +12,11 @@ layout(set = 0, binding = 0) uniform CascadeParam
     mat4 cascadeProjView[SHADOW_MAP_CASCADE_COUNT];
 } cParam;
 
-layout(push constant) uint cascadeIndex;
-
+layout(push_constant) uniform PushBlock
+{
+ uint cascadeIndex;
+} pushConsts;
 void main()
 {
-    gl_Position = cParam.cascadeProjView[cascadeIndex] * mParam.model * vec4(inPos, 1);
+    gl_Position = cParam.cascadeProjView[pushConsts.cascadeIndex] * mParam.model * vec4(inPos, 1);
 }

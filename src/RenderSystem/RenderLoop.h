@@ -15,20 +15,22 @@ namespace RenderSystem
 {
 	class RenderLoop
 	{
-
 	public:
 		RenderLoop();
 		~RenderLoop();
 		void Init();
 		void PreSolve();
 		void Loop();
-
 		void Run();
+
 	private:
 		void UIInit();
 		void renderGUI();
 		void updateUI();
 		void buildCmd();
+	private:
+		void defaultScene();
+		void csmScene();
 
 		shared_ptr<Graphics::CommandBuffer> cmdBuf_ptr;
 		shared_ptr<Graphics::CommandBuffer> ui_cmdBuf_ptr;

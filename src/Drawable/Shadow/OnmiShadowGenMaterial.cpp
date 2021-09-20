@@ -68,11 +68,11 @@ namespace Draw
 	{
 		SetValue("Scene", "lightPos", pl_ptr->GetLightPosition());
 	}
-	void OnmiShadowGenMaterial::SetTransform(glm::mat4 translate, glm::mat4 rotate)
+	void OnmiShadowGenMaterial::SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale)
 	{
 		auto lightPos = pl_ptr->GetLightPosition();
 		translate = glm::translate(translate, glm::vec3(-lightPos.x, -lightPos.y, -lightPos.z));
-		SetValue("Model", "modelTrans",  translate * rotate);
+		SetValue("Model", "modelTrans",  translate * rotate * scale);
 	}
 	void OnmiShadowGenMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{

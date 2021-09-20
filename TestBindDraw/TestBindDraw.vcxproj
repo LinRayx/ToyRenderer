@@ -169,6 +169,7 @@
     <ClInclude Include="..\src\Drawable\PBRMaterial.h" />
     <ClInclude Include="..\src\Drawable\PhoneMaterial.h" />
     <ClInclude Include="..\src\Drawable\PostProcess\CompositionMaterial.h" />
+    <ClInclude Include="..\src\Drawable\PostProcess\ScreenSpaceReflectionMaterial.h" />
     <ClInclude Include="..\src\Drawable\PrefilterMaterial.h" />
     <ClInclude Include="..\src\Drawable\Private\IMaterial.h" />
     <ClInclude Include="..\src\Drawable\RenderPassFactory.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="..\src\Drawable\PBRMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PhoneMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PostProcess\CompositionMaterial.cpp" />
+    <ClCompile Include="..\src\Drawable\PostProcess\ScreenSpaceReflectionMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\PrefilterMaterial.cpp" />
     <ClCompile Include="..\src\Drawable\RenderPassFactory.cpp" />
     <ClCompile Include="..\src\Drawable\Shadow\CascadeShadowMaterial.cpp" />

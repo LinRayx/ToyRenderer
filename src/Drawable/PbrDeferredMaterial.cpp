@@ -1,9 +1,10 @@
 #include "Drawable/PbrDeferredMaterial.h"
-
+#include "Drawable/Shadow/CascadeShadowMaterial.h"
+// #define PRINT_CSM
 namespace Draw
 {
 	/// <summary>
-	/// layout(set = 0, binding = 2) uniform sampler2D brdfLUT;
+	// layout(set = 0, binding = 2) uniform sampler2D brdfLUT;
 	// layout(set = 0, binding = 3) uniform samplerCube irradianceMap;
 	// layout(set = 0, binding = 4) uniform samplerCube prefilteredMap;
 	// layout(set = 0, binding = 5) uniform sampler2D gbuffer_positionDepthMap;
@@ -17,7 +18,7 @@ namespace Draw
 		using namespace Graphics;
 		Dcb::RawLayout layout2;
 		layout2.Add<Dcb::Float3>("viewPos");
-
+		layout2.Add<Dcb::Matrix>("viewMat");
 		layout2.Add<Dcb::Array>("PointLights");
 		layout2["PointLights"].Set<Dcb::Struct>(Control::Scene::getInstance()->pointLights.size());
 		layout2["PointLights"].T().Add<Dcb::Struct>("pl");
@@ -39,11 +40,26 @@ namespace Draw
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["GBuffer_metallic_roughness"].textureImageView, textureManager->nameToTex["GBuffer_metallic_roughness"].textureSampler);
 		addTexture(LayoutType::SCENE, StageFlag::FRAGMENT, textureManager->nameToTex["ssaoBlurMap"].textureImageView, textureManager->nameToTex["ssaoMap"].textureSampler);
 		addCubeTexture("omni_depth_map");
+
+		Dcb::RawLayout directionLight;
+		directionLight.Add<Dcb::Float4>("cascadeSplits");
+		directionLight.Add<Dcb::Array>("cascadeViewProjMat");
+		directionLight["cascadeViewProjMat"].Set<Dcb::Matrix>(SHADOWMAP_COUNT);
+		directionLight.Add<Dcb::Matrix>("inverseViewMat");
+		directionLight.Add<Dcb::Float3>("lightDir");
+#ifdef PRINT_CSM
+		directionLight.Add<Dcb::Float>("CASCADEINDEX");
+#endif // PRINT_CSM
+
+		addLayout("DirectionLight", std::move(directionLight), LayoutType::Light, DescriptorType::UNIFORM, StageFlag::FRAGMENT);
+		addTexture(LayoutType::Light, StageFlag::FRAGMENT, textureManager->nameToTex["casDepth"].textureImageView, textureManager->nameToTex["casDepth"].textureSampler, DescriptorType::TEXTURE_DEPTH);
+
 	}
 
 	void PbrDeferredMaterial::UpdateSceneData()
 	{
 		SetValue("Light", "viewPos", Control::Scene::getInstance()->camera_ptr->GetViewPos());
+		SetValue("Light", "viewMat", Control::Scene::getInstance()->camera_ptr->GetViewMatrix());
 		SetValue("Light", "SSAO", Control::Scene::getInstance()->SSAO);
 
 		auto& pl = Control::Scene::getInstance()->pointLights;
@@ -57,6 +73,22 @@ namespace Draw
 			SetValue("Light", "PointLights", key, "quadratic", i, pl[i].GetLightQuadratic());
 			// std::cout << pl[i].GetLightColor().x << " " << pl[i].GetLightColor().y << " " << pl[i].GetLightColor().z << std::endl;
 		}
+
+		SetValue("DirectionLight", "cascadeSplits", Cascades::GetCascadeSplits());
+		{
+			// auto = glm::mat4*
+			auto tmp = Cascades::GetCascadeViewProjMat();
+			
+			for (int i = 0; i < SHADOWMAP_COUNT; ++i) {
+				glm::mat4 mat = tmp[i];
+				SetValue("DirectionLight", "cascadeViewProjMat", i, tmp[i]);
+			}
+		}
+		SetValue("DirectionLight", "inverseViewMat", Cascades::GetInverseViewMat());
+		SetValue("DirectionLight", "lightDir", Control::Scene::getInstance()->directionLight.GetDirection());
+#ifdef PRINT_CSM
+		SetValue("DirectionLight", "CASCADEINDEX", static_cast<float>(Gloable::CASCADEINDEX));
+#endif
 	}
 	void PbrDeferredMaterial::BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd)
 	{
@@ -84,6 +116,18 @@ namespace Draw
 	{
 		cout << "PbrDeferredMaterial::initPipelineCreateInfo" << endl;
 		using namespace Graphics;
+		frag_defs.emplace_back("SHADOW_MAP_CASCADE_COUNT=" + to_string(SHADOWMAP_COUNT));
+// #define DEBUG_CSM
+#ifdef DEBUG_CSM
+		frag_defs.emplace_back("DEBUG_CSM");
+#endif // DEBUG_CSM
+
+
+#ifdef PRINT_CSM
+		frag_defs.emplace_back("PRINT_CSM");
+#endif // PRINT_CSM
+
+
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::FULLSCREEN_VERT, VK_SHADER_STAGE_VERTEX_BIT, std::move(vert_defs)));
 		shaderStages.emplace_back(Bind::CreateShaderStage(Bind::ShaderType::PBR_Deferred, VK_SHADER_STAGE_FRAGMENT_BIT, std::move(frag_defs)));
 		pinfo.pVertexInputState = &emptyVertexInputState;

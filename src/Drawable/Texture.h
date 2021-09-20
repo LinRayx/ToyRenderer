@@ -27,8 +27,8 @@ namespace Draw
 			int texHeight;
 			int texChannel;
 			VkFormat format;
-			VkImage textureImage;
-			VkImageView textureImageView;
+			VkImage textureImage = VK_NULL_HANDLE;
+			VkImageView textureImageView = VK_NULL_HANDLE;
 			VkDeviceMemory textureImageMemory;
 			VkBuffer stagingBuffer;
 			VkDeviceMemory stagingBufferMemory;

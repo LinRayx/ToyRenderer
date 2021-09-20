@@ -20,9 +20,9 @@ namespace Draw
 	{
 		MaterialBase::UpdateSceneData();
 	}
-	void PointLightMaterial::SetTransform(glm::mat4 translate, glm::mat4 rotate)
+	void PointLightMaterial::SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale)
 	{
-		glm::mat4 transform = translate * rotate * glm::scale(glm::mat4(1.0), glm::vec3(0.1f));
+		glm::mat4 transform = translate * rotate * scale;
 		glm::vec3 pos = Gloable::ExtractTranslation(translate);
 		pl_ptr->SetLightPosition(pos);
 		SetValue("Model", "modelTrans", transform);

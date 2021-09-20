@@ -19,7 +19,7 @@ namespace Draw {
 	}
 
 	Model::Model(
-		std::string file_path, std::string directory, glm::mat4 translate, glm::mat4 rotate)
+		std::string file_path, std::string directory, glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale)
 	{
 		this->directory = directory;
 		
@@ -44,7 +44,7 @@ namespace Draw {
 		}
 
 		int nextId = 0;
-		pRoot = ParseNode(*pScene->mRootNode, translate, rotate, nextId);
+		pRoot = ParseNode(*pScene->mRootNode, translate, rotate, scale, nextId);
 	}
 
 	void Model::ParseMesh(const aiMesh& mesh, const aiMaterial* material)
@@ -54,7 +54,7 @@ namespace Draw {
 		objects.emplace_back(Object(std::move(t_mesh)));
 	}
 
-	std::unique_ptr<Node> Model::ParseNode(const aiNode& node, glm::mat4 translate, glm::mat4 rotate, int& nextId)
+	std::unique_ptr<Node> Model::ParseNode(const aiNode& node, glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale, int& nextId)
 	{
 		// const glm::mat4* tmp = reinterpret_cast<const glm::mat4* >(&node.mTransformation);
 		// nowTrans *= *tmp;
@@ -64,13 +64,13 @@ namespace Draw {
 		for (size_t i = 0; i < node.mNumMeshes; i++)
 		{
 			const auto meshIdx = node.mMeshes[i];
-			objects[meshIdx].mesh.SetTransform(translate, rotate);
+			objects[meshIdx].mesh.SetTransform(translate, rotate, scale);
 			curMeshPtrs.push_back(&objects[meshIdx].mesh);
 		}
-		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), rotate, translate, node.mName.C_Str(), nextId);
+		auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), rotate, translate, scale, node.mName.C_Str(), nextId);
 		for (size_t i = 0; i < node.mNumChildren; i++)
 		{
-			pNode->AddChild(ParseNode(*node.mChildren[i], rotate , translate, ++nextId));
+			pNode->AddChild(ParseNode(*node.mChildren[i], rotate , translate, scale, ++nextId));
 		}
 
 		return pNode;
@@ -119,24 +119,18 @@ namespace Draw {
 			case Draw::MaterialType::OMNISHADOW:
 				material = new OnmiShadowGenMaterial;
 				break;
+			case Draw::MaterialType::CASCADESHADOW:
+				material = new CascadeShadowMaterial;
+				break;
 			default:
 				throw std::runtime_error("can not find suitable material!");
 			}
 			material->SetModelName(this->name);
 			it.mesh.SetMaterial(material);
 			material->BindMeshData(it.mesh.vertex_buffer, it.mesh.index_buffer);
-			material->SetTransform(it.mesh.GetTranslate(), it.mesh.GetRotate());
+			material->SetTransform(it.mesh.GetTranslate(), it.mesh.GetRotate(), it.mesh.GetScale());
 			// material->SetValue("Model", "modelTrans", it.mesh.GetTransform());
 			it.materials[type] = material;
-		}
-	}
-
-	void Model::CollectMesh(shared_ptr<Draw::CascadeShadowMaterial> csm_ptr) {
-		for (auto& it : objects) {
-			csm_ptr->CollectVAndIBuffers(it.mesh.vertex_buffer, it.mesh.index_buffer);
-			csm_ptr->SetTransform(it.mesh.GetTranslate(), it.mesh.GetRotate());
-			it.mesh.SetMaterial(csm_ptr.get());
-			it.materials[MaterialType::CASCADESHADOW] = csm_ptr.get();
 		}
 	}
 
@@ -148,7 +142,7 @@ namespace Draw {
 			it.mesh.SetMaterial(mat);
 			it.mesh.SetPosition(mat->GetPosition());
 			mat->BindMeshData(it.mesh.vertex_buffer, it.mesh.index_buffer);
-			mat->SetTransform(it.mesh.GetTranslate(), it.mesh.GetRotate());
+			mat->SetTransform(it.mesh.GetTranslate(), it.mesh.GetRotate(), it.mesh.GetScale());
 			// mat->SetValue("Model", "modelTrans", it.mesh.GetTransform());
 			it.materials[type] = mat;
 		}
@@ -182,11 +176,13 @@ namespace Draw {
 	}
 
 	Node::Node(std::vector<Mesh*> meshPtrs,
-		glm::mat4 translate, glm::mat4 rotate, const char* name, int id)
+		glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale,
+		const char* name, int id)
 		: curMeshes(std::move(meshPtrs)),id(id)
 	{
 		this->translate = translate;
 		this->rotate = rotate;
+		this->scale = scale;
 		this->name = name;
 	}
 
@@ -240,15 +236,15 @@ namespace Draw {
 		return rotate;
 	}
 
-	void Node::SetTransform(glm::mat4 translate, glm::mat4 rotate)
+	void Node::SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale)
 	{
 		this->translate *= translate;
 		this->rotate *= rotate;
 		for (auto& mesh : curMeshes) {
-			mesh->SetTransform(translate, rotate);
+			mesh->SetTransform(translate, rotate, scale);
 		}
 		for (auto& child : childPtrs) {
-			child->SetTransform(translate, rotate);
+			child->SetTransform(translate, rotate, scale);
 		}
 	}
 
@@ -316,12 +312,13 @@ namespace Draw {
 		mat->LoadModelTexture(material, dire, name);
 		mat_ptrs.push_back(mat);
 	}
-	void Mesh::SetTransform(glm::mat4 translate, glm::mat4 rotate)
+	void Mesh::SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale)
 	{
 		this->translate = translate;
 		this->rotate = rotate;
+		this->scale = scale;
 		for (auto& ptr : mat_ptrs) {
-			ptr->SetTransform(translate, rotate);
+			ptr->SetTransform(translate, rotate, scale);
 		}
 	}
 
@@ -343,5 +340,9 @@ namespace Draw {
 	glm::mat4 Mesh::GetRotate()
 	{
 		return rotate;
+	}
+	glm::mat4 Mesh::GetScale()
+	{
+		return scale;
 	}
 }

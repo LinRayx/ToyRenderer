@@ -39,11 +39,12 @@ namespace Draw
 		shared_ptr<Bind::VertexBuffer> vertex_buffer;
 		shared_ptr<Bind::IndexBuffer> index_buffer;
 		void SetMaterial(MaterialBase* mat);
-		void SetTransform(glm::mat4 translate, glm::mat4 rotate);
+		void SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale);
 		void SetPosition(glm::vec3 pos);
 		MaterialBase* GetMaterial();
 		glm::mat4 GetTranslate();
 		glm::mat4 GetRotate();
+		glm::mat4 GetScale();
 	private:
 		const aiMaterial* material;
 		vector<MaterialBase*> mat_ptrs;
@@ -51,12 +52,13 @@ namespace Draw
 		string name;
 		glm::mat4 translate;
 		glm::mat4 rotate;
+		glm::mat4 scale;
 	};
 
 	class Node
 	{
 	public:
-		Node(std::vector<Mesh*> meshPtrs, glm::mat4 translate, glm::mat4 rotate, const char* name, int id) ;
+		Node(std::vector<Mesh*> meshPtrs, glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale, const char* name, int id) ;
 		void AddChild(std::unique_ptr<Node> pChild);
 		void Accept(ModelWindowBase* window);
 		int GetId();
@@ -65,7 +67,7 @@ namespace Draw
 		bool AddMaterialUI();
 		glm::mat4& GetTranslate();
 		glm::mat4& GetRotate();
-		void SetTransform(glm::mat4 translate, glm::mat4 rotate);
+		void SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale);
 		void Traverse(vector<Mesh*> meshes);
 
 	private:
@@ -75,17 +77,18 @@ namespace Draw
 		int id;
 		glm::mat4 translate;
 		glm::mat4 rotate;
+		glm::mat4 scale;
 	};
 
 	class Model : public ModelBase
 	{
 	public:
 
-		Model(std::string file_path, std::string directory, glm::mat4 translate = glm::mat4(1.0f), glm::mat4 rotate = glm::mat4(1.0));
+		Model(std::string file_path, std::string directory, glm::mat4 translate = glm::mat4(1.0f), glm::mat4 rotate = glm::mat4(1.0), glm::mat4 scale = glm::mat4(1.0));
 
 		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
 
-		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 translate, glm::mat4 rotate, int& nextId);
+		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale, int& nextId);
 
 		void Update(int cur);
 
@@ -93,7 +96,6 @@ namespace Draw
 
 		void AddMaterial(MaterialType type, glm::vec4 color = glm::vec4(1, 1, 1, 1));
 		void AddMaterial(DefaultMaterial* mat);
-		void CollectMesh(shared_ptr<Draw::CascadeShadowMaterial> csm_ptr);
 
 		void Compile();
 

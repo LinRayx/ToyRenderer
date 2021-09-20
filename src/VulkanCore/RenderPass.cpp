@@ -477,6 +477,10 @@ namespace Graphics {
 
 	void RenderPass::CreateCSMRenderPass(VkImage depthImg, VkImageView depthView, vector<VkImageView>& cascadeViews, VkFormat format, int width, int height)
 	{
+		this->width = width;
+		this->height = height;
+		clearValues.resize(1);
+		clearValues[0].depthStencil = { 1.0, 0 };
 		VkAttachmentDescription attachmentDescription{};
 		attachmentDescription.format = format;
 		attachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT;

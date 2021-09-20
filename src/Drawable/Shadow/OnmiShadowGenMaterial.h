@@ -13,7 +13,7 @@ namespace Draw
 		OnmiShadowGenMaterial();
 		virtual void BuildCommandBuffer(shared_ptr<Graphics::CommandBuffer> cmd, int index, int face);
 		virtual void UpdateSceneData();
-		virtual void SetTransform(glm::mat4 translate, glm::mat4 rotate);
+		virtual void SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale);
 	protected:
 		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo) override;
 	private:

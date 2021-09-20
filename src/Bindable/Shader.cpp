@@ -195,21 +195,29 @@ namespace Bind
 		shaderFilePath[ShaderType::BLUR] = dict+"Blur";
 		shaderFilePath[ShaderType::OMNISHADOW] = dict+"shadow/omni_shadow";
 		shaderFilePath[ShaderType::COMPOSITION] = dict + "composition/Composition";
+		shaderFilePath[ShaderType::CASCADE_SHADOW] = dict + "shadow/CascadeShadow";
 	}
 
-	std::vector< unique_ptr<Shader> > shaderCollection;
+	map<string, unique_ptr<Shader> >shaderCollection;
+	// std::vector< unique_ptr<Shader> > shaderCollection;
 
 	VkPipelineShaderStageCreateInfo CreateShaderStage(ShaderType type, VkShaderStageFlagBits stage, vector<string>&& defs)
 	{
 		VkPipelineShaderStageCreateInfo info = {};
+		string key = std::to_string(static_cast<int>(type)) + std::to_string(stage);
+		for (auto str : defs) {
+			key += str;
+		}
 
-		unique_ptr<Shader> shader = make_unique<Shader>(shaderFilePath[type], "../src/shaders", "main", stage, std::forward<vector<string>>(defs));
-
+		Shader* shader;
+		if (!shaderCollection.count(key)) 
+			shaderCollection[key] = make_unique<Shader>(shaderFilePath[type], "../src/shaders", "main", stage, std::forward<vector<string>>(defs));
+		shader = shaderCollection[key].get();
 		info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		info.stage = stage;
-		info.module = shader->GetShaderModule();
+		info.module = shaderCollection[key]->GetShaderModule();
 		info.pName = "main";
-		shaderCollection.emplace_back(std::move(shader));
+
 		return info;
 	}
 

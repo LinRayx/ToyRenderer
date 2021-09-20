@@ -49,9 +49,9 @@ namespace Draw
 		SetValue("ViewAndProj", "projMat", Control::Scene::getInstance()->camera_ptr->GetProjectMatrix());
 	}
 
-	void MaterialBase::SetTransform(glm::mat4 translate, glm::mat4 rotate)
+	void MaterialBase::SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale)
 	{
-		SetValue("Model", "modelTrans", translate * rotate);
+		SetValue("Model", "modelTrans", translate * rotate * scale);
 	}
 
 	int MaterialBase::loadTextures(const aiMaterial* mat, aiTextureType type, string directory, string meshName)

@@ -48,7 +48,7 @@ namespace Draw
 
 		void SetModelName(string name);
 		virtual void UpdateSceneData();
-		virtual void SetTransform(glm::mat4 translate, glm::mat4 rotate);
+		virtual void SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale);
 	protected:
 		int loadTextures(const aiMaterial* mat, aiTextureType type, string directory, string meshName);
 		string getTypeName(aiTextureType type);

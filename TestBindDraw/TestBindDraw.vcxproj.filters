@@ -324,6 +324,9 @@
     <ClInclude Include="..\src\Drawable\Shadow\CascadeShadowMaterial.h">
       <Filter>头文件\Drawable\Shadow</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Drawable\PostProcess\ScreenSpaceReflectionMaterial.h">
+      <Filter>头文件\Drawable\PostProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\VulkanCore\Buffer.cpp">
@@ -499,6 +502,9 @@
     </ClCompile>
     <ClCompile Include="..\src\Drawable\Shadow\CascadeShadowMaterial.cpp">
       <Filter>源文件\Drawable\Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Drawable\PostProcess\ScreenSpaceReflectionMaterial.cpp">
+      <Filter>源文件\Drawable\PostProcess</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

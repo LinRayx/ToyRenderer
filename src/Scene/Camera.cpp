@@ -49,6 +49,10 @@ namespace Control
 	{
 		return Position;
 	}
+	glm::vec3 Camera::GetWorldUp()
+	{
+		return WorldUp;
+	}
 	float Camera::GetNearPlane()
 	{
 		return nearPlane;

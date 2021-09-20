@@ -79,7 +79,7 @@ namespace Draw
 				rot = glm::rotate(rot, tf.zRot, glm::vec3(0, 0, 1));
 				auto scl = glm::scale(imat, glm::vec3(tf.xScale, tf.yScale, tf.zScale) * glm::vec3(tf.scale));
 
-				pSelectedNode->SetTransform(tran, rot);
+				pSelectedNode->SetTransform(tran, rot, scl);
 			}
 			
 			if (!pSelectedNode->HasChild())

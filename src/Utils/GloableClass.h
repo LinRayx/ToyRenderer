@@ -16,6 +16,7 @@ namespace Gloable
 	glm::mat4 ScaleTranslation(glm::mat4 matrix, float scale);
 
 	extern bool FilpY;
+	extern int CASCADEINDEX;
 
 	namespace SSAO
 	{

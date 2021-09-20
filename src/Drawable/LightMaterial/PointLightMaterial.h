@@ -15,7 +15,7 @@ namespace Draw
 		glm::vec3 GetPosition();
 		virtual void UpdateSceneData();
 		
-		virtual void SetTransform(glm::mat4 translate, glm::mat4 rotate);
+		virtual void SetTransform(glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale);
 		virtual bool SetUI();
 	private:
 		Control::PointLight* pl_ptr;

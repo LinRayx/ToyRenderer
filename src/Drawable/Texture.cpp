@@ -17,8 +17,10 @@ namespace Draw
 	Texture::~Texture()
 	{
 		for (auto& tex : nameToTex) {
-			vkDestroyImage(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureImage, Graphics::Vulkan::getInstance()->GetDevice().allocator);
-			vkDestroyImageView(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureImageView, Graphics::Vulkan::getInstance()->GetDevice().allocator);
+			if (tex.second.textureImage != VK_NULL_HANDLE)
+				vkDestroyImage(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureImage, Graphics::Vulkan::getInstance()->GetDevice().allocator);
+			if (tex.second.textureImageView != VK_NULL_HANDLE)
+				vkDestroyImageView(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureImageView, Graphics::Vulkan::getInstance()->GetDevice().allocator);
 			if (tex.second.textureSampler != VK_NULL_HANDLE)
 				vkDestroySampler(Graphics::Vulkan::getInstance()->GetDevice().device, tex.second.textureSampler, Graphics::Vulkan::getInstance()->GetDevice().allocator);
 		}
@@ -114,7 +116,7 @@ namespace Draw
 	void Texture::CreateCSMDepthAndViews(string depthName, string cascadeName, VkFormat format,int width, int height, int count)
 	{
 		TextureData texData;
-
+		texData.format = format;
 		VkImageCreateInfo imageInfo = Graphics::initializers::imageCreateInfo();
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
 		imageInfo.extent.width = width;
@@ -170,6 +172,7 @@ namespace Draw
 
 			TextureData cas;
 			cas.textureImageView = Graphics::Image::getInstance()->createImageView(viewInfo);
+			cas.format = format;
 			nameToTex[cascadeName + to_string(i)] = std::move(cas);
 		}
 		nameToTex[depthName] = std::move(texData);

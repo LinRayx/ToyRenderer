@@ -62,7 +62,7 @@ namespace Draw
 		}
 		void addLayout(std::string key, Dcb::RawLayout&& layout,
 			Graphics::LayoutType layoutType, Graphics::DescriptorType descType, Graphics::StageFlag stage);
-		void addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler);
+		void addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler, Graphics::DescriptorType type = Graphics::DescriptorType::TEXTURE2D);
 
 		void addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler, uint32_t binding);
 

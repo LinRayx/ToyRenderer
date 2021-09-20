@@ -71,9 +71,9 @@ namespace Draw
 		desc_ptr->Add(layoutType, descType, stage, buffer_ptrs[key]);
 	}
 
-	void MaterialBaseParent::addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler)
+	void MaterialBaseParent::addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler, Graphics::DescriptorType type)
 	{
-		desc_ptr->Add(layout_type, Graphics::DescriptorType::TEXTURE2D, stage, textureImageView, textureSampler);
+		desc_ptr->Add(layout_type, type, stage, textureImageView, textureSampler);
 	}
 
 	void MaterialBaseParent::addTexture(Graphics::LayoutType layout_type, Graphics::StageFlag stage, VkImageView textureImageView, VkSampler textureSampler, uint32_t binding)

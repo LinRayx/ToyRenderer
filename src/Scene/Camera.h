@@ -31,6 +31,7 @@ namespace Control
         glm::mat4 GetProjectMatrix();
         glm::mat4 GetCustomProjectMatrix(float aspect, float near, float far, float radians);
         glm::vec3 GetViewPos();
+        glm::vec3 GetWorldUp();
         float GetNearPlane();
         float GetFarPlane();
         float GetYaw();

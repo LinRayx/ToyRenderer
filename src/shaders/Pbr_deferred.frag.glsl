@@ -18,6 +18,7 @@ struct PointLight
 layout(set = 0, binding = 0) uniform SceneParam
 {
 	vec3 viewPos;
+	mat4 view;
 	PointLight pl[MAX_POINTLIGHT_NUM];
 	bool SSAO;
 }sParam;
@@ -32,8 +33,28 @@ layout(set = 0, binding = 7) uniform sampler2D gbuffer_metallicRoughnessMap;
 layout(set = 0, binding = 8) uniform sampler2D ssaoMap;
 layout(set = 0, binding = 9) uniform samplerCube lightShadowMap;
 
+layout(set = 3, binding = 0) uniform DirctionLight
+{
+	vec4 cascadeSplits;
+	mat4 cascadeViewProjMat[SHADOW_MAP_CASCADE_COUNT];
+	mat4 inverseViewMat;
+	vec3 lightDir;
+#ifdef PRINT_CSM
+	float CASCADEINDEX;
+#endif
+} dlParam;
+
+layout(set = 3, binding = 1) uniform sampler2DArray csmShadowMap;
+
 #define EPSILON 0.15
 #define SHADOW_OPACITY 0.5
+
+const mat4 biasMat = mat4(
+	0.5, 0.0, 0.0, 0.0,
+	0.0, 0.5, 0.0, 0.0,
+	0.0, 0.0, 1.0, 0.0,
+	0.5, 0.5, 0.0, 1.0
+);
 
 const float PI = 3.14159265359;
 vec3 albedo;
@@ -142,8 +163,30 @@ float calulateShadow(vec3 pos)
 	return shadow;
 }
 
+float textureProj(vec4 shadowCoord, vec2 offset, uint cascadeIndex)
+{
+	float shadow = 1.0;
+	float bias = 0.005;
+
+	if (shadowCoord.z > -1.0 && shadowCoord.z < 1.0) {
+		float dist = texture(csmShadowMap, vec3(shadowCoord.st + offset, cascadeIndex)).r;
+		if (shadowCoord.w > 0 && dist < shadowCoord.z - bias) {
+			shadow = SHADOW_OPACITY;
+		}
+	}
+	return shadow;
+}
+
 void main()
 {
+
+#ifdef PRINT_CSM
+	float depth = texture(csmShadowMap, vec3(inUV, dlParam.CASCADEINDEX)).r;
+	outDiffuse.rgb = vec3(depth);
+	outSpecular.rgb = vec3(0.0f);
+	return;
+#endif
+
 	float flag = texture(gbuffer_albedoMap, inUV).a;
 	if (flag < 1) {
 		outDiffuse = vec4(0, 0, 0, 1);
@@ -167,11 +210,15 @@ void main()
 	// Specular contribution
 	vec3 Lo = vec3(0.0);
 
-	for (int i = 0; i < 4; ++i) {
-		vec3 L = normalize(sParam.pl[i].position - pos);
-		vec3 color = sParam.pl[i].color.xyz * sParam.pl[i].color.w;
-		Lo += specularContribution(L,color, V, N, F0, metallic, roughness);
-	}
+	//for (int i = 0; i < 4; ++i) {
+	//	vec3 L = normalize(sParam.pl[i].position - pos);
+	//	vec3 color = sParam.pl[i].color.xyz * sParam.pl[i].color.w;
+	//	Lo += specularContribution(L,color, V, N, F0, metallic, roughness);
+	//}
+
+	vec3 L = normalize(-dlParam.lightDir);
+	vec3 color = vec3(3, 3, 3);
+	Lo += specularContribution(L, color, V, N, F0, metallic, roughness);
 
 	vec2 brdf = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
 	vec3 reflection = prefilteredReflection(R, roughness).rgb;
@@ -191,12 +238,41 @@ void main()
 		ao = ssao.rrr;
 	vec3 ambient = (kD * diffuse + specular) * ao;
 
-	// vec3 color = ambient + Lo;
-	// vec3 color = Lo;
+	vec4 viewPos = sParam.view * vec4(pos, 1);
+	// Get cascade index for the current fragment's view position
+	uint cascadeIndex = 0;
+	for (uint i = 0; i < SHADOW_MAP_CASCADE_COUNT - 1; ++i) {
+		if (viewPos.z < dlParam.cascadeSplits[i]) {
+			cascadeIndex = i + 1;
+		}
+	}
 
-	float shadow = calulateShadow(pos);
-
-
+	//float shadow = calulateShadow(pos);
+	// Depth compare for shadowing
+	vec4 shadowCoord = (biasMat * dlParam.cascadeViewProjMat[cascadeIndex]) * vec4(pos, 1.0);
+	float shadow = 1.0f;
+	shadow = textureProj(shadowCoord / shadowCoord.w, vec2(0.0), cascadeIndex);
 	outDiffuse = vec4(kD * diffuse * ao * shadow, 1);
 	outSpecular = vec4((specular * ao + Lo) * shadow, 1);
+
+#ifdef DEBUG_CSM
+	switch (cascadeIndex) {
+	case 0:
+		outDiffuse.rgb *= vec3(1.0f, 0.25f, 0.25f);
+		outSpecular.rgb *= vec3(1.0f, 0.25f, 0.25f);
+		break;
+	case 1:
+		outDiffuse.rgb *= vec3(0.25f, 1.0f, 0.25f);
+		outSpecular.rgb *= vec3(0.25f, 1.0f, 0.25f);
+		break;
+	case 2:
+		outDiffuse.rgb *= vec3(0.25f, 0.25f, 1.0f);
+		outSpecular.rgb *= vec3(0.25f, 0.25f, 1.0f);
+		break;
+	case 3:
+		outDiffuse.rgb *= vec3(1.0f, 1.0f, 0.25f);
+		outSpecular.rgb *= vec3(1.0f, 1.0f, 0.25f);
+		break;
+	}
+#endif
 }

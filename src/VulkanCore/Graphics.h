@@ -16,6 +16,7 @@ namespace Graphics
 		UNIFORM,
 		TEXTURE2D,
 		TEXTURE_CUBE,
+		TEXTURE_DEPTH,
 	};
 
 	enum class StageFlag
@@ -39,6 +40,7 @@ namespace Graphics
 		SCENE = 0,
 		MODEL,
 		PBRTEXTURE,
+		Light,
 		COUNT,
 	};
 

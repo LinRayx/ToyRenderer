@@ -86,8 +86,8 @@ namespace Graphics
 			vector<VkDescriptorImageInfo > imageInfos(infos.size());
 			for (size_t j = 0; j < infos.size(); ++j) {
 				VkWriteDescriptorSet descriptorWrite = {};
-				if (infos[j].type == DescriptorType::TEXTURE2D) {
-					imageInfos[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				if (infos[j].type == DescriptorType::TEXTURE2D || infos[j].type == DescriptorType::TEXTURE_DEPTH) {
+					imageInfos[j].imageLayout = infos[j].type == DescriptorType::TEXTURE_DEPTH ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 					imageInfos[j].imageView = infos[j].textureImageView;
 					imageInfos[j].sampler = infos[j].textureSampler;
 
@@ -98,6 +98,7 @@ namespace Graphics
 					descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					descriptorWrite.descriptorCount = 1;
 					descriptorWrite.pImageInfo = &imageInfos[j];
+				
 				}
 				else {
 					bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[i];
@@ -142,6 +143,7 @@ namespace Graphics
 			bindings.emplace_back(uboLayoutBinding);
 			break;
 		}
+		case DescriptorType::TEXTURE_DEPTH:
 		case DescriptorType::TEXTURE2D:
 		{
 			VkDescriptorSetLayoutBinding samplerLayoutBinding{};

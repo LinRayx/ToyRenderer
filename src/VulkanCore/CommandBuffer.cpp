@@ -225,13 +225,16 @@ namespace Graphics
         }
     }
 
-    void CommandBuffer::ShadowBegin(RenderPassType type, int index)
+    void CommandBuffer::ShadowBegin(RenderPassType type, int index, int fbIndex)
     {
         auto& rp = nameToRenderPass[type];
         VkRenderPassBeginInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = rp->renderPass;
-        renderPassInfo.framebuffer = rp->framebuffer;
+        if (fbIndex == -1)
+            renderPassInfo.framebuffer = rp->framebuffer;
+        else
+            renderPassInfo.framebuffer = rp->framebuffers[fbIndex];
         renderPassInfo.renderArea.offset = { 0, 0 };
         renderPassInfo.renderArea.extent.width = rp->width;
         renderPassInfo.renderArea.extent.height = rp->height;

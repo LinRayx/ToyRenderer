@@ -41,54 +41,8 @@ namespace RenderSystem
 
 	void RenderLoop::Init()
 	{	
-		Draw::Model* model1 = new Draw::Model("../assets/plane.gltf", "../assets/");
-		glm::mat4 I = glm::mat4(1.f);
-		auto rot = I;
-		rot = glm::rotate(I, glm::radians(-90.f), glm::vec3(1, 0, 0));
-		rot = glm::rotate(rot, glm::radians(180.f), glm::vec3(0, 0, 1));
-		Draw::Model* model3 = new Draw::Model("../assets/mary.gltf", "../assets/", I, rot);
-
-		
-		auto tran = glm::translate(I, glm::vec3(0, 5, -5));
-		rot = glm::rotate(I, glm::radians(90.f), glm::vec3(1, 0, 0));
-		
-		Draw::Model* model11 = new Draw::Model("../assets/plane.gltf", "../assets/", tran, rot);
-
-		tran = glm::translate(I, glm::vec3(-5, 5, 0));
-		rot = glm::rotate(I, glm::radians(-90.f), glm::vec3(0, 0, 1));
-		
-		
-		Draw::Model* model111 = new Draw::Model("../assets/plane.gltf", "../assets/", tran, rot);
-
-		model111->AddMaterial(Draw::MaterialType::GBuffer);
-		model111->AddMaterial(Draw::MaterialType::OMNISHADOW);
-
-		model11->AddMaterial(Draw::MaterialType::GBuffer);
-		model11->AddMaterial(Draw::MaterialType::OMNISHADOW);
-
-		model1->AddMaterial(Draw::MaterialType::GBuffer);
-		model3->AddMaterial(Draw::MaterialType::GBuffer);
-		model1->AddMaterial(Draw::MaterialType::OMNISHADOW);
-		model3->AddMaterial(Draw::MaterialType::OMNISHADOW);
-
-		Draw::Model* model2 = new Draw::Model( "../assets/cube.gltf", "../assets/");
-		model2->AddMaterial(Draw::MaterialType::Skybox);
-
-		Draw::Model* lightModel = new Draw::Model("../assets/cube.gltf", "../assets/");
-		Draw::PointLightMaterial* plMaterial = new Draw::PointLightMaterial;
-		plMaterial->SetPointLight(&Control::Scene::getInstance()->pointLights[0]);
-		lightModel->AddMaterial(plMaterial);
-
-		models.emplace_back(std::move(model2));
-		models.emplace_back(std::move(model1));
-		models.emplace_back(std::move(model3));
-		models.emplace_back(std::move(lightModel));
-		models.emplace_back(std::move(model11));
-		models.emplace_back(std::move(model111));
-
-		modelWindows[0].SetModel(models[1]);
-		modelWindows[1].SetModel(models[2]);
-		modelWindows[2].SetModel(models[3]);
+		// defaultScene();
+		csmScene();
 		for (auto& model : models) {
 			model->Compile();
 		}
@@ -109,11 +63,6 @@ namespace RenderSystem
 		comp_ptr->Compile();
 		mat_fullscreen_ptrs[Draw::MaterialType::FS_COMPOSITION] = comp_ptr;
 
-		csm_ptr = make_shared<Draw::CascadeShadowMaterial>();
-		
-		for (auto& model : models) {
-			model->CollectMesh(csm_ptr);
-		}
 		buildCmd();
 	}
 
@@ -163,13 +112,13 @@ namespace RenderSystem
 			Control::Scene::getInstance()->camera_ptr->Control_camera(Graphics::Vulkan::getInstance()->swapchain.window, frameT_ptr->Get());
 			int imageIndex = cmdQue_ptr->GetCurImageIndex();
 
+			for (auto& model : models) {
+				model->Update(imageIndex);
+			}
+
 			for (auto& mat : mat_fullscreen_ptrs) {
 				mat.second->UpdateSceneData();
 				mat.second->Update(imageIndex);
-			}
-
-			for (auto& model : models) {
-				model->Update(imageIndex);
 			}
 			
 			cmdQue_ptr->AddCommandBuffer(cmdBuf_ptr->drawCmdBuffers[imageIndex]);
@@ -215,7 +164,10 @@ namespace RenderSystem
 		ImGui::Text("ViewPos:  %.3f , %.3f, %.3f . Yaw: %.2f, Pitch: %.2f,", viewPos.x, viewPos.y, viewPos.z, 
 			Control::Scene::getInstance()->camera_ptr->GetYaw(),
 			Control::Scene::getInstance()->camera_ptr->GetPitch());
-		gui_ptr->updated = ImGui::Checkbox("SSAO Open", &Control::Scene::getInstance()->SSAO);
+
+		ImGui::SliderFloat("CascadeSplitLambda", &Draw::Cascades::GetCascadeSplitLambda(), 0, 1.f);
+		ImGui::SliderInt("CascadeIndex", &Gloable::CASCADEINDEX, 0, Draw::SHADOWMAP_COUNT-1);
+		// gui_ptr->updated = ImGui::Checkbox("SSAO Open", &Control::Scene::getInstance()->SSAO);
 		ImGui::End();
 		for (auto& window : modelWindows) {
 			gui_ptr->updated = window.DrawUI();
@@ -231,10 +183,19 @@ namespace RenderSystem
 
 	void RenderLoop::buildCmd()
 	{
-		csm_ptr->BuildCommandBuffer(cmdBuf_ptr);
-
 		cmdBuf_ptr->Begin();
+		
+		for (int cmdIndex = 0; cmdIndex < cmdBuf_ptr->drawCmdBuffers.size(); ++cmdIndex) {
+			for (int i = 0; i < Draw::SHADOWMAP_COUNT; ++i) {
+				cmdBuf_ptr->ShadowBegin(Graphics::RenderPassType::CASCADE_SHADOW, cmdIndex, i);
+				for (auto& model : models) {
+					model->BuildCommandBuffer(Draw::MaterialType::CASCADESHADOW, cmdBuf_ptr, cmdIndex, i);
+				}
+				cmdBuf_ptr->ShadowEnd(cmdIndex);
+			}
+		}
 
+		// csm_ptr->BuildCommandBuffer(cmdBuf_ptr);
 		for (int cmdIndex = 0; cmdIndex < 2; ++cmdIndex) {
 			for (int i = 0; i < 6; ++i) {
 				cmdBuf_ptr->ShadowBegin(Graphics::RenderPassType::ONMISHADOW, cmdIndex);
@@ -249,6 +210,8 @@ namespace RenderSystem
 					i);
 			}
 		}
+
+
 
 		cmdBuf_ptr->DeferredBegin();
 		for (auto& model : models) {
@@ -276,6 +239,98 @@ namespace RenderSystem
 		cmdBuf_ptr->DefaultEnd();
 
 		cmdBuf_ptr->End();
+	}
+
+	void RenderLoop::defaultScene()
+	{
+		Draw::Model* planeBottom = new Draw::Model("../assets/plane.gltf", "../assets/");
+
+		glm::mat4 I = glm::mat4(1.f);
+		auto rot = I;
+		rot = glm::rotate(I, glm::radians(-90.f), glm::vec3(1, 0, 0));
+		rot = glm::rotate(rot, glm::radians(180.f), glm::vec3(0, 0, 1));
+		Draw::Model* mary = new Draw::Model("../assets/mary.gltf", "../assets/", I, rot);
+
+		auto tran = glm::translate(I, glm::vec3(0, 5, -5));
+		rot = glm::rotate(I, glm::radians(90.f), glm::vec3(1, 0, 0));
+		Draw::Model* planeLeft = new Draw::Model("../assets/plane.gltf", "../assets/", tran, rot);
+
+		tran = glm::translate(I, glm::vec3(-5, 5, 0));
+		rot = glm::rotate(I, glm::radians(-90.f), glm::vec3(0, 0, 1));
+		Draw::Model* planeBack = new Draw::Model("../assets/plane.gltf", "../assets/", tran, rot);
+
+		planeBack->AddMaterial(Draw::MaterialType::GBuffer);
+		planeBack->AddMaterial(Draw::MaterialType::OMNISHADOW);
+		planeBack->AddMaterial(Draw::MaterialType::CASCADESHADOW);
+
+		planeLeft->AddMaterial(Draw::MaterialType::GBuffer);
+		planeLeft->AddMaterial(Draw::MaterialType::OMNISHADOW);
+		planeLeft->AddMaterial(Draw::MaterialType::CASCADESHADOW);
+
+		planeBottom->AddMaterial(Draw::MaterialType::GBuffer);
+		planeBottom->AddMaterial(Draw::MaterialType::OMNISHADOW);
+		planeBottom->AddMaterial(Draw::MaterialType::CASCADESHADOW);
+
+		mary->AddMaterial(Draw::MaterialType::GBuffer);
+		mary->AddMaterial(Draw::MaterialType::OMNISHADOW);
+		mary->AddMaterial(Draw::MaterialType::CASCADESHADOW);
+
+		Draw::Model* skybox = new Draw::Model("../assets/cube.gltf", "../assets/");
+		skybox->AddMaterial(Draw::MaterialType::Skybox);
+
+		tran = glm::translate(I, glm::vec3(0, 3, 5));
+		rot = I;
+		auto scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
+		Draw::Model* lightModel = new Draw::Model("../assets/cube.gltf", "../assets/", tran, rot, scale);
+		Draw::PointLightMaterial* plMaterial = new Draw::PointLightMaterial;
+		plMaterial->SetPointLight(&Control::Scene::getInstance()->pointLights[0]);
+		lightModel->AddMaterial(plMaterial);
+
+		models.emplace_back(std::move(skybox));
+		models.emplace_back(std::move(planeBottom));
+		models.emplace_back(std::move(mary));
+		models.emplace_back(std::move(lightModel));
+		models.emplace_back(std::move(planeLeft));
+		models.emplace_back(std::move(planeBack));
+
+		modelWindows[0].SetModel(models[1]);
+		modelWindows[1].SetModel(models[2]);
+		modelWindows[2].SetModel(models[3]);
+	}
+
+	void RenderLoop::csmScene()
+	{
+		glm::mat4 I = glm::mat4(1.f);
+		auto tran = I;
+		auto rot = I;
+		auto scale = glm::scale(glm::mat4(1.0f), glm::vec3(10.f));
+		Draw::Model* planeBottom = new Draw::Model("../assets/plane.gltf", "../assets/", tran, rot, scale);
+		models.emplace_back(std::move(planeBottom));
+		planeBottom->AddMaterial(Draw::MaterialType::GBuffer);
+		planeBottom->AddMaterial(Draw::MaterialType::OMNISHADOW);
+		planeBottom->AddMaterial(Draw::MaterialType::CASCADESHADOW);
+		auto startPoint = I;
+		scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+		for (int i = -4; i < 4; ++i) {
+			for (int j = -4; j < 4; ++j) {
+				tran = glm::translate(startPoint, glm::vec3(j * 10, 0.5, i * 10));
+				
+				Draw::Model* cube = new Draw::Model("../assets/cube.gltf", "../assets/", tran, rot, scale);
+				cube->AddMaterial(Draw::MaterialType::GBuffer);
+				cube->AddMaterial(Draw::MaterialType::OMNISHADOW);
+				cube->AddMaterial(Draw::MaterialType::CASCADESHADOW);
+				models.emplace_back(std::move(cube));
+			}
+		}
+
+		//tran = glm::translate(I, glm::vec3(0, 3, 5));
+		//rot = I;
+		//scale = glm::scale(glm::mat4(1.0), glm::vec3(0.1));
+		//Draw::Model* lightModel = new Draw::Model("../assets/cube.gltf", "../assets/", tran, rot, scale);
+		//Draw::PointLightMaterial* plMaterial = new Draw::PointLightMaterial;
+		//plMaterial->SetPointLight(&Control::Scene::getInstance()->pointLights[0]);
+		//lightModel->AddMaterial(plMaterial);
+		//models.emplace_back(std::move(lightModel));
 	}
 
 }
