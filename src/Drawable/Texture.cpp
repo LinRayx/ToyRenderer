@@ -438,7 +438,7 @@ namespace Draw
 	void createCubeDepthResource()
 	{
 		VkFormat format = VK_FORMAT_R32_SFLOAT;
-		uint32_t dim = 1024;
+		uint32_t dim = Gloable::CSM_MAP_DIM;
 
 		// Cube map image description
 		VkImageCreateInfo imageCreateInfo = Graphics::initializers::imageCreateInfo();
@@ -588,7 +588,7 @@ namespace Draw
 		// Shadow
 		createCubeDepthResource();
 
-		textureManager->CreateCSMDepthAndViews("casDepth", "cascades", VK_FORMAT_D32_SFLOAT_S8_UINT, 1024, 1024, SHADOWMAP_COUNT);
+		textureManager->CreateCSMDepthAndViews("casDepth", "cascades", VK_FORMAT_D32_SFLOAT_S8_UINT, Gloable::CSM_MAP_DIM, Gloable::CSM_MAP_DIM, SHADOWMAP_COUNT);
 	}
 
 	VkImageView GetImageView(string name)

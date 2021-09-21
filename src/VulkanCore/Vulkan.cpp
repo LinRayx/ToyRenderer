@@ -193,6 +193,7 @@ namespace Graphics {
 		enabled_features.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
 		enabled_features.samplerAnisotropy = VK_TRUE;
 		enabled_features.geometryShader = VK_TRUE;
+		enabled_features.depthClamp = VK_TRUE;
 
 		VkDeviceCreateInfo device_info = {};
 		device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

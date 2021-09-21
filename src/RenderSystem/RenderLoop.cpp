@@ -310,10 +310,10 @@ namespace RenderSystem
 		planeBottom->AddMaterial(Draw::MaterialType::OMNISHADOW);
 		planeBottom->AddMaterial(Draw::MaterialType::CASCADESHADOW);
 		auto startPoint = I;
-		scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+		scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.3f));
 		for (int i = -4; i < 4; ++i) {
 			for (int j = -4; j < 4; ++j) {
-				tran = glm::translate(startPoint, glm::vec3(j * 10, 0.5, i * 10));
+				tran = glm::translate(startPoint, glm::vec3(j * 10, 1, i * 10));
 				
 				Draw::Model* cube = new Draw::Model("../assets/cube.gltf", "../assets/", tran, rot, scale);
 				cube->AddMaterial(Draw::MaterialType::GBuffer);

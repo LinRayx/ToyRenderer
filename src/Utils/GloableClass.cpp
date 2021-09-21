@@ -4,6 +4,7 @@
 
 namespace Gloable
 {
+
 	int CASCADEINDEX = 0;
 	bool FilpY = false;
 	glm::vec3 ExtractEulerAngles(const glm::mat4& mat)

@@ -8,6 +8,7 @@
 
 namespace Gloable
 {
+	const int CSM_MAP_DIM = 1024;
 	
 	glm::vec3 ExtractEulerAngles(const glm::mat4& matrix);
 

@@ -12,12 +12,12 @@ namespace Control
 	Camera::Camera(int sc_width, int sc_height, float move_speed, float move_sen) 
 		: sc_width(sc_width), sc_height(sc_height)
 	{
-		Position = glm::vec3(0, 5, 5);
+		Position = glm::vec3(-140.787, 147.064, 22.56);
 		WorldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 		Front = glm::vec3(0.0f, 0.0f, -1.0f);
 		Zoom = 45.f;
-		Yaw = -90.0f;
-		Pitch = 0.0f;
+		Yaw = -22.0f;
+		Pitch = -41.0f;
 		firstMouse = true;
 		lastX = sc_width / 2;
 		lastY = sc_height / 2;
@@ -39,6 +39,9 @@ namespace Control
 		auto proj = glm::perspective(glm::radians(45.f), (float)sc_width / (float)sc_height, nearPlane, farPlane);
 		//if (Gloable::FilpY)
 		//	proj[1][1] *= -1;
+		//float width = 244;
+		//proj = glm::ortho(-width, width, -width, width, 0.0f, width*2);
+
 		return proj;
 	}
 	glm::mat4 Camera::GetCustomProjectMatrix(float aspect, float near, float far, float radians)

@@ -49,11 +49,12 @@ layout(set = 3, binding = 1) uniform sampler2DArray csmShadowMap;
 #define EPSILON 0.15
 #define SHADOW_OPACITY 0.5
 
+// xy * 0.5 + 0.5
 const mat4 biasMat = mat4(
 	0.5, 0.0, 0.0, 0.0,
 	0.0, 0.5, 0.0, 0.0,
-	0.0, 0.0, 1.0, 0.0,
-	0.5, 0.5, 0.0, 1.0
+	0.0, 0.0, 0.5, 0.0,
+	0.5, 0.5, 0.5, 1.0
 );
 
 const float PI = 3.14159265359;
@@ -250,6 +251,8 @@ void main()
 	//float shadow = calulateShadow(pos);
 	// Depth compare for shadowing
 	vec4 shadowCoord = (biasMat * dlParam.cascadeViewProjMat[cascadeIndex]) * vec4(pos, 1.0);
+	
+	// shadowCoord.y = 1 - shadowCoord.y;
 	float shadow = 1.0f;
 	shadow = textureProj(shadowCoord / shadowCoord.w, vec2(0.0), cascadeIndex);
 	outDiffuse = vec4(kD * diffuse * ao * shadow, 1);

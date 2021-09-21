@@ -19,12 +19,8 @@ namespace Draw
 	protected:
 		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo);
 	private:
-
-		const int SHADOWMAP_DIM = 1024;
-
+		const int SHADOWMAP_DIM = Gloable::CSM_MAP_DIM;
 		Control::DirectionLight* light_ptr;
-
-
 
 		VkViewport viewport = Graphics::initializers::viewportOffscreen((float)SHADOWMAP_DIM, (float)SHADOWMAP_DIM, 0.0f, 1.0f);
 		VkRect2D scissor = Graphics::initializers::rect2D(SHADOWMAP_DIM, SHADOWMAP_DIM, 0, 0);

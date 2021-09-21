@@ -1,5 +1,5 @@
 #include "Drawable/Shadow/CascadeShadowMaterial.h"
-
+#include <glm/gtx/string_cast.hpp>
 namespace Draw
 {
 	namespace Cascades
@@ -14,7 +14,7 @@ namespace Draw
 		glm::mat4 cascadeViewProjMat[SHADOWMAP_COUNT];
 		glm::mat4 inverseViewMat;
 		uint32_t cascadeIndex;
-		float cascadeSplitLambda = 0.95f;
+		float cascadeSplitLambda = 0.85f;
 
 		float& GetCascadeSplitLambda()
 		{
@@ -23,6 +23,7 @@ namespace Draw
 
 		void updateCascade()
 		{
+			// std::cout << "updateCascade" << std::endl;
 			float cascadeSplits[SHADOWMAP_COUNT];
 			auto& camera = Control::Scene::getInstance()->camera_ptr;
 			float nearClip = camera->GetNearPlane();
@@ -92,15 +93,28 @@ namespace Draw
 				glm::vec3 minExtents = -maxExtents;
 
 				glm::vec3 lightDir = normalize(Control::Scene::getInstance()->directionLight.GetDirection());
-				glm::mat4 lightViewMatrix = glm::lookAt(frustumCenter - lightDir * -minExtents.z, frustumCenter, camera->GetWorldUp());
-				glm::mat4 lightOrthoMatrix = glm::ortho(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z - minExtents.z);
-
+				glm::mat4 lightViewMatrix = glm::lookAt(frustumCenter - lightDir * maxExtents.z, frustumCenter, glm::vec3(0, 1, 0));
+				glm::mat4 lightOrthoMatrix = glm::ortho(minExtents.x, maxExtents.x, minExtents.y, maxExtents.y, 0.0f, maxExtents.z * 2);
+				// std::cout << glm::to_string(frustumCenter) << " " << glm::to_string(frustumCenter - lightDir * maxExtents.z) << std::endl;
 				// Store split distance and matrix in cascade
+
 				cascades[i].splitDepth = (camera->GetNearPlane() + splitDist * clipRange) * -1.0f;
 				cascades[i].viewProjMatrix = lightOrthoMatrix * lightViewMatrix;
 				cascadeViewProjMat[i] = lightOrthoMatrix * lightViewMatrix;
-
+				// cout << glm::to_string(lightOrthoMatrix) <<" " << glm::to_string(lightViewMatrix)<< endl;
 				lastSplitDist = cascadeSplits[i];
+
+				//// ShadowMap Texel Align
+				//glm::vec4 shadowOrigin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+				//shadowOrigin = cascadeViewProjMat[i] * shadowOrigin;
+				//shadowOrigin = shadowOrigin * ((float)Gloable::CSM_MAP_DIM * 0.5f);
+				//glm::vec4 roundOrign = glm::round(shadowOrigin);
+				//glm::vec4 roundOffset = roundOrign - shadowOrigin;
+				//roundOffset = roundOffset * 2.0f / (float)Gloable::CSM_MAP_DIM;
+				//lightOrthoMatrix[3][0] = lightOrthoMatrix[3][0] + roundOffset.x;
+				//lightOrthoMatrix[3][1] = lightOrthoMatrix[3][1] + roundOffset.y;
+				//cascadeViewProjMat[i] = lightOrthoMatrix * lightViewMatrix;
+
 			}
 		}
 		glm::vec4 GetCascadeSplits()
@@ -162,6 +176,10 @@ namespace Draw
 		pinfo.renderPass = nameToRenderPass[RenderPassType::CASCADE_SHADOW]->renderPass;
 		viewport_info.pScissors = &scissor;
 		viewport_info.pViewports = &viewport;
+		colorBlendState.attachmentCount = 0;
+		depthStencilState.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+		// Enable depth clamp (if available)
+		rasterizationState.depthClampEnable = VK_TRUE;
 		rasterizationState.cullMode = VK_CULL_MODE_NONE;
 	}
 	void CascadeShadowMaterial::UpdateSceneData()

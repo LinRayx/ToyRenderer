@@ -77,8 +77,8 @@ namespace Draw
 			textureManager->nameToTex["casDepth"].textureImageView,
 			views,
 			textureManager->nameToTex["casDepth"].format,
-			1024,
-			1024);
+			Gloable::CSM_MAP_DIM,
+			Gloable::CSM_MAP_DIM);
 		nameToRenderPass[RenderPassType::CASCADE_SHADOW] = rp8;
 	}
 
