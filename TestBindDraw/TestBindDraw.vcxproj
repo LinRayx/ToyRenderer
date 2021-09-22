@@ -80,7 +80,7 @@
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(ProjectDir)..\lib;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(ProjectDir)..\lib;$(LibraryWPath)</LibraryWPath>
-    <IncludePath>$(ProjectDir)..\src\Scene;$(ProjectDir)..\src\Test;$(ProjectDir)..\include;$(ProjectDir)..\src\VulkanCore;$(ProjectDir)..\include\stb_image;$(ProjectDir)..\include\Include;$(ProjectDir)..\include\imgui;$(ProjectDir)..\include\imgui\backends;$(ProjectDir)..\src\Drawable;$(ProjectDir)..\src\DynamicVariable;$(ProjectDir)..\src\Bindable;$(ProjectDir)..\src\Utils;$(ProjectDir)..\src\RenderSystem;$(ProjectDir)..\src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)..\src\Scene;$(ProjectDir)..\src\Test;$(ProjectDir)..\include;$(ProjectDir)..\src\VulkanCore;$(ProjectDir)..\include\stb_image;$(ProjectDir)..\include\Include;$(ProjectDir)..\include\imgui;$(ProjectDir)..\include\imgui\backends;$(ProjectDir)..\src\Drawable;$(ProjectDir)..\src\DynamicVariable;$(ProjectDir)..\src\Bindable;$(ProjectDir)..\src\Utils;$(ProjectDir)..\src\RenderSystem;C:\Program Files (x86)\Visual Leak Detector\include;$(ProjectDir)..\src;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)build\Debug\</OutDir>
     <IntDir>$(ProjectDir)build\Debug\</IntDir>
   </PropertyGroup>
@@ -272,6 +272,7 @@
     <ClCompile Include="..\src\VulkanCore\Graphics.cpp" />
     <ClCompile Include="..\src\VulkanCore\Image.cpp" />
     <ClCompile Include="..\src\VulkanCore\RenderPass.cpp" />
+    <ClCompile Include="..\src\VulkanCore\Synchronization.cpp" />
     <ClCompile Include="..\src\VulkanCore\Vulkan.cpp" />
     <ClCompile Include="..\src\VulkanCore\vulkan_core_headers.cpp" />
   </ItemGroup>

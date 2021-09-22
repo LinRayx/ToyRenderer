@@ -40,6 +40,7 @@ namespace Graphics {
 
 	Vulkan::~Vulkan()
 	{
+		std::cout << "Vulkan::~Vulkan()" << std::endl;
 		destroy_swapchain(&swapchain, &device);
 		destroy_vulkan_device(&device);
 	}

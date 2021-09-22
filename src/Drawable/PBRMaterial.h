@@ -6,6 +6,13 @@
 
 namespace Draw
 {
+	enum class PBRTEXTURE_TYPE
+	{
+		ALBEDO,
+		NORMAL,
+		METALLIC,
+		ROUGHNESS,
+	};
 	class PBRMaterial : public MaterialBase
 	{
 	public:
@@ -17,6 +24,7 @@ namespace Draw
 		float& GetMetallic();
 		glm::vec3& GetAlbedo();
 		float& GetRoughness();
+		void AddTexture(PBRTEXTURE_TYPE type, string name);
 	protected:
 		virtual void initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo);
 		void InitPBRData();

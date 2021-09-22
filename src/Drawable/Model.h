@@ -35,7 +35,8 @@ namespace Draw
 	{
 		friend class Model;
 	public:
-		Mesh(const aiMesh& mesh, const aiMaterial* material, string directoy);
+		Mesh(string file_path, const aiMesh& mesh, const aiMaterial* material, string directoy);
+		~Mesh() = default;
 		shared_ptr<Bind::VertexBuffer> vertex_buffer;
 		shared_ptr<Bind::IndexBuffer> index_buffer;
 		void SetMaterial(MaterialBase* mat);
@@ -85,8 +86,8 @@ namespace Draw
 	public:
 
 		Model(std::string file_path, std::string directory, glm::mat4 translate = glm::mat4(1.0f), glm::mat4 rotate = glm::mat4(1.0), glm::mat4 scale = glm::mat4(1.0));
-
-		void ParseMesh(const aiMesh& mesh, const aiMaterial* material);
+		~Model();
+		void ParseMesh(string file_path, const aiMesh& mesh, const aiMaterial* material);
 
 		std::unique_ptr<Node> ParseNode(const aiNode& node, glm::mat4 translate, glm::mat4 rotate, glm::mat4 scale, int& nextId);
 

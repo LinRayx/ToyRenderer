@@ -79,6 +79,7 @@ namespace Graphics
 		{
 			for (auto descriptorSetLayout : descLayouts)
 				vkDestroyDescriptorSetLayout( Vulkan::getInstance()->device.device, descriptorSetLayout, Vulkan::getInstance()->device.allocator);
+			vkDestroyPipelineLayout(Vulkan::getInstance()->device.device, pipelineLayout, Vulkan::getInstance()->device.allocator);
 		}
 		void add(DescriptorType type, StageFlag stage, vector<VkDescriptorSetLayoutBinding>& bindings);
 		void Add(LayoutType layout_type, DescriptorType desc_type, StageFlag stage);

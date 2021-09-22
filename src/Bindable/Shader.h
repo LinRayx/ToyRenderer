@@ -117,6 +117,7 @@ namespace Bind
 	extern std::map<ShaderType, unique_ptr<ShaderData>> shaderFactory;
 	void LoadShaders();
 	void LoadShaderPaths();
+	void DestroyShader();
 	VkPipelineShaderStageCreateInfo CreateShaderStage(ShaderType type, VkShaderStageFlagBits stage, vector<string>&& defs);
 }
 

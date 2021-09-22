@@ -19,6 +19,7 @@ namespace Graphics
 	public:
 		CommandBuffer()
 		{
+			std::cout << "CommandBuffer()" << std::endl;
 			drawCmdBuffers.resize(Vulkan::getInstance()->swapchain.image_count);
 
 			VkCommandBufferAllocateInfo cmdBufAllocateInfo = {};
@@ -32,6 +33,7 @@ namespace Graphics
 
 		~CommandBuffer()
 		{
+			std::cout << "~CommandBuffer()" << std::endl;
 			vkFreeCommandBuffers(Vulkan::getInstance()->device.device, CommandPool::getInstance()->cmdPool, static_cast<uint32_t>(drawCmdBuffers.size()), drawCmdBuffers.data());
 		}
 

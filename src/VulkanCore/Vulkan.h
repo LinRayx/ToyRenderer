@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include <vector>
 #include <memory>
+#include <iostream>
 
 namespace Draw
 {
@@ -35,14 +36,7 @@ namespace Graphics
 		friend class Draw::Drawable;
 		friend class RenderSystem::RenderLoop;
 	private:
-		/*! This macro initializes a function pointer for the Vulkan function with the
-		given name. It uses GLFW to find it. The surrounding scope must have a
-		device_t* device with a valid instance. The identifier of the function
-		pointer is the function name, prefixed by p.*/
 
-		/*! Holds Vulkan objects that are created up to device creation. This includes
-			the instance, the physical device and the device. It depends on the choice
-			of extensions and devices but not on a window or a resolution.*/
 		typedef struct device_s {
 			//! Number of loaded extensions for the instance
 			uint32_t instance_extension_count;
@@ -123,49 +117,15 @@ namespace Graphics
 	private:
 		Vulkan(int width = 1280, int height = 760);
 		~Vulkan();
-
+		Vulkan(const Vulkan&) = delete;
+		Vulkan& operator=(const Vulkan&) = delete;
 	private:
-		/*! Creates all Vulkan objects that are created up to device creation. This
-			includes the instance, the physical device and the device. It depends on
-			the choice of extensions and devices but not on a window or a resolution.
-			\param device The output structure. The calling side has to invoke
-				destroy_vulkan_device() if the call succeeded.
-			\param application_internal_name The name of the application that is
-				advertised to Vulkan.
-			\param physical_device_index The index of the physical device that is to
-				be used in the list produced by vkEnumeratePhysicalDevices().
-			\param request_ray_tracing Whether you want a device that supports ray
-				tracing. If the physical device, does not support it, device creation
-				still succeeds. Check device->ray_tracing_supported for the outcome.
-			\return 0 indicates success. Upon failure, device is zeroed.*/
+
 		int create_vulkan_device(device_t* device, const char* application_internal_name, uint32_t physical_device_index, VkBool32 request_ray_tracing);
 
-		/*! Destroys a device that has been created successfully by
-			create_vulkan_device().
-			\param device The device that is to be destroyed and zeroed.*/
+
 		void destroy_vulkan_device(device_t* device);
 
-
-		/*! Creates Vulkan objects that are related to the swapchain. This includes the
-			swapchain itself, the window, various buffers and image views. It depends
-			on the device and is changed substantially whenever the resolution changes.
-			Upon resize, the window is kept and shortcuts are used.
-			\param swapchain The output structure and for resizes the existing
-				swapchain. The calling side has to invoke destroy_swapchain()
-				if the call succeeded.
-			\param device A successfully created device.
-			\param resize Whether to perform a resize (VK_TRUE) or first
-				initialization.
-			\param application_display_name The display name of the application, which
-				is used as Window title. Irrelevant for resize.
-			\param width, height The dimensions of the client area of the created
-				window and thus the swapchain. The window manager may not respect this
-				request, i.e. the actual resolution may differ. Irrelevant for resize.
-			\param use_vsync 1 to use vertical synchronization, 0 to render as fast as
-				possible (always do this for profiling).
-			\return 0 indicates success. 1 upon failure, in which case swapchain is
-				destroyed. 2 to indicate that the window is minimized. Swapchain
-				resize can be successful once that changes.*/
 		int create_or_resize_swapchain(swapchain_t* swapchain, const device_t* device, VkBool32 resize,
 			const char* application_display_name, uint32_t width, uint32_t height, VkBool32 use_vsync);
 
@@ -176,20 +136,8 @@ namespace Graphics
 			return ((float)swapchain->extent.width) / ((float)swapchain->extent.height);
 		}
 
-		/*! Destroys a swapchain that has been created successfully by
-			create_swapchain().
-			\param swapchain The swapchain that is to be destroyed and zeroed.
-			\param device The device that has been used to construct the swapchain.*/
 		void destroy_swapchain(swapchain_t* swapchain, const device_t* device);
 
-
-		/*! Goes through memory types available from device and identifies the lowest
-			index that satisfies all given requirements.
-			\param memory_type_bits A bit mask indicating which memory type indices are
-				admissible. Available from VkMemoryRequirements.
-			\param property_mask A combination of VkMemoryPropertyFlagBits.
-			\return 0 if type_index was set to a valid reply, 1 if no compatible memory
-				is available.*/
 		int find_memory_type(uint32_t* type_index, const device_t* device, uint32_t memory_type_bits, VkMemoryPropertyFlags property_mask);
 
 		/*! Returns the smallest number that is greater equal offset and a multiple of
@@ -245,6 +193,7 @@ public:
 		class Deletor {
 		public:
 			~Deletor() {
+				std::cout << "Vulkan Deletor" << std::endl;
 				if (Vulkan::instance != NULL)
 					delete Vulkan::instance;
 			}

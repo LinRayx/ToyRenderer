@@ -19,6 +19,11 @@ namespace Draw
 		viewport_info.pViewports = &viewport;
 	}
 
+	MaterialBaseParent::~MaterialBaseParent()
+	{
+		vkDestroyPipeline(Graphics::Vulkan::getInstance()->GetDevice().device, pipeline, Graphics::Vulkan::getInstance()->GetDevice().allocator);
+	}
+
 	void MaterialBaseParent::Compile()
 	{
 		desc_ptr->Compile();
@@ -56,7 +61,7 @@ namespace Draw
 	{
 		for (auto it : buffer_ptrs)
 		{
-			it.second->UpdateData(cur, bufs[it.first]->GetSizeInBytes(), bufs[it.first]->GetData());
+			it.second->UpdateData(0, bufs[it.first]->GetSizeInBytes(), bufs[it.first]->GetData());
 		}
 	}
 	void MaterialBaseParent::BindMeshData(shared_ptr<Bind::VertexBuffer> vBuffer_ptr, shared_ptr<Bind::IndexBuffer> iBuffer_ptr)
@@ -66,6 +71,7 @@ namespace Draw
 	}
 	void MaterialBaseParent::addLayout(std::string key, Dcb::RawLayout&& layout, Graphics::LayoutType layoutType, Graphics::DescriptorType descType, Graphics::StageFlag stage)
 	{
+		
 		bufs[key] = make_shared<Dcb::Buffer>(std::move(layout));
 		buffer_ptrs[key] = make_shared<Graphics::Buffer>(Graphics::BufferUsage::UNIFORM, bufs[key]->GetSizeInBytes());
 		desc_ptr->Add(layoutType, descType, stage, buffer_ptrs[key]);

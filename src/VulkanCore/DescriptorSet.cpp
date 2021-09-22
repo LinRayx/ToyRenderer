@@ -15,7 +15,7 @@ namespace Graphics
 
 	DescriptorSetCore::~DescriptorSetCore()
 	{
-
+		
 	}
 
 	void DescriptorSetCore::Add(LayoutType layout_type, DescriptorType type, StageFlag stage, shared_ptr<Buffer> buffer_ptr)
@@ -101,7 +101,7 @@ namespace Graphics
 				
 				}
 				else {
-					bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[i];
+					bufferInfos[j].buffer = infos[j].buffer_ptr->buffers[0];
 					bufferInfos[j].offset = 0;
 					bufferInfos[j].range = infos[j].buffer_ptr->size;
 

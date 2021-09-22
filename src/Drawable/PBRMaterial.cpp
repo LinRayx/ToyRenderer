@@ -71,6 +71,10 @@ namespace Draw
 		return roughness;
 	}
 
+	void PBRMaterial::AddTexture(PBRTEXTURE_TYPE type, string name)
+	{
+	}
+
 	void PBRMaterial::initPipelineCreateInfo(VkGraphicsPipelineCreateInfo& pinfo)
 	{
 		cout << "PBRMaterial::initPipelineCreateInfo" << endl;

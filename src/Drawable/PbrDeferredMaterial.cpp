@@ -117,7 +117,7 @@ namespace Draw
 		cout << "PbrDeferredMaterial::initPipelineCreateInfo" << endl;
 		using namespace Graphics;
 		frag_defs.emplace_back("SHADOW_MAP_CASCADE_COUNT=" + to_string(SHADOWMAP_COUNT));
-// #define DEBUG_CSM
+#define DEBUG_CSM
 #ifdef DEBUG_CSM
 		frag_defs.emplace_back("DEBUG_CSM");
 #endif // DEBUG_CSM

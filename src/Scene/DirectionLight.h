@@ -12,7 +12,7 @@ namespace Control
 		glm::vec3 GetDirection();
 		void SetDirection(glm::vec3 dir);
 	private:
-		glm::vec3 direction = glm::vec3(0) - glm::vec3(0, 0.5, 1);
+		glm::vec3 direction = glm::vec3(0) - glm::vec3(1, 1, 1);
 	};
 }
 

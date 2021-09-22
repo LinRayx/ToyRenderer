@@ -82,5 +82,10 @@ namespace Draw
 		nameToRenderPass[RenderPassType::CASCADE_SHADOW] = rp8;
 	}
 
+	void DestroyRenderPass()
+	{
+		Graphics::nameToRenderPass.clear();
+	}
+
 
 }

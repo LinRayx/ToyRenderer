@@ -3,11 +3,12 @@
 
 namespace Graphics {
 
+	map<string, shared_ptr<Buffer> > global_buffer_ptrs;
 
 	Buffer::Buffer(BufferUsage type, size_t size) : size(size)
 	{
-		buffers.resize(Vulkan::getInstance()->swapchain.image_count);
-		buffersMemorys.resize(Vulkan::getInstance()->swapchain.image_count);
+		buffers.resize(1);
+		buffersMemorys.resize(1);
 		for (size_t i = 0; i < buffers.size(); ++i)
 		{
 			createBuffer(size, getUsage(type), VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffers[i], buffersMemorys[i]);
@@ -36,6 +37,7 @@ namespace Graphics {
 
 	Buffer::~Buffer()
 	{
+		std::cout << "~Buffer" << std::endl;
 		for (size_t i = 0; i < buffers.size(); i++) {
 			vkDestroyBuffer(Vulkan::getInstance()->device.device, buffers[i], Vulkan::getInstance()->device.allocator);
 			vkFreeMemory(Vulkan::getInstance()->device.device, buffersMemorys[i], Vulkan::getInstance()->device.allocator);

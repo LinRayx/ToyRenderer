@@ -230,4 +230,10 @@ namespace Bind
 		shaderFactory[ShaderType::FULLSCREEN_VERT] = make_unique< ShaderData>("FullScreen", false);
 		shaderFactory[ShaderType::SSAO] = make_unique< ShaderData>(shaderFactory[ShaderType::FULLSCREEN_VERT]->vert_shader, "Ssao_generate");
 	}
+
+	void DestroyShader()
+	{
+		shaderFactory.clear();
+		shaderCollection.clear();
+	}
 }

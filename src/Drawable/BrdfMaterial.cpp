@@ -7,6 +7,10 @@ namespace Draw
 		desc_ptr = std::make_unique<Graphics::DescriptorSetCore>();
 		desc_ptr->Compile();
 	}
+	BrdfMaterial::~BrdfMaterial()
+	{
+		vkDestroyPipeline(Graphics::Vulkan::getInstance()->GetDevice().device, pipeline, Graphics::Vulkan::getInstance()->GetDevice().allocator);
+	}
 	void BrdfMaterial::Compile()
 	{
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = Graphics::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);

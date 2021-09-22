@@ -169,6 +169,7 @@ float textureProj(vec4 shadowCoord, vec2 offset, uint cascadeIndex)
 	float shadow = 1.0;
 	float bias = 0.005;
 
+
 	if (shadowCoord.z > -1.0 && shadowCoord.z < 1.0) {
 		float dist = texture(csmShadowMap, vec3(shadowCoord.st + offset, cascadeIndex)).r;
 		if (shadowCoord.w > 0 && dist < shadowCoord.z - bias) {

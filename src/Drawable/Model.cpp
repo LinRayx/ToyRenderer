@@ -7,7 +7,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Draw {
-	
+
+	map<string, shared_ptr<Bind::VertexBuffer> > nameToVertex_buffer;
+	map<string, shared_ptr<Bind::IndexBuffer> > nameToIndex_buffer;
+
 	glm::mat4 ModelBase::getModelMatrix()
 	{
 		glm::mat4 mat = glm::mat4(1.0);
@@ -40,16 +43,25 @@ namespace Draw {
 		}
 
 		for (size_t i = 0; i < pScene->mNumMeshes; ++i) {
-			ParseMesh(*pScene->mMeshes[i], pScene->mMaterials[pScene->mMeshes[i]->mMaterialIndex]);
+			ParseMesh(file_path, *pScene->mMeshes[i], pScene->mMaterials[pScene->mMeshes[i]->mMaterialIndex]);
 		}
 
 		int nextId = 0;
 		pRoot = ParseNode(*pScene->mRootNode, translate, rotate, scale, nextId);
 	}
 
-	void Model::ParseMesh(const aiMesh& mesh, const aiMaterial* material)
+	Model::~Model()
 	{
-		Mesh t_mesh(mesh, material, directory);
+		for (auto it : objects) {
+			for (auto& mat : it.materials) {
+				delete mat.second;
+			}
+		}
+	}
+
+	void Model::ParseMesh(string file_path, const aiMesh& mesh, const aiMaterial* material)
+	{
+		Mesh t_mesh(file_path, mesh, material, directory);
 
 		objects.emplace_back(Object(std::move(t_mesh)));
 	}
@@ -254,58 +266,65 @@ namespace Draw {
 	}
 
 
-	Mesh::Mesh(const aiMesh& mesh, const aiMaterial* material, string directoy)
+	Mesh::Mesh(string file_path, const aiMesh& mesh, const aiMaterial* material, string directoy)
 	{
 		dire = directoy;
 		this->material = material;
 		this->name = mesh.mName.C_Str();
 
-		using namespace Dcb;
-		Dcb::VertexBuffer vbuf(
-			std::move(
-				Dcb::VertexLayout{}
-				.Append(VertexLayout::Position3D)
-				.Append(VertexLayout::Normal)
-				.Append(VertexLayout::Texture2D)
-				.Append(VertexLayout::Tangent)
-				//.Append(VertexLayout::Float3Color)
-				//.Append(VertexLayout::Float3Color)
-				//.Append(VertexLayout::Float3Color)
-			)
-		);
+		if (nameToIndex_buffer.count(file_path)) {
+			vertex_buffer = nameToVertex_buffer[file_path];
+			index_buffer = nameToIndex_buffer[file_path];
+		}
+		else {
+			using namespace Dcb;
+			Dcb::VertexBuffer vbuf(
+				std::move(
+					Dcb::VertexLayout{}
+					.Append(VertexLayout::Position3D)
+					.Append(VertexLayout::Normal)
+					.Append(VertexLayout::Texture2D)
+					.Append(VertexLayout::Tangent)
+					//.Append(VertexLayout::Float3Color)
+					//.Append(VertexLayout::Float3Color)
+					//.Append(VertexLayout::Float3Color)
+				)
+			);
 
-		for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
-			if (Gloable::FilpY) {
-				mesh.mVertices[i].y *= -1;
-				mesh.mNormals[i].y *= -1;
+			for (uint32_t i = 0; i < mesh.mNumVertices; ++i) {
+				if (Gloable::FilpY) {
+					mesh.mVertices[i].y *= -1;
+					mesh.mNormals[i].y *= -1;
+				}
+
+				vbuf.EmplaceBack(
+					*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
+					*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
+					*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i]),
+					*reinterpret_cast<glm::vec4*>(&mesh.mTangents[i])
+					//Gloable::GetPreComputeLT(i, 0),
+					//Gloable::GetPreComputeLT(i, 1),
+					//Gloable::GetPreComputeLT(i, 2)
+				);
 			}
 
-			vbuf.EmplaceBack(
-				*reinterpret_cast<glm::vec3*>(&(mesh.mVertices[i])),
-				*reinterpret_cast<glm::vec3*>(&(mesh.mNormals[i])),
-				*reinterpret_cast<glm::vec2*>(&mesh.mTextureCoords[0][i]),
-				*reinterpret_cast<glm::vec4*>(&mesh.mTangents[i])
-				//Gloable::GetPreComputeLT(i, 0),
-				//Gloable::GetPreComputeLT(i, 1),
-				//Gloable::GetPreComputeLT(i, 2)
-			);
+			std::vector<unsigned short> ibuf;
+			ibuf.reserve(mesh.mNumFaces * 3);
+			for (unsigned int i = 0; i < mesh.mNumFaces; i++)
+			{
+				const auto& face = mesh.mFaces[i];
+				assert(face.mNumIndices == 3);
+				ibuf.push_back(face.mIndices[0]);
+				ibuf.push_back(face.mIndices[1]);
+				ibuf.push_back(face.mIndices[2]);
+			}
+
+			vertex_buffer = make_shared<Bind::VertexBuffer>(vbuf);
+			index_buffer = make_shared<Bind::IndexBuffer>(ibuf);
+
+			nameToIndex_buffer[file_path] = index_buffer;
+			nameToVertex_buffer[file_path] = vertex_buffer;
 		}
-
-		std::vector<unsigned short> ibuf;
-		ibuf.reserve(mesh.mNumFaces * 3);
-		for (unsigned int i = 0; i < mesh.mNumFaces; i++)
-		{
-			const auto& face = mesh.mFaces[i];
-			assert(face.mNumIndices == 3);
-			ibuf.push_back(face.mIndices[0]);
-			ibuf.push_back(face.mIndices[1]);
-			ibuf.push_back(face.mIndices[2]);
-		}
-
-		vertex_buffer = make_shared<Bind::VertexBuffer>(vbuf);
-		index_buffer = make_shared<Bind::IndexBuffer>(ibuf);
-
-
 	}
 	void Mesh::SetMaterial(MaterialBase* mat)
 	{

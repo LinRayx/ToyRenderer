@@ -69,6 +69,7 @@ namespace Graphics {
 		class Deletor {
 		public:
 			~Deletor() {
+				std::cout << "Image Deletor" << std::endl;
 				if (Image::instance != NULL)
 					delete Image::instance;
 			}

@@ -506,6 +506,9 @@
     <ClCompile Include="..\src\Drawable\PostProcess\ScreenSpaceReflectionMaterial.cpp">
       <Filter>源文件\Drawable\PostProcess</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\VulkanCore\Synchronization.cpp">
+      <Filter>源文件\VulkanCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\desc_test.vert.glsl">

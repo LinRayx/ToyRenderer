@@ -5,5 +5,6 @@
 namespace Draw
 {
 	void CreateRenderPass();
+	void DestroyRenderPass();
 }
 #endif // !RENDERPASS_FACTORY_H

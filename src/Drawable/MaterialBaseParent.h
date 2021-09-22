@@ -21,6 +21,7 @@ namespace Draw
 	{
 	public:
 		MaterialBaseParent();
+		virtual ~MaterialBaseParent();
 		template<typename T>
 		void SetValue(std::string key1, std::string key2, T value)
 		{

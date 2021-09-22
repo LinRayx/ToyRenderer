@@ -9,6 +9,7 @@ namespace Draw
 	{
 	public:
 		BrdfMaterial();
+		~BrdfMaterial();
 		void Compile();
 		void Execute(shared_ptr<Graphics::CommandBuffer> cmd);
 	private:

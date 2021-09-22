@@ -36,12 +36,13 @@ namespace RenderSystem
 		}
 
 		Draw::DestroyTextureMgr();
-		Graphics::DestroyRenderPass();
+		Draw::DestroyRenderPass();
+		Bind::DestroyShader();
 	}
 
 	void RenderLoop::Init()
 	{	
-		// defaultScene();
+		//defaultScene();
 		csmScene();
 		for (auto& model : models) {
 			model->Compile();
@@ -110,19 +111,20 @@ namespace RenderSystem
 			frameT_ptr->Record();
 
 			Control::Scene::getInstance()->camera_ptr->Control_camera(Graphics::Vulkan::getInstance()->swapchain.window, frameT_ptr->Get());
-			int imageIndex = cmdQue_ptr->GetCurImageIndex();
+			int imageIndex = cmdQue_ptr->prepareFrame();
 
 			for (auto& model : models) {
-				model->Update(imageIndex);
+				model->Update(0);
 			}
 
 			for (auto& mat : mat_fullscreen_ptrs) {
 				mat.second->UpdateSceneData();
-				mat.second->Update(imageIndex);
+				mat.second->Update(0);
 			}
 			
 			cmdQue_ptr->AddCommandBuffer(cmdBuf_ptr->drawCmdBuffers[imageIndex]);
-			cmdQue_ptr->Submit();
+			cmdQue_ptr->draw();
+			cmdQue_ptr->submitFrame();
 
 			updateUI();
 		}

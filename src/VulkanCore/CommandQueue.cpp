@@ -2,6 +2,10 @@
 
 namespace Graphics
 {
+	CommandQueue::~CommandQueue()
+	{
+
+	}
 	void CommandQueue::FlushCommandBuffer(VkCommandBuffer commandBuffer)
 	{
 		VkSubmitInfo submitInfo = initializers::submitInfo();
@@ -40,6 +44,39 @@ namespace Graphics
 
 		sync_ptr->imagesInFlight[imageIndex] = sync_ptr->waitFences[currentFrame];
 		return imageIndex;
+	}
+
+	uint32_t CommandQueue::prepareFrame()
+	{
+		VkResult result = vkAcquireNextImageKHR(Vulkan::getInstance()->device.device, Vulkan::getInstance()->swapchain.swapchain, UINT64_MAX, sync_ptr->semaphores.presentComplete, VK_NULL_HANDLE, &imageIndex);
+		return imageIndex;
+	}
+
+	void CommandQueue::submitFrame()
+	{
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.pNext = NULL;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &Vulkan::getInstance()->swapchain.swapchain;
+		presentInfo.pImageIndices = &imageIndex;
+		// Check if a wait semaphore has been specified to wait for before presenting the image
+		if (sync_ptr->semaphores.renderComplete != VK_NULL_HANDLE)
+		{
+			presentInfo.pWaitSemaphores = &sync_ptr->semaphores.renderComplete;
+			presentInfo.waitSemaphoreCount = 1;
+		}
+		VkResult result = vkQueuePresentKHR(Vulkan::getInstance()->device.queue, &presentInfo);
+		vkQueueWaitIdle(Vulkan::getInstance()->device.queue);
+		cmdBufs.clear();
+	}
+
+	void CommandQueue::draw()
+	{
+		submitInfo.commandBufferCount = cmdBufs.size();
+
+		submitInfo.pCommandBuffers = cmdBufs.data();
+		vkQueueSubmit(Vulkan::getInstance()->device.queue, 1, &submitInfo, VK_NULL_HANDLE);
 	}
 
 	void CommandQueue::drawFrame()
