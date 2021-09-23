@@ -13,10 +13,144 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Exception">
+      <UniqueIdentifier>{8506d8e2-c354-41a9-baa1-8ed61c2e44ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Exception">
+      <UniqueIdentifier>{5be8751b-b01b-4806-86e2-dbc33c08fb94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\SceneManager">
+      <UniqueIdentifier>{04564b7b-8603-4ccd-bb63-d2d5fc1bac5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\SceneManager">
+      <UniqueIdentifier>{c33ee866-91b6-47ef-8fdd-8281d7e6b2ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\MemoryManager">
+      <UniqueIdentifier>{0fef384c-162e-4fcf-8ca0-1ef022bd33ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Utils">
+      <UniqueIdentifier>{8c4a1c07-8b11-47ef-8979-4e7af943e77f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Template">
+      <UniqueIdentifier>{822a1914-db96-4634-bbff-e3ca29daefdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Template">
+      <UniqueIdentifier>{284ff434-7ae7-4167-9651-b3effe90a426}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\ResourceManager">
+      <UniqueIdentifier>{d84ce4a5-9023-4d49-9f41-b84942be0000}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\ResourceManager">
+      <UniqueIdentifier>{2ccbb55d-cc2b-4af0-a0c9-2b30917f9985}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Exception\VELException.cpp">
+      <Filter>源文件\Exception</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneManager\VELNode.cpp">
+      <Filter>源文件\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneManager\VELSceneNode.cpp">
+      <Filter>源文件\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneManager\VELSceneManager.cpp">
+      <Filter>源文件\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Template\VELSingleton.cpp">
+      <Filter>源文件\Template</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneManager\VELRoot.cpp">
+      <Filter>源文件\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneManager\VELEntity.cpp">
+      <Filter>源文件\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneManager\VELMovableObject.cpp">
+      <Filter>源文件\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ResourceManager\VELResourceGroupManager.cpp">
+      <Filter>源文件\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ResourceManager\VELMeshManager.cpp">
+      <Filter>源文件\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ResourceManager\VELResourceManager.cpp">
+      <Filter>源文件\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ResourceManager\VELResource.cpp">
+      <Filter>源文件\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ResourceManager\VELMesh.cpp">
+      <Filter>源文件\ResourceManager</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Exception\VELException.h">
+      <Filter>头文件\Exception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MemoryManager\VELMemoryAllocatorConfig.h">
+      <Filter>头文件\MemoryManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\MemoryManager\VELAlignedAllocator.h">
+      <Filter>头文件\MemoryManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SceneManager\VELSceneNode.h">
+      <Filter>头文件\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SceneManager\VELNode.h">
+      <Filter>头文件\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SceneManager\VELSceneManager.h">
+      <Filter>头文件\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\VELStdHeaders.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\VELPrerequisites.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\VELCommand.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SceneManager\VELRoot.h">
+      <Filter>头文件\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Template\VELSingleton.h">
+      <Filter>头文件\Template</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SceneManager\VELEntity.h">
+      <Filter>头文件\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\SceneManager\VELMovableObject.h">
+      <Filter>头文件\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceManager\VELResourceManager.h">
+      <Filter>头文件\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\Utils\VELSharerdPtr.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceManager\VELResourceGroupManager.h">
+      <Filter>头文件\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceManager\VELMeshManager.h">
+      <Filter>头文件\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceManager\VELHardwareBuffer.h">
+      <Filter>头文件\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceManager\VELManualResourceLoader.h">
+      <Filter>头文件\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceManager\VELResource.h">
+      <Filter>头文件\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ResourceManager\VELMesh.h">
+      <Filter>头文件\ResourceManager</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

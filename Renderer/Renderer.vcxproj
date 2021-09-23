@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\src;$(ProjectDir)..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +140,43 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\Exception\VELException.cpp" />
+    <ClCompile Include="..\src\ResourceManager\VELMesh.cpp" />
+    <ClCompile Include="..\src\ResourceManager\VELMeshManager.cpp" />
+    <ClCompile Include="..\src\ResourceManager\VELResource.cpp" />
+    <ClCompile Include="..\src\ResourceManager\VELResourceGroupManager.cpp" />
+    <ClCompile Include="..\src\ResourceManager\VELResourceManager.cpp" />
+    <ClCompile Include="..\src\SceneManager\VELEntity.cpp" />
+    <ClCompile Include="..\src\SceneManager\VELMovableObject.cpp" />
+    <ClCompile Include="..\src\SceneManager\VELNode.cpp" />
+    <ClCompile Include="..\src\SceneManager\VELRoot.cpp" />
+    <ClCompile Include="..\src\SceneManager\VELSceneManager.cpp" />
+    <ClCompile Include="..\src\SceneManager\VELSceneNode.cpp" />
+    <ClCompile Include="..\src\Template\VELSingleton.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Exception\VELException.h" />
+    <ClInclude Include="..\src\MemoryManager\VELAlignedAllocator.h" />
+    <ClInclude Include="..\src\MemoryManager\VELMemoryAllocatorConfig.h" />
+    <ClInclude Include="..\src\ResourceManager\VELHardwareBuffer.h" />
+    <ClInclude Include="..\src\ResourceManager\VELManualResourceLoader.h" />
+    <ClInclude Include="..\src\ResourceManager\VELMesh.h" />
+    <ClInclude Include="..\src\ResourceManager\VELMeshManager.h" />
+    <ClInclude Include="..\src\ResourceManager\VELResource.h" />
+    <ClInclude Include="..\src\ResourceManager\VELResourceGroupManager.h" />
+    <ClInclude Include="..\src\ResourceManager\VELResourceManager.h" />
+    <ClInclude Include="..\src\SceneManager\VELEntity.h" />
+    <ClInclude Include="..\src\SceneManager\VELMovableObject.h" />
+    <ClInclude Include="..\src\SceneManager\VELNode.h" />
+    <ClInclude Include="..\src\SceneManager\VELRoot.h" />
+    <ClInclude Include="..\src\SceneManager\VELSceneManager.h" />
+    <ClInclude Include="..\src\SceneManager\VELSceneNode.h" />
+    <ClInclude Include="..\src\Template\VELSingleton.h" />
+    <ClInclude Include="..\src\Utils\VELCommand.h" />
+    <ClInclude Include="..\src\Utils\VELPrerequisites.h" />
+    <ClInclude Include="..\src\Utils\VELSharerdPtr.h" />
+    <ClInclude Include="..\src\Utils\VELStdHeaders.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
