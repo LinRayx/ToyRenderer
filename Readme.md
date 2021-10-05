@@ -1,4 +1,4 @@
-# 开始转向URP，实现复杂图形算法
+# 开始转向Unity SRP，实现复杂图形算法
 
 ## 阶段性成果
 ![result1](./output/mary3.png)
